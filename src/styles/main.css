@@ -51,6 +51,9 @@ footer { padding: var(--space-medium); text-align: center; font-size: var(--font
 h1, h2, p, a { overflow-wrap: anywhere; }
 @media (min-width: 768px) { main { padding-block: var(--space-large); } }
 .practice-heading { margin-bottom: 16px; }
+.practice-heading-row { display: flex; align-items: center; gap: 8px; }
+.practice-heading-row .board-toggle { margin-left: auto; padding-inline: 8px; white-space: nowrap; }
+.practice-nav button[aria-disabled="true"] { color: var(--muted); border-color: var(--border); background: var(--surface); cursor: default; }
 progress { width: 100%; accent-color: var(--accent); }
 .practice-main, .question-card, .stimulus { min-width: 0; }
 .question-card, .desktop-board, .mobile-board { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }

@@ -69,11 +69,12 @@ test('drafts toggle and change without grading or saving, survive navigation but
   await screen.findByRole('heading', { name: /^2\. 표본/ });
   expect(await screen.findByRole('button', { name: '1번, 안 푼 문제' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '이전' }));
-  expect(await screen.findByText('선택됨')).toBeTruthy();
+  await waitFor(() => expect(screen.getByRole('button', { name: '3. 표본 보기 셋' }).getAttribute('aria-pressed')).toBe('true'));
+  await waitFor(() => expect(screen.queryByText('선택됨')).toBeNull());
   expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!).answers).toEqual({});
   cleanup();
   await ready();
-  await waitFor(() => expect(screen.queryByText('선택됨')).toBeNull());
+  await waitFor(() => within(screen.getByRole('article')).getAllByRole('button').forEach(button => expect(button.getAttribute('aria-pressed')).toBe('false')));
 });
 test('click selection can change and clear, and interactive Enter only activates its own control', async () => {
   await ready();
@@ -81,8 +82,14 @@ test('click selection can change and clear, and interactive Enter only activates
   const two = screen.getByRole('button', { name: '2. 표본 보기 둘' });
   fireEvent.click(one);
   await waitFor(() => expect(one.getAttribute('aria-pressed')).toBe('true'));
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: '1. 표본 보기 하나' })).toBe(one);
+    expect(screen.queryByText('선택됨')).toBeNull();
+    expect(two.getAttribute('aria-pressed')).toBe('false');
+  });
   fireEvent.click(two);
   await waitFor(() => expect(one.getAttribute('aria-pressed')).toBe('false'));
+  await waitFor(() => expect(screen.getByRole('button', { name: '2. 표본 보기 둘' }).getAttribute('aria-pressed')).toBe('true'));
   fireEvent.click(two);
   await waitFor(() => expect(two.getAttribute('aria-pressed')).toBe('false'));
   fireEvent.click(two);

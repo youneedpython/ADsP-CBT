@@ -36,7 +36,6 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
       const selecting = mode === 'exam' || mode === 'practice' && !confirmed;
       return <button key={answer} disabled={mode === 'review'} aria-disabled={locked || undefined} aria-pressed={selecting ? selected === answer : undefined} className={`choice ${correct ? 'correct' : wrong ? 'wrong' : selecting && selected === answer ? 'selected' : ''}`} onClick={() => { if (!locked) choose(answer); }}>
         <span>{answer}.</span>{' '}<span><MathText text={choice} /></span>{correct && <>{' '}<strong>정답</strong></>}{wrong && <>{' '}<strong>내 답</strong></>}
-        {selecting && selected === answer && <>{' '}<strong>선택됨</strong></>}
         {mode === 'review' && correct && selected === answer && <>{' '}<strong>내 답</strong></>}
       </button>;
     })}</div>

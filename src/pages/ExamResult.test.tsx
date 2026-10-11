@@ -75,9 +75,18 @@ test('creates a record and saves choice, change, deselection without answer leak
   fireEvent.click(choice(1));
   await waitFor(() => expect(readExam().answers).toEqual({ 1: 1 }));
   await waitFor(() => expect(choice(1).getAttribute('aria-pressed')).toBe('true'));
-  await waitFor(() => expect(choice(1).textContent).toBe('1. 표본 하나 선택됨'));
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: '1. 표본 하나' })).toBe(choice(1));
+    expect(choice(1).textContent).toBe('1. 표본 하나');
+    expect(screen.queryByText('선택됨')).toBeNull();
+    for (const number of [2, 3, 4]) expect(choice(number).getAttribute('aria-pressed')).toBe('false');
+  });
   fireEvent.click(choice(2));
   await waitFor(() => expect(readExam().answers).toEqual({ 1: 2 }));
+  await waitFor(() => {
+    expect(choice(1).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByRole('button', { name: '2. 표본 둘' }).getAttribute('aria-pressed')).toBe('true');
+  });
   expect(await screen.findByText('푼 문제 1 / 50')).toBeTruthy();
   await waitFor(() => expect(screen.getByRole('progressbar', { name: '푼 문제 진행' }).getAttribute('value')).toBe('1'));
   expect(await screen.findByRole('button', { name: '1번, 푼 문제, 현재 문제' })).toBeTruthy();

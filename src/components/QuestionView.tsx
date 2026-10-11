@@ -3,11 +3,17 @@ import type { Answer, Question, RoundData } from '../data/types';
 import { dataUrl } from '../data/loadRound';
 import { MathText } from './MathText';
 const circled = ['①', '②', '③', '④'];
-export function QuestionView({ question: q, subjects, selected, choose, mode = 'practice' }: {
-  question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review';
+export function QuestionView({ question: q, subjects, selected, choose, mode = 'practice', confirmed = selected !== undefined }: {
+  question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
 }) {
   const title = useRef<HTMLHeadingElement>(null);
   const previous = useRef(q.number);
+  const result = useRef<HTMLParagraphElement>(null);
+  const wasConfirmed = useRef(confirmed);
+  useEffect(() => {
+    if (mode === 'practice' && confirmed && !wasConfirmed.current) result.current?.focus();
+    wasConfirmed.current = confirmed;
+  }, [confirmed, mode, q.number]);
   useEffect(() => {
     if (previous.current !== q.number) title.current?.focus();
     previous.current = q.number;
@@ -23,12 +29,14 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
     </div>)}
     <div className="choices">{q.choices.map((choice, index) => {
       const answer = (index + 1) as Answer;
-      const correct = (mode === 'review' || mode === 'practice' && selected !== undefined) && answer === q.answer;
-      const wrong = mode !== 'exam' && selected === answer && answer !== q.answer;
-      const locked = mode === 'review' || mode === 'practice' && selected !== undefined;
-      return <button key={answer} disabled={mode === 'review'} aria-disabled={locked || undefined} aria-pressed={mode === 'exam' ? selected === answer : undefined} className={`choice ${correct ? 'correct' : wrong ? 'wrong' : mode === 'exam' && selected === answer ? 'selected' : ''}`} onClick={() => { if (!locked) choose(answer); }}>
+      const graded = mode === 'review' || mode === 'practice' && confirmed;
+      const correct = graded && answer === q.answer;
+      const wrong = graded && selected === answer && answer !== q.answer;
+      const locked = graded;
+      const selecting = mode === 'exam' || mode === 'practice' && !confirmed;
+      return <button key={answer} disabled={mode === 'review'} aria-disabled={locked || undefined} aria-pressed={selecting ? selected === answer : undefined} className={`choice ${correct ? 'correct' : wrong ? 'wrong' : selecting && selected === answer ? 'selected' : ''}`} onClick={() => { if (!locked) choose(answer); }}>
         <span>{answer}.</span>{' '}<span><MathText text={choice} /></span>{correct && <>{' '}<strong>정답</strong></>}{wrong && <>{' '}<strong>내 답</strong></>}
-        {mode === 'exam' && selected === answer && <>{' '}<strong>선택됨</strong></>}
+        {selecting && selected === answer && <>{' '}<strong>선택됨</strong></>}
         {mode === 'review' && correct && selected === answer && <>{' '}<strong>내 답</strong></>}
       </button>;
     })}</div>
@@ -36,8 +44,8 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
       {selected === undefined && <p>풀지 않음</p>}
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
     </section>}
-    {mode === 'practice' && selected !== undefined && <section className="feedback" aria-label="풀이 결과">
-      <p role="status">{selected === q.answer ? '맞았습니다.' : `틀렸습니다. 정답은 ${circled[q.answer - 1]}번입니다.`}</p>
+    {mode === 'practice' && confirmed && selected !== undefined && <section className="feedback" aria-label="풀이 결과">
+      <p ref={result} tabIndex={-1} role="status">{selected === q.answer ? '맞았습니다.' : `틀렸습니다. 정답은 ${circled[q.answer - 1]}번입니다.`}</p>
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
     </section>}
   </article>;

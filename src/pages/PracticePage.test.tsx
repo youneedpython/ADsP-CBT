@@ -40,9 +40,79 @@ test('renders all stimuli safely and hides answers before selection', async () =
   await waitFor(() => expect(screen.queryByRole('heading', { name: '해설' })).toBeNull());
   await waitFor(() => expect((screen.getByRole('button', { name: '이전' }) as HTMLButtonElement).disabled).toBe(true));
 });
+test('drafts toggle and change without grading or saving, survive navigation but not reopening', async () => {
+  await ready();
+  const confirm = screen.getByRole('button', { name: '정답 확인' });
+  const nav = confirm.closest('nav')!;
+  const buttonsPresent = () => expect(within(nav).getAllByRole('button').length).toBe(3);
+  buttonsPresent();
+  expect(confirm.getAttribute('aria-disabled')).toBe('true');
+  expect((confirm as HTMLButtonElement).disabled).toBe(false);
+  fireEvent.click(confirm);
+  await waitFor(() => expect(screen.queryByRole('status')).toBeNull());
+  for (const [key, selected] of [['1', '1'], ['2', '2'], ['2', undefined], ['3', '3']]) {
+    fireEvent.keyDown(window, { key });
+    await waitFor(() => {
+      const choices = within(screen.getByRole('article')).getAllByRole('button');
+      choices.forEach((choice, index) => expect(choice.getAttribute('aria-pressed')).toBe(String(String(index + 1) === selected)));
+    });
+  }
+  await waitFor(() => expect(screen.getByRole('button', { name: /3\. 표본 보기 셋/ }).getAttribute('aria-pressed')).toBe('true'));
+  buttonsPresent();
+  expect(confirm.className).toBe('');
+  expect(screen.queryByText('정답')).toBeNull();
+  expect(screen.queryByText('내 답')).toBeNull();
+  expect(screen.queryByRole('status')).toBeNull();
+  expect(screen.queryByRole('heading', { name: '해설' })).toBeNull();
+  expect(localStorage.getItem('adsp-cbt:v1:50:practice')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: '다음' }));
+  await screen.findByRole('heading', { name: /^2\. 표본/ });
+  expect(await screen.findByRole('button', { name: '1번, 안 푼 문제' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: '이전' }));
+  expect(await screen.findByText('선택됨')).toBeTruthy();
+  expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!).answers).toEqual({});
+  cleanup();
+  await ready();
+  await waitFor(() => expect(screen.queryByText('선택됨')).toBeNull());
+});
+test('click selection can change and clear, and interactive Enter only activates its own control', async () => {
+  await ready();
+  const one = screen.getByRole('button', { name: '1. 표본 보기 하나' });
+  const two = screen.getByRole('button', { name: '2. 표본 보기 둘' });
+  fireEvent.click(one);
+  await waitFor(() => expect(one.getAttribute('aria-pressed')).toBe('true'));
+  fireEvent.click(two);
+  await waitFor(() => expect(one.getAttribute('aria-pressed')).toBe('false'));
+  fireEvent.click(two);
+  await waitFor(() => expect(two.getAttribute('aria-pressed')).toBe('false'));
+  fireEvent.click(two);
+  await waitFor(() => expect(two.getAttribute('aria-pressed')).toBe('true'));
+  two.focus();
+  expect(fireEvent.keyDown(two, { key: 'Enter' })).toBe(true);
+  await waitFor(() => expect(screen.queryByRole('status')).toBeNull());
+  const confirm = screen.getByRole('button', { name: '정답 확인' });
+  const writes = vi.spyOn(Storage.prototype, 'setItem');
+  confirm.focus();
+  expect(fireEvent.keyDown(confirm, { key: 'Enter' })).toBe(true);
+  fireEvent.click(confirm);
+  const result = await screen.findByRole('status');
+  await waitFor(() => expect(document.activeElement).toBe(result));
+  expect(writes).toHaveBeenCalledTimes(1);
+  expect(confirm.getAttribute('aria-disabled')).toBe('true');
+  expect(screen.getByRole('button', { name: '다음' }).className).toBe('');
+  expect(within(confirm.closest('nav')!).getAllByRole('button').length).toBe(3);
+  fireEvent.keyDown(window, { key: '1' });
+  fireEvent.keyDown(window, { key: 'Enter' });
+  fireEvent.click(confirm);
+  await waitFor(() => expect(writes).toHaveBeenCalledTimes(1));
+  writes.mockRestore();
+  expect(screen.getByRole('button', { name: '문항 번호판' }).closest('.practice-heading')).toBeTruthy();
+});
 test('keyboard choices lock while remaining focusable and arrows focus the new question', async () => {
   await ready();
   fireEvent.keyDown(window, { key: '2', code: 'Numpad2' });
+  await waitFor(() => expect(screen.getByRole('button', { name: /2\. 표본 보기 둘/ }).getAttribute('aria-pressed')).toBe('true'));
+  fireEvent.keyDown(window, { key: 'Enter' });
   const chosen = screen.getByRole('button', { name: /2\. 표본 보기 둘/ });
   await waitFor(() => expect(chosen.getAttribute('aria-disabled')).toBe('true'));
   await waitFor(() => expect((chosen as HTMLButtonElement).disabled).toBe(false));
@@ -115,6 +185,7 @@ test('restart from second question removes the record and navigation writes once
 test.each([1, 2])('grades selection %s once and preserves state through navigation', async answer => {
   await ready();
   fireEvent.click(screen.getByRole('button', { name: answer === 1 ? '1. 표본 보기 하나' : '2. 표본 보기 둘' }));
+  fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe(answer === 2 ? '맞았습니다.' : '틀렸습니다. 정답은 ②번입니다.'));
   expect(await screen.findByText('정답')).toBeTruthy();
   await waitFor(() => expect(Boolean(screen.queryByText('내 답'))).toBe(answer === 1));
@@ -137,6 +208,7 @@ test('board opens, moves, closes and restarts without confirmation', async () =>
   await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   await screen.findByRole('heading', { name: /^2\. 표본/ });
   fireEvent.click(screen.getByRole('button', { name: '2. 표본 보기 둘' }));
+  fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   expect(await screen.findByRole('button', { name: '2번, 맞은 문제, 현재 문제' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '처음부터 다시' }));
   await waitFor(() => expect(window.location.hash).toContain('q=1'));
@@ -158,6 +230,7 @@ test('round request failure can be retried', async () => {
 test('reopening practice resumes answers and current question', async () => {
   await ready();
   fireEvent.click(screen.getByRole('button', { name: '2. 표본 보기 둘' }));
+  fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!)).toEqual({ answers: { 1: 2 }, current: 2 }));
   fireEvent.click(screen.getByRole('link', { name: 'ADsP 기출 복원 문제' }));
@@ -172,6 +245,7 @@ test('a new app instance restores saved answers and position', async () => {
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await screen.findByRole('heading', { name: /^2\. 표본/ });
   fireEvent.click(screen.getByRole('button', { name: '1. 표본 보기 하나' }));
+  fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   await waitFor(() => expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!)).toEqual({ answers: { 2: 1 }, current: 2 }));
   cleanup();
   window.location.hash = '#/rounds/50/practice';
@@ -192,6 +266,7 @@ test('failed persistence shows a notice while practice continues', async () => {
   try {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: '2. 표본 보기 둘' }));
+    fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
     expect(await screen.findByText('이 브라우저에서는 풀이 기록을 저장할 수 없습니다.')).toBeTruthy();
     await waitFor(() => expect(screen.getByRole('status').textContent).toBe('맞았습니다.'));
   } finally { spy.mockRestore(); }

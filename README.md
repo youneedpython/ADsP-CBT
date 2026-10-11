@@ -1,4 +1,4 @@
-# ADsP 기출 복원문제
+# ADsP CBT
 
 ADsP(데이터분석 준전문가) 기출 복원문제를 회차별로 풀어 보는 사이트입니다.
 
@@ -61,24 +61,5 @@ ADsP(데이터분석 준전문가) 기출 복원문제를 회차별로 풀어 �
 
 풀이 기록은 지금 쓰는 브라우저에만 저장됩니다. 서버로 보내지 않으며 다른 기기나 다른 브라우저에서는 보이지 않습니다. 브라우저의 사이트 데이터를 지우면 기록도 지워집니다.
 
-## 개발
-
-Node.js 24.21.0을 사용합니다.
-
-```sh
-npm ci
-npm run dev
-npm run validate:data
-npm test
-npm run build
-```
-
-빌드 결과는 `dist/`에 생성됩니다.
-
-## 문제 데이터
-
-`public/data/rounds.json`은 회차 목록입니다. 각 항목은 회차 번호, 제목, 문항 수, 제한 시간과 회차 JSON 파일명을 담습니다.
-`public/data/<회차>.json`은 `formatVersion: 1`, 회차 정보, 과목 목록과 문항 배열을 담습니다. 문항은 번호, 과목, 문제, 지문, 보기 4개, 정답 번호(1~4), 해설로 구성됩니다.
-지문은 글, 코드, 표, 그림을 지원하며 그림은 `public/data/<회차>/`에 별도 파일로 저장합니다. 데이터 변경 후 `npm run validate:data`로 검사합니다.
 
 문의와 문제 제기는 [이 Repository의 Issues](https://github.com/youneedpython/ADsP-CBT/issues)로 받습니다.

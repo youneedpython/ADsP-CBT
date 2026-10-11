@@ -5,5 +5,12 @@
     "questionCount": 50,
     "timeLimitMinutes": 90,
     "file": "50.json"
+  },
+  {
+    "round": 49,
+    "title": "ADsP 제49회 복원 자료 기반 학습문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "49.json"
   }
 ]

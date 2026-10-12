@@ -16,6 +16,14 @@ function answers(counts: number[]) {
     Array.from({ length: count }, (_, offset) => [index * 10 + offset + 1, 1])));
 }
 describe('scoring', () => {
+  it.each([
+    [10, 3, 26, 78, '2과목 과락'],
+    [4, 4, 12, 40, '총점 미달'],
+  ])('checks README examples (%s,%s,%s)', (a, b, c, score, reason) => {
+    expect(scoreRound(sample(), answers([a, b, c]))).toMatchObject({
+      score, correctCount: a + b + c, passed: false, failureReasons: [reason],
+    });
+  });
   it('scores all correct, wrong and unanswered without mutating inputs', () => {
     const round = sample();
     const correct = Object.fromEntries(round.questions.map(q => [q.number, 1]));

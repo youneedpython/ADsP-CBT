@@ -2,11 +2,11 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { loadRounds } from './loadRounds';
 
 afterEach(() => vi.unstubAllGlobals());
-test('uses the configured base URL', async () => {
+test.each([undefined, new AbortController().signal])('revalidates the configured base URL with signal %s', async signal => {
   const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => [] });
   vi.stubGlobal('fetch', fetchMock);
-  expect(await loadRounds()).toEqual([]);
-  expect(fetchMock).toHaveBeenCalledWith(`${import.meta.env.BASE_URL}data/rounds.json`, { signal: undefined });
+  expect(await loadRounds(signal)).toEqual([]);
+  expect(fetchMock).toHaveBeenCalledWith(`${import.meta.env.BASE_URL}data/rounds.json`, { signal, cache: 'no-cache' });
 });
 test('rejects HTTP errors without reading JSON', async () => {
   const json = vi.fn();

@@ -16,6 +16,7 @@
   --font-small: 14px;
   --font-subject: 17px;
   --font-heading: 20px;
+  --logo-size: 28px;
   --line-height: 1.6;
   --space-small: 8px;
   --space-medium: 16px;
@@ -35,7 +36,8 @@ body, h1, h2, p { margin: 0; }
 .container { width: 100%; max-width: var(--content-width); margin-inline: auto; padding-inline: var(--space-medium); }
 header { background: var(--surface); border-bottom: 1px solid var(--border); }
 h1, h2 { font-size: var(--font-heading); }
-h1 a { display: flex; align-items: center; min-height: var(--touch-height); padding-block: var(--space-small); color: var(--text); text-decoration: none; }
+h1 a { display: flex; align-items: center; gap: var(--space-small); min-height: var(--touch-height); padding-block: var(--space-small); color: var(--text); text-decoration: none; }
+.service-logo { width: var(--logo-size); height: var(--logo-size); flex-shrink: 0; }
 main { flex: 1; padding-block: var(--space-medium); }
 .notice { padding: var(--space-medium); border: 1px solid var(--notice-border); border-radius: var(--radius); background: var(--notice-bg); color: var(--notice-text); font-size: var(--font-small); }
 .notice h2 { font-size: var(--font-small); margin-bottom: var(--space-small); }

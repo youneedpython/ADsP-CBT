@@ -1,3 +1,4 @@
+import { formatRemainingTime, getTiming } from '../domain/session';
 import { useEffect, useState } from 'react';
 import { Link } from "react-router";
 import { LoadingState, type PageProps } from "../components/LoadingState";
@@ -20,10 +21,11 @@ export function RoundList({ state, retry }: PageProps) {
         state.rounds.length === 0 ? <p role="status" className="state-panel">아직 등록된 회차가 없습니다.</p> :
           <ul className="round-list">{state.rounds.map(round => {
             const exam = records[round.round]?.exam;
+            const remaining = exam ? getTiming(exam.elapsedSeconds, round.timeLimitMinutes).remainingSeconds : 0;
             const result = records[round.round]?.result;
             const label = exam ? '시험 이어 풀기' : '시험';
             return <li key={round.round} className="round-card">
-            <div className="round-heading"><h2>{round.round}회</h2><span className={!exam && result ? result.passed ? 'record-pass' : 'record-fail' : undefined}>{exam ? `시험 ${Object.keys(exam.answers).length}/${round.questionCount} 진행 중` : result ? `최근 ${result.score}점 · ${result.passed ? '합격' : '불합격'}` : '기록 없음'}</span></div>
+            <div className="round-heading"><h2>{round.round}회</h2><span className={!exam && result ? result.passed ? 'record-pass' : 'record-fail' : undefined}>{exam ? `시험 ${Object.keys(exam.answers).length}/${round.questionCount} 진행 중 · ${remaining <= 0 ? '시간 초과' : `남은 시간 ${formatRemainingTime(remaining)}`}` : result ? `최근 ${result.score}점 · ${result.passed ? '합격' : '불합격'}` : '기록 없음'}</span></div>
             <p className="round-meta">{round.questionCount}문항 · {round.timeLimitMinutes}분</p>
             <div className="round-actions">
               <Link className="button secondary" to={`/rounds/${round.round}/practice`} aria-label={`${round.round}회 연습`}>연습</Link>

@@ -2,7 +2,7 @@ import type { Answers } from '../domain/scoring';
 import { isAnswer } from '../domain/scoring';
 
 export interface PracticeRecord { answers: Answers; current: number }
-export interface ExamRecord extends PracticeRecord { startedAt: string }
+export interface ExamRecord extends PracticeRecord { startedAt: string; elapsedSeconds: number }
 export interface ResultRecord {
   answers: Answers;
   score: number;
@@ -32,7 +32,7 @@ function valid(value: unknown, kind: RecordKind, count: number): boolean {
   if (!integer(count, 1) || !object(value) || !object(value.answers)) return false;
   if (!Object.entries(value.answers).every(([key, answer]) =>
     /^[1-9]\d*$/.test(key) && integer(Number(key), 1, count) && isAnswer(answer))) return false;
-  if (kind !== 'result') return integer(value.current, 1, count) && (kind !== 'exam' || date(value.startedAt));
+  if (kind !== 'result') return integer(value.current, 1, count) && (kind !== 'exam' || (date(value.startedAt) && integer(value.elapsedSeconds, 0)));
   return value.questionCount === count && integer(value.score, 0, count * 2)
     && typeof value.passed === 'boolean' && integer(value.elapsedSeconds, 0) && date(value.submittedAt)
     && object(value.subjectCorrect) && ['1', '2', '3'].every(key => Object.hasOwn(value.subjectCorrect as object, key))

@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { formatRemainingTime, getProgress, getTiming, isTimeWarning, selectExamAnswer, selectPracticeAnswer } from './session';
+import { accumulateElapsed, formatRemainingTime, getProgress, getTiming, isTimeWarning, selectExamAnswer, selectPracticeAnswer } from './session';
 
 it('locks practice answers and preserves the initial state', () => {
   const initial = { answers: {}, current: 1 };
@@ -22,9 +22,13 @@ it('counts valid answers only for requested questions', () => {
 });
 it.each([[0, 5400, 0], [699000, 4701, 699], [4799000, 601, 4799], [4800000, 600, 4800],
   [5400000, 0, 5400], [5401000, -1, 5401], [6125000, -725, 6125]])('calculates time at %s ms', (now, remainingSeconds, elapsedSeconds) => {
-  expect(getTiming(10000, 10000 + now, 90)).toEqual({ remainingSeconds, elapsedSeconds, overtimeSeconds: Math.max(0, -remainingSeconds) });
+  expect(getTiming(now / 1000, 90)).toEqual({ remainingSeconds, elapsedSeconds, overtimeSeconds: Math.max(0, -remainingSeconds) });
   expect(isTimeWarning(remainingSeconds)).toBe(remainingSeconds <= 600);
 });
 it.each([[5400, '90:00'], [4701, '78:21'], [5, '0:05'], [0, '0:00'], [-1, '초과 0:01'], [-725, '초과 12:05']])('formats %s seconds', (seconds, expected) => {
   expect(formatRemainingTime(seconds)).toBe(expected);
+});
+
+it.each([[1000, 2000, 11], [1000, 6000, 15], [1000, 6001, 10], [2000, 1000, 10], [1000, 2999, 11]])('accumulates a visible interval %s to %s', (start, end, expected) => {
+  expect(accumulateElapsed(10, start, end)).toBe(expected);
 });

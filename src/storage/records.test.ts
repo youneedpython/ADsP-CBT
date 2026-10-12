@@ -8,7 +8,7 @@ function fake(): RecordStorage {
 }
 const records: RecordTypes = {
   practice: { answers: { 1: 2 }, current: 2 },
-  exam: { answers: { 1: 2 }, current: 2, startedAt: '2026-10-11T03:00:00.000Z' },
+  exam: { answers: { 1: 2 }, current: 2, elapsedSeconds: 1800, startedAt: '2026-10-11T03:00:00.000Z' },
   result: { answers: { 1: 2 }, score: 2, subjectCorrect: { 1: 1, 2: 0, 3: 0 }, passed: false,
     elapsedSeconds: 42, submittedAt: '2026-10-11T04:00:00.000Z', questionCount: 3 },
 };
@@ -26,6 +26,7 @@ it.each(['practice', 'exam', 'result'] as const)('round trips and deletes %s ind
   expect(store.canPersist()).toBe(true);
 });
 const invalid: [RecordKind, string][] = [
+  ...[undefined, -1, 1.5, '42'].map(elapsedSeconds => ['exam', JSON.stringify({ ...records.exam, elapsedSeconds })] as [RecordKind, string]),
   ...['not json', 'null', '[]', '2', '{}'].map(raw => ['practice', raw] as [RecordKind, string]),
   ...[{ answers: [], current: 1 }, { answers: {}, current: '1' }, { current: 1 }, { answers: {} },
     ...[0, 4, 1.5].map(current => ({ answers: {}, current })),

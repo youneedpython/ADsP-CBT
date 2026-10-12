@@ -12,8 +12,8 @@ const data: RoundData = {
     question: `개발 표본 문제 ${index + 1}`, stimulus: [], choices: ['표본 하나', '표본 둘', '표본 셋', '표본 넷'], answer: 2, explanation: '숨겨야 하는 표본 해설' })),
 };
 const startedAt = '2026-10-11T03:00:00.000Z';
-function exam(answers: Record<number, number> = {}, current = 1, start = startedAt) {
-  localStorage.setItem(recordKey(50, 'exam'), JSON.stringify({ answers, current, startedAt: start }));
+function exam(answers: Record<number, number> = {}, current = 1, elapsedSeconds = 0) {
+  localStorage.setItem(recordKey(50, 'exam'), JSON.stringify({ answers, current, startedAt, elapsedSeconds }));
 }
 function result(answers: Record<number, number>, elapsedSeconds = 3667) {
   // Deliberately stale aggregates prove that the screen scores the saved answers again.
@@ -99,8 +99,7 @@ test('creates a record and saves choice, change, deselection without answer leak
   await waitFor(() => expect(choice(2).getAttribute('aria-pressed')).toBe('false'));
 });
 test('zero seconds exposes the warning in text', async () => {
-  exam();
-  vi.spyOn(Date, 'now').mockReturnValue(Date.parse(startedAt) + 90 * 60 * 1000);
+  exam({}, 1, 5400);
   await ready();
   expect(await screen.findByText('남은 시간 0:00 · 10분 이하')).toBeTruthy();
   expect((await screen.findByRole('alert')).textContent).toContain('시간이 끝났습니다.');
@@ -124,7 +123,7 @@ test('resumes answers, current question and start; explicit query wins and movem
   await waitFor(() => expect(readExam().current).toBe(3));
 });
 test('ticks, warns, alerts once, shows overtime, never auto submits and clears timer', async () => {
-  exam({}, 1, new Date(Date.now() - (80 * 60 - 1) * 1000).toISOString());
+  exam({}, 1, 4799);
   await ready();
   vi.useFakeTimers();
   // Remount so the interval itself belongs to the fake clock.
@@ -148,12 +147,107 @@ test('ticks, warns, alerts once, shows overtime, never auto submits and clears t
   expect(vi.getTimerCount()).toBe(0);
 });
 test('already expired exam alerts once on entry', async () => {
-  exam({}, 1, new Date(Date.now() - 91 * 60 * 1000).toISOString());
+  exam({}, 1, 5460);
   await ready();
   expect(await screen.findByRole('alert')).toBeTruthy();
   fireEvent.click(within(screen.getByRole('alert')).getByRole('button', { name: '닫기' }));
   fireEvent.click(choice(2));
   await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+});
+
+async function fakeExam() {
+  await ready();
+  cleanup();
+  vi.useFakeTimers();
+  render(<App />);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+}
+async function advance(milliseconds: number) {
+  await act(async () => { await vi.advanceTimersByTimeAsync(milliseconds); });
+}
+function visibility(value: 'hidden' | 'visible') {
+  vi.spyOn(document, 'visibilityState', 'get').mockReturnValue(value);
+  fireEvent(document, new Event('visibilitychange'));
+}
+
+test('visible ticks save every five seconds, hidden tabs pause and submission counts only visible time', async () => {
+  await fakeExam();
+  const writes = vi.spyOn(Storage.prototype, 'setItem');
+  await advance(1000);
+  expect(screen.getByText('남은 시간 89:59')).toBeTruthy();
+  expect(writes).not.toHaveBeenCalled();
+  await advance(4000);
+  expect(readExam().elapsedSeconds).toBe(5);
+  expect(writes).toHaveBeenCalledTimes(1);
+  await advance(1000);
+  visibility('hidden');
+  expect(readExam().elapsedSeconds).toBe(6);
+  expect(vi.getTimerCount()).toBe(0);
+  await advance(3600000);
+  expect(screen.getByText('남은 시간 89:54')).toBeTruthy();
+  visibility('visible');
+  await advance(2000);
+  expect(screen.getByText('남은 시간 89:52')).toBeTruthy();
+  openSubmit();
+  await advance(1000);
+  fireEvent.click(screen.getByRole('button', { name: '제출' }));
+  await advance(0);
+  expect(JSON.parse(localStorage.getItem(recordKey(50, 'result'))!).elapsedSeconds).toBe(9);
+  expect(localStorage.getItem(recordKey(50, 'exam'))).toBeNull();
+});
+
+test('pagehide and unmount save, listeners clean up, reentry ignores hours away and suspension', async () => {
+  const removeDocument = vi.spyOn(document, 'removeEventListener');
+  const removeWindow = vi.spyOn(window, 'removeEventListener');
+  await fakeExam();
+  await advance(2000);
+  fireEvent(window, new Event('pagehide'));
+  expect(readExam().elapsedSeconds).toBe(2);
+  await advance(3600000);
+  expect(screen.getByText('남은 시간 89:58')).toBeTruthy();
+  fireEvent(window, new Event('pageshow'));
+  await advance(1000);
+  vi.setSystemTime(Date.now() + 3600000);
+  await advance(1000);
+  expect(screen.getByText('남은 시간 89:57')).toBeTruthy();
+  await advance(1000);
+  cleanup();
+  expect(readExam().elapsedSeconds).toBe(4);
+  expect(vi.getTimerCount()).toBe(0);
+  expect(removeDocument).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+  expect(removeWindow).toHaveBeenCalledWith('pagehide', expect.any(Function));
+  expect(removeWindow).toHaveBeenCalledWith('pageshow', expect.any(Function));
+  await advance(7200000);
+  render(<App />);
+  await advance(0);
+  expect(screen.getByText('남은 시간 89:56')).toBeTruthy();
+  await advance(1000);
+  expect(screen.getByText('남은 시간 89:55')).toBeTruthy();
+});
+
+test.each([0, 2])('restart confirmation cancels or resets answers, current, time and alert while retaining result (%s answers)', async count => {
+  exam(count ? { 1: 2, 2: 3 } : {}, 3, 5401);
+  result({ 1: 2 });
+  const previousResult = localStorage.getItem(recordKey(50, 'result'));
+  await ready();
+  fireEvent.click(within(screen.getByRole('alert')).getByRole('button', { name: '닫기' }));
+  const opener = screen.getByRole('button', { name: '처음부터 다시' });
+  opener.focus(); fireEvent.click(opener);
+  expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('true');
+  expect(screen.getByText(`진행 중인 시험을 지우고 처음부터 다시 시작할까요? ${count ? '고른 답 2개와 지난 시간이 지워집니다.' : '고른 답과 지난 시간이 지워집니다.'}`)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: '취소' }));
+  await waitFor(() => expect(document.activeElement).toBe(opener));
+  expect(readExam().current).toBe(3);
+  expect(readExam().elapsedSeconds).toBe(5401);
+  fireEvent.click(opener); fireEvent.keyDown(window, { key: 'Escape' });
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  fireEvent.click(opener); fireEvent.click(screen.getByRole('button', { name: '다시 시작' }));
+  await waitFor(() => expect(readExam()).toMatchObject({ answers: {}, current: 1, elapsedSeconds: 0 }));
+  expect(readExam().startedAt).not.toBe(startedAt);
+  expect(screen.getByText('남은 시간 90:00')).toBeTruthy();
+  expect(screen.queryByRole('alert')).toBeNull();
+  expect(localStorage.getItem(recordKey(50, 'result'))).toBe(previousResult);
+  await waitFor(() => expect(window.location.hash).toContain('q=1'));
 });
 test('confirmation supports cancel, Escape and both prompts', async () => {
   await ready();
@@ -169,7 +263,7 @@ test('confirmation supports cancel, Escape and both prompts', async () => {
   expect(await screen.findByText('제출하고 채점할까요?')).toBeTruthy();
 });
 test('submission saves all result fields, deletes exam and replaces history', async () => {
-  exam(answersFor(all));
+  exam(answersFor(all), 1, 3667);
   const submissionTime = Date.parse(startedAt) + 3667000;
   vi.spyOn(Date, 'now').mockReturnValue(submissionTime);
   const replace = vi.spyOn(window.history, 'replaceState');

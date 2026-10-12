@@ -20,9 +20,13 @@ export function getProgress(answers: Answers, questionNumbers: readonly number[]
   return { answeredCount: questionNumbers.length - unanswered.length, unanswered };
 }
 
-/** Times are milliseconds since the Unix epoch; remainingSeconds is signed. */
-export function getTiming(startedAt: number, now: number, timeLimitMinutes: number) {
-  const elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
+/** Ignore clock rollback and suspended updates; timestamps are milliseconds. */
+export function accumulateElapsed(elapsedSeconds: number, start: number, end: number): number {
+  const gap = end - start;
+  return elapsedSeconds + (gap > 5000 ? 0 : Math.max(0, Math.floor(gap / 1000)));
+}
+
+export function getTiming(elapsedSeconds: number, timeLimitMinutes: number) {
   const remainingSeconds = timeLimitMinutes * 60 - elapsedSeconds;
   return { elapsedSeconds, remainingSeconds, overtimeSeconds: Math.max(0, -remainingSeconds) };
 }

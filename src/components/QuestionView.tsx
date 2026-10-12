@@ -25,7 +25,7 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
     previous.current = q.number;
   }, [q.number]);
   return <article className="question-card">
-    <p>{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
+    <p className="question-subject">{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
     {stimuli.map((group, index) => {
       const item = group[0];

@@ -5,11 +5,16 @@
   --text: #1c2330;
   --muted: #596579;
   --accent: #2f54d6;
+  --accent-soft: #e8edfc;
+  --radius-pill: 999px;
+  --chip-padding-block: 4px;
+  --chip-padding-inline: 10px;
   --notice-bg: #fff6dd;
   --notice-border: #f0d48a;
   --notice-text: #6b5200;
   --font-body: 16px;
   --font-small: 14px;
+  --font-subject: 17px;
   --font-heading: 20px;
   --line-height: 1.6;
   --space-small: 8px;
@@ -58,6 +63,7 @@ progress { width: 100%; accent-color: var(--accent); }
 .practice-main, .question-card, .stimulus { min-width: 0; }
 .question-card, .desktop-board, .mobile-board { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
 .question-title { font-size: 18px; margin: 16px 0; }
+.question-subject { display: inline-block; max-width: 100%; padding: var(--chip-padding-block) var(--chip-padding-inline); border-radius: var(--radius-pill); color: var(--accent); background: var(--accent-soft); font-size: var(--font-subject); font-weight: 700; }
 .stimulus { border: 1px solid #b9c0cc; padding: 12px; margin-bottom: 14px; }
 .stimulus-code, .stimulus-table { overflow-x: auto; }
 .stimulus-text p + p { margin-top: var(--space-small); }
@@ -66,11 +72,15 @@ pre { margin: 0; font: 15px/1.6 monospace; }
 table { border-collapse: collapse; }
 th, td { border: 1px solid var(--border); padding: 8px; }
 img { display: block; max-width: 100%; height: auto; }
-.formula { display: inline-block; max-width: 100%; overflow: auto hidden; vertical-align: middle; padding-block: var(--space-small); margin-block: calc(-1 * var(--space-small)); }
-.formula-display { display: block; }
+.formula { display: inline; overflow: visible; }
+.formula-display { display: block; overflow: auto hidden; }
+.formula-display .katex-display { padding-block: var(--space-small); padding-inline-end: var(--space-small); }
 .formula .katex-display { margin: 0; text-align: left; }
 .formula .katex-display > .katex { text-align: left; }
-th .formula, td .formula { max-width: min(60vw, var(--content-width)); }
+.question-title, .stimulus-text p, .feedback p, .choice > span:nth-child(2) { min-width: 0; overflow-x: auto; }
+.question-title:has(.formula), .stimulus-text p:has(.formula), .feedback p:has(.formula), .choice > span:nth-child(2):has(.formula) { padding-block: var(--space-small); margin-block: calc(-1 * var(--space-small)); padding-inline-end: var(--space-small); }
+.question-title:has(.formula) { margin-block: calc(16px - var(--space-small)); }
+.stimulus-text p + p:has(.formula) { margin-block-start: 0; }
 .choices { display: grid; gap: 10px; }
 .choice { width: 100%; justify-content: flex-start; align-items: flex-start; gap: 10px; text-align: left; background: white; color: var(--text); border-color: var(--border); font-size: 16px; font-weight: 400; overflow-wrap: anywhere; }
 .choice span:nth-child(2) { flex: 1; min-width: 0; }

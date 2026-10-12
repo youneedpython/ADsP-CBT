@@ -61,8 +61,8 @@ function ExamRound({ data }: { data: RoundData }) {
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
         {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>
-    {!persistent && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
-    {expired && <div role="alert" className="notice expiry-notice">시간이 끝났습니다. 계속 풀거나 제출할 수 있습니다.<button className="secondary" onClick={() => setExpired(false)}>닫기</button></div>}
+    {!persistent && <p className="notice exam-notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
+    {expired && <div role="alert" className="notice expiry-notice exam-notice">시간이 끝났습니다. 계속 풀거나 제출할 수 있습니다.<button className="secondary" onClick={() => setExpired(false)}>닫기</button></div>}
     <div className="practice-layout"><div className="practice-main">
       <QuestionView mode="exam" question={question} subjects={data.subjects} selected={record.answers[question.number] as Answer | undefined} choose={choose} />
       <nav className="practice-nav exam-nav" aria-label="문제 이동"><button className="secondary" disabled={current === 1} onClick={() => move(current - 1)}>이전</button><button className="secondary" disabled={current === data.questions.length} onClick={() => move(current + 1)}>다음</button><button onClick={() => setConfirm(true)}>제출하고 채점</button></nav>

@@ -10,6 +10,12 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
   const previous = useRef(q.number);
   const result = useRef<HTMLParagraphElement>(null);
   const wasConfirmed = useRef(confirmed);
+  const stimuli: (typeof q.stimulus)[] = [];
+  for (const item of q.stimulus) {
+    const last = stimuli.at(-1);
+    if (item.type === 'text' && last?.[0].type === 'text') last.push(item);
+    else stimuli.push([item]);
+  }
   useEffect(() => {
     if (mode === 'practice' && confirmed && !wasConfirmed.current) result.current?.focus();
     wasConfirmed.current = confirmed;
@@ -21,12 +27,14 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
   return <article className="question-card">
     <p>{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
-    {q.stimulus.map((item, index) => <div className="stimulus" key={index}>
-      {item.type === 'text' && <p><MathText text={item.text} /></p>}
+    {stimuli.map((group, index) => {
+      const item = group[0];
+      return <div className={`stimulus stimulus-${item.type}`} key={index}>
+      {item.type === 'text' && group.map((paragraph, paragraphIndex) => paragraph.type === 'text' && <p key={paragraphIndex}><MathText text={paragraph.text} display /></p>)}
       {item.type === 'code' && <pre>{item.text}</pre>}
       {item.type === 'table' && <table><thead><tr>{item.rows[0].map((cell, col) => <th key={col} scope="col"><MathText text={cell} /></th>)}</tr></thead><tbody>{item.rows.slice(1).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, col) => <td key={col}><MathText text={cell} /></td>)}</tr>)}</tbody></table>}
       {item.type === 'image' && <img src={dataUrl(item.src)} alt={item.alt} />}
-    </div>)}
+    </div>; })}
     <div className="choices">{q.choices.map((choice, index) => {
       const answer = (index + 1) as Answer;
       const graded = mode === 'review' || mode === 'practice' && confirmed;

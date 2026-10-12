@@ -12,5 +12,12 @@
     "questionCount": 50,
     "timeLimitMinutes": 90,
     "file": "49.json"
+  },
+  {
+    "round": 48,
+    "title": "ADsP 제48회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "48.json"
   }
 ]

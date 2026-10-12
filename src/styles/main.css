@@ -58,13 +58,19 @@ progress { width: 100%; accent-color: var(--accent); }
 .practice-main, .question-card, .stimulus { min-width: 0; }
 .question-card, .desktop-board, .mobile-board { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
 .question-title { font-size: 18px; margin: 16px 0; }
-.stimulus { border: 1px solid #b9c0cc; padding: 12px; margin-bottom: 14px; overflow-x: auto; }
+.stimulus { border: 1px solid #b9c0cc; padding: 12px; margin-bottom: 14px; }
+.stimulus-code, .stimulus-table { overflow-x: auto; }
+.stimulus-text p + p { margin-top: var(--space-small); }
 .stimulus p, .feedback p { white-space: pre-wrap; }
 pre { margin: 0; font: 15px/1.6 monospace; }
 table { border-collapse: collapse; }
 th, td { border: 1px solid var(--border); padding: 8px; }
 img { display: block; max-width: 100%; height: auto; }
-.formula { display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: middle; }
+.formula { display: inline-block; max-width: 100%; overflow: auto hidden; vertical-align: middle; padding-block: var(--space-small); margin-block: calc(-1 * var(--space-small)); }
+.formula-display { display: block; }
+.formula .katex-display { margin: 0; text-align: left; }
+.formula .katex-display > .katex { text-align: left; }
+th .formula, td .formula { max-width: min(60vw, var(--content-width)); }
 .choices { display: grid; gap: 10px; }
 .choice { width: 100%; justify-content: flex-start; align-items: flex-start; gap: 10px; text-align: left; background: white; color: var(--text); border-color: var(--border); font-size: 16px; font-weight: 400; overflow-wrap: anywhere; }
 .choice span:nth-child(2) { flex: 1; min-width: 0; }
@@ -79,6 +85,14 @@ button:disabled { cursor: default; }
 .number-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .number-grid button { padding: 4px; }
 .number-grid [aria-current] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.board-legend { display: flex; flex-wrap: wrap; gap: var(--space-medium); margin-block: var(--space-medium); font-size: var(--font-small); }
+.board-legend > span { display: inline-flex; align-items: center; gap: var(--space-small); }
+.legend-sample { width: 20px; height: 20px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); }
+.legend-sample.secondary { background: var(--surface); }
+.legend-sample.correct { background: #eaf7ef; border-color: #16633c; }
+.legend-sample.wrong { background: #fff0f0; border-color: #a52a30; }
+.legend-current { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.exam-notice { margin-bottom: var(--space-medium); }
 .submit-overlay { position: fixed; inset: 0; background: #0008; display: grid; place-items: center; padding: 16px; z-index: 3; }
 .selected { color: #2345b7; background: #edf1ff; border-color: var(--accent); }
 .choice.selected { border-width: 2px; padding: calc(var(--space-small) - 1px) calc(var(--space-medium) - 1px); font-weight: 700; }

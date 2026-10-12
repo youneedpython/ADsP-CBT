@@ -1,5 +1,10 @@
 import type { RoundData } from '../data/types';
 import type { Answers } from '../domain/scoring';
+export function BoardLegend({ mode = 'practice' }: { mode?: 'practice' | 'exam' }) {
+  const states = mode === 'exam' ? [['', '푼 문제'], ['secondary', '안 푼 문제']] : [['correct', '맞은 문제'], ['wrong', '틀린 문제'], ['secondary', '안 푼 문제']];
+  return <div className="board-legend">{[...states, ['secondary legend-current', '현재 문제']].map(([state, label]) =>
+    <span key={label}><span aria-hidden="true" className={`legend-sample ${state}`} />{label}</span>)}</div>;
+}
 export function QuestionBoard({ data, current, answers, move, restart, mode = 'practice' }: {
   data: RoundData; current: number; answers: Answers; move: (number: number) => void; restart?: () => void; mode?: 'practice' | 'exam';
 }) {
@@ -12,6 +17,6 @@ export function QuestionBoard({ data, current, answers, move, restart, mode = 'p
           className={state === '푼 문제' ? '' : state === '맞은 문제' ? 'correct' : state === '틀린 문제' ? 'wrong' : 'secondary'} onClick={() => move(q.number)}>{q.number}</button>;
       })}</div>
     </section>)}
-    <p>{mode === 'exam' ? '푼 문제 · 안 푼 문제' : '맞은 문제 · 틀린 문제 · 안 푼 문제'}</p>{restart && <button className="secondary" onClick={restart}>처음부터 다시</button>}
+    <BoardLegend mode={mode} />{restart && <button className="secondary" onClick={restart}>처음부터 다시</button>}
   </>;
 }

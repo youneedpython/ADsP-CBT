@@ -102,10 +102,10 @@ test('all correct disables wrong scope and falls back to all', async () => {
 test('list displays independent records and uses summaries without loading round files', async () => {
   window.location.hash = '#/';
   fetchMock.mockResolvedValue({ ok: true, json: async () => [50, 49, 48, 47, 46, 45].map(summary) });
-  localStorage.setItem(recordKey(49, 'exam'), JSON.stringify({ answers: { 1: 2, 3: 1 }, current: 3, startedAt: '2026-10-11T00:00:00Z' }));
+  localStorage.setItem(recordKey(49, 'exam'), JSON.stringify({ answers: { 1: 2, 3: 1 }, current: 3, elapsedSeconds: 1800, startedAt: '2026-10-11T00:00:00Z' }));
   localStorage.setItem(recordKey(48, 'result'), JSON.stringify(result({}, true)));
   localStorage.setItem(recordKey(47, 'result'), JSON.stringify(result()));
-  localStorage.setItem(recordKey(46, 'exam'), JSON.stringify({ answers: { 1: 1 }, current: 2, startedAt: '2026-10-11T00:00:00Z' }));
+  localStorage.setItem(recordKey(46, 'exam'), JSON.stringify({ answers: { 1: 1 }, current: 2, elapsedSeconds: 5400, startedAt: '2026-10-11T00:00:00Z' }));
   localStorage.setItem(recordKey(46, 'result'), JSON.stringify(result()));
   localStorage.setItem(recordKey(45, 'result'), 'invalid');
   render(<App />); await screen.findByRole('heading', { name: '50회' });
@@ -113,11 +113,11 @@ test('list displays independent records and uses summaries without loading round
   const cards = screen.getAllByRole('listitem');
   await waitFor(() => expect(within(cards[0]).getByText('기록 없음')).toBeTruthy());
   await waitFor(() => expect(within(cards[0]).queryByText('결과 보기')).toBeNull());
-  await waitFor(() => expect(within(cards[1]).getByText('시험 2/4 진행 중')).toBeTruthy());
+  await waitFor(() => expect(within(cards[1]).getByText('시험 2/4 진행 중 · 남은 시간 60:00')).toBeTruthy());
   expect(await screen.findByRole('link', { name: '49회 시험 이어 풀기' })).toBeTruthy();
   await waitFor(() => expect(within(cards[2]).getByText('최근 8점 · 합격')).toBeTruthy());
   await waitFor(() => expect(within(cards[3]).getByText('최근 4점 · 불합격')).toBeTruthy());
-  await waitFor(() => expect(within(cards[4]).getByText('시험 1/4 진행 중')).toBeTruthy());
+  await waitFor(() => expect(within(cards[4]).getByText('시험 1/4 진행 중 · 시간 초과')).toBeTruthy());
   await waitFor(() => expect(screen.getByRole('link', { name: '46회 결과 보기' }).getAttribute('href')).toBe('#/rounds/46/result'));
   expect(await screen.findByRole('link', { name: '48회 시험' })).toBeTruthy();
   await waitFor(() => expect(within(cards[5]).getByText('기록 없음')).toBeTruthy());

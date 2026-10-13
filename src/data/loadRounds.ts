@@ -5,7 +5,8 @@ function isRound(value: unknown): value is RoundSummary {
   const item = value as Record<string, unknown>;
   return ['round', 'questionCount', 'timeLimitMinutes'].every(
     key => typeof item[key] === 'number' && Number.isInteger(item[key]) && (item[key] as number) > 0,
-  ) && typeof item.title === 'string' && item.title.trim() !== ''
+  ) && typeof item.year === 'number' && Number.isInteger(item.year) && item.year >= 2000 && item.year <= 2100
+    && typeof item.title === 'string' && item.title.trim() !== ''
     && typeof item.file === 'string' && item.file.trim() !== '';
 }
 export async function loadRounds(signal?: AbortSignal): Promise<RoundSummary[]> {

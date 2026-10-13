@@ -3,6 +3,7 @@ import { LoadingState, type PageProps } from '../components/LoadingState';
 import { selectResume, answeredCount } from '../domain/roundOverview';
 import { getTiming, formatRemainingTime } from '../domain/session';
 import { useRecordStore } from '../storage/RecordStoreContext';
+import { EXAM_SUBJECTS, PASS_EXAMPLES, PASS_SCORE, POINTS_PER_QUESTION, SUBJECT_PASS_PERCENT, evaluatePassExample } from '../domain/passRule';
 export function HomePage({ state, retry }: PageProps) {
   const store = useRecordStore();
   const rounds = state.status === 'success' ? state.rounds : [];
@@ -28,5 +29,27 @@ export function HomePage({ state, retry }: PageProps) {
       <section className="overview-panel"><span className="step-number" aria-hidden="true">2</span><h3>시험</h3><p>50문항을 90분 안에 풉니다. 제출하기 전에는 정답이 보이지 않습니다.</p></section>
       <section className="overview-panel"><span className="step-number" aria-hidden="true">3</span><h3>결과와 다시 보기</h3><p>총점과 과목별 점수, 합격 여부를 보고 틀린 문제만 골라 해설을 다시 읽습니다.</p></section>
     </div></section>
+    <section className="pass-rule-section" aria-labelledby="pass-rule-title">
+      <h2 id="pass-rule-title">합격 기준</h2>
+      <p className="pass-rule-lead">두 조건을 모두 만족해야 합격입니다.</p>
+      <div className="pass-rule-grid">
+        <div className="overview-panel">
+          <div className="pass-condition"><span className="step-number" aria-hidden="true">1</span><div><h3>총점 {PASS_SCORE}점 이상</h3><p>문항당 {POINTS_PER_QUESTION}점입니다. {EXAM_SUBJECTS.reduce((sum, subject) => sum + subject.questionCount, 0)}문항 중 {Math.ceil(PASS_SCORE / POINTS_PER_QUESTION)}문항 이상 맞혀야 합니다.</p></div></div>
+          <div className="pass-condition"><span className="step-number" aria-hidden="true">2</span><div><h3>과목마다 {SUBJECT_PASS_PERCENT}% 이상</h3><p>한 과목이라도 40%에 못 미치면 과락으로 불합격입니다. 총점이 높아도 마찬가지입니다.</p></div></div>
+          <table className="pass-rule-table">
+            <thead><tr>{['과목', '문항', '배점', '최소 정답'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
+            <tbody>{EXAM_SUBJECTS.map(subject => <tr key={subject.id}><th scope="row">{subject.id}과목 {subject.name}</th><td>{subject.questionCount}</td><td>{subject.questionCount * POINTS_PER_QUESTION}점</td><td>{Math.ceil(subject.questionCount * SUBJECT_PASS_PERCENT / 100)}문항</td></tr>)}</tbody>
+          </table>
+        </div>
+        <div className="overview-panel">
+          <h3>점수로 보는 예</h3>
+          <ul className="pass-examples">{PASS_EXAMPLES.map(example => {
+            const result = evaluatePassExample(example.correctCounts);
+            return <li key={example.correctCounts.join('-')}><div className="pass-example-heading"><strong>{example.correctCounts.join(' · ')}문항 → {result.score}점</strong><span className={result.passed ? 'record-pass' : 'record-fail'}>{result.passed ? '합격' : '불합격'}</span></div><p>{example.reason}</p></li>;
+          })}</ul>
+          <p>숫자는 1과목 · 2과목 · 3과목의 정답 수입니다. 안 푼 문제는 틀린 것으로 채점합니다.</p>
+        </div>
+      </div>
+    </section>
   </>;
 }

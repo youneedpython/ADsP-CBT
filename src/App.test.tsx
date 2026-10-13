@@ -17,6 +17,11 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 test('renders exact notices, metadata, and both hash links', async () => {
   render(<App />);
   expect(screen.getByRole('heading', { level: 1, name: 'ADsP 기출 복원 문제' })).toBeTruthy();
+  const logo = screen.getByRole('link', { name: 'ADsP 기출 복원 문제' }).querySelector('img');
+  expect(logo?.getAttribute('alt')).toBe('');
+  expect(logo?.getAttribute('src')).toBe(`${import.meta.env.BASE_URL}favicon.svg`);
+  expect(logo?.getAttribute('width')).toBe('28');
+  expect(logo?.getAttribute('height')).toBe('28');
   expect(screen.getByRole('contentinfo').textContent).toBe(
     '복원 문제입니다. 실제 시험과 다를 수 있습니다.',
   );

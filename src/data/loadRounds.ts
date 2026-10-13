@@ -9,7 +9,7 @@ function isRound(value: unknown): value is RoundSummary {
     && typeof item.file === 'string' && item.file.trim() !== '';
 }
 export async function loadRounds(signal?: AbortSignal): Promise<RoundSummary[]> {
-  const response = await fetch(`${import.meta.env.BASE_URL}data/rounds.json`, { signal });
+  const response = await fetch(`${import.meta.env.BASE_URL}data/rounds.json`, { signal, cache: 'no-cache' });
   if (!response.ok) throw new Error('회차 목록 HTTP 오류');
   const data: unknown = await response.json();
   if (!Array.isArray(data) || !data.every(isRound)) throw new Error('회차 목록 형식 오류');

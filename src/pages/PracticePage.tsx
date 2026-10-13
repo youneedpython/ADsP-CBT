@@ -85,7 +85,7 @@ function PracticeRound({ data }: { data: RoundData }) {
     <div className="practice-layout"><div className="practice-main">
       <QuestionView question={question} subjects={data.subjects} selected={answers[current] ?? draft} confirmed={confirmed} choose={choose} />
       <nav className="practice-nav" aria-label="문제 이동"><button className="secondary" disabled={current === 1} onClick={() => move(current - 1)}>이전</button><button className={!confirmed && draft !== undefined ? '' : 'secondary'} aria-disabled={confirmed || draft === undefined} onClick={confirm}>정답 확인</button>
-        {current === data.questions.length ? <Link className={`button ${confirmed ? '' : 'secondary'}`} to="/">회차 목록</Link> : <button className={confirmed ? '' : 'secondary'} onClick={() => move(current + 1)}>다음</button>}
+        {current === data.questions.length ? <Link className={`button ${confirmed ? '' : 'secondary'}`} to="/rounds">회차 목록</Link> : <button className={confirmed ? '' : 'secondary'} onClick={() => move(current + 1)}>다음</button>}
       </nav>
     </div><aside className="desktop-board" aria-label="문항 번호판">{board}</aside></div>
     {open && <Modal label="문항 번호판" close={() => setOpen(false)}><button className="secondary" onClick={() => setOpen(false)}>닫기</button>{board}</Modal>}

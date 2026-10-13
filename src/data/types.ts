@@ -1,5 +1,6 @@
 export interface RoundSummary {
   round: number;
+  year: number;
   title: string;
   questionCount: number;
   timeLimitMinutes: number;

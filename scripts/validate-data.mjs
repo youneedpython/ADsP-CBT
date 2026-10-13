@@ -45,7 +45,8 @@ export async function validateData(directory = defaultDirectory()) {
   const seen = new Set();
   for (const entry of rounds) {
     const r = entry?.round;
-    if (!keys(entry, ['round', 'title', 'questionCount', 'timeLimitMinutes', 'file'], r)) continue;
+    if (!keys(entry, ['round', 'year', 'title', 'questionCount', 'timeLimitMinutes', 'file'], r)) continue;
+    if (!Number.isInteger(entry.year) || entry.year < 2000 || entry.year > 2100) add(r, undefined, 'year는 2000 ~ 2100 정수 필요');
     if (!Number.isInteger(r) || r < 1 || seen.has(r)) add(r, undefined, '회차 번호 오류 / 중복');
     seen.add(r);
     string(entry.title, r, undefined, 'title', true);

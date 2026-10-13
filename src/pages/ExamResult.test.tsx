@@ -25,7 +25,7 @@ beforeEach(() => {
   localStorage.clear();
   window.location.hash = '#/rounds/50/exam';
   vi.stubGlobal('fetch', vi.fn(async (url: string) => ({ ok: true, json: async () => url.endsWith('rounds.json')
-    ? [{ round: 50, title: '개발 표본', questionCount: 50, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) })));
+    ? [{ round: 50, year: 2026, title: '개발 표본', questionCount: 50, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) })));
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 async function ready() {
@@ -311,6 +311,7 @@ test.each([
 test.each([false, true])('question result links, counts and review action, perfect=%s', async perfect => {
   result(answersFor(perfect ? all : [1])); window.location.hash = '#/rounds/50/result'; render(<App />);
   await screen.findByRole('heading', { name: '50회 · 결과' });
+  expect(screen.getByRole('link', { name: '회차 목록' }).getAttribute('href')).toBe('#/rounds');
   await waitFor(() => expect(screen.getByRole('link', { name: '1번, 맞은 문제' }).getAttribute('href')).toBe('#/rounds/50/review?q=1'));
   await waitFor(() => expect(screen.getByRole('link', { name: `3번, ${perfect ? '맞은 문제' : '틀린 문제'}` }).getAttribute('href')).toBe('#/rounds/50/review?q=3'));
   expect(await screen.findByText(`틀린 문제 ${perfect ? 0 : 49}`)).toBeTruthy();

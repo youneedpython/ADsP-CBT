@@ -28,6 +28,6 @@ function ResultRound({ data }: { data: RoundData }) {
     </section>)}</div>
     <h3>문항별 결과</h3>
     <div className="result-grid">{result.questions.map(question => <Link key={question.number} className={question.correct ? 'correct' : 'wrong'} aria-label={`${question.number}번, ${question.correct ? '맞은 문제' : '틀린 문제'}`} to={`/rounds/${data.round}/review?q=${question.number}`}>{question.number}</Link>)}</div><p>틀린 문제 {wrong}</p>
-    <nav className="round-actions"><Link className="button secondary" to="/">회차 목록</Link><Link className="button" to={`/rounds/${data.round}/review${wrong ? '?filter=wrong' : ''}`}>{wrong ? '틀린 문제 보기' : '전체 문제 보기'}</Link></nav>
+    <nav className="round-actions"><Link className="button secondary" to="/rounds">회차 목록</Link><Link className="button" to={`/rounds/${data.round}/review${wrong ? '?filter=wrong' : ''}`}>{wrong ? '틀린 문제 보기' : '전체 문제 보기'}</Link></nav>
   </section>;
 }

@@ -18,7 +18,7 @@ beforeEach(() => {
   window.localStorage.clear();
   window.location.hash = '#/rounds/50/practice';
   mock.mockReset();
-  mock.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('rounds.json') ? [{ round: 50, title: '개발 표본', questionCount: 2, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) }));
+  mock.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('rounds.json') ? [{ round: 50, year: 2026, title: '개발 표본', questionCount: 2, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) }));
   vi.stubGlobal('fetch', mock);
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
@@ -203,6 +203,7 @@ test.each([1, 2])('grades selection %s once and preserves state through navigati
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(window.location.hash).toContain('q=2'));
   expect(await screen.findByRole('link', { name: '회차 목록' })).toBeTruthy();
+  expect(screen.getByRole('link', { name: '회차 목록' }).getAttribute('href')).toBe('#/rounds');
   await waitFor(() => expect(screen.queryByRole('button', { name: '다음' })).toBeNull());
   fireEvent.click(screen.getByRole('button', { name: '이전' }));
   await waitFor(() => expect(screen.getByRole('status').textContent).toContain(answer === 2 ? '맞았습니다' : '틀렸습니다'));
@@ -228,7 +229,7 @@ test.each(['0', '999', '1.5', 'abc', '2'])('handles query %s', async q => {
   expect(await screen.findByText(q === '2' ? '2 / 2' : '1 / 2')).toBeTruthy();
 });
 test('round request failure can be retried', async () => {
-  mock.mockImplementationOnce(async () => ({ ok: true, json: async () => [{ round: 50, title: '표본', questionCount: 2, timeLimitMinutes: 90, file: '50.json' }] })).mockRejectedValueOnce(new Error('표본 오류'));
+  mock.mockImplementationOnce(async () => ({ ok: true, json: async () => [{ round: 50, year: 2026, title: '표본', questionCount: 2, timeLimitMinutes: 90, file: '50.json' }] })).mockRejectedValueOnce(new Error('표본 오류'));
   render(<App />);
   await screen.findByText('문제를 불러오지 못했습니다.');
   fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
@@ -241,7 +242,7 @@ test('reopening practice resumes answers and current question', async () => {
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!)).toEqual({ answers: { 1: 2 }, current: 2 }));
   fireEvent.click(screen.getByRole('link', { name: 'ADsP 기출 복원 문제' }));
-  fireEvent.click(await screen.findByRole('link', { name: '50회 연습' }));
+  fireEvent.click(await screen.findByRole('link', { name: '이어서 풀기' }));
   await screen.findByRole('heading', { name: '50회 · 연습' });
   expect(await screen.findByText('2 / 2')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '이전' }));

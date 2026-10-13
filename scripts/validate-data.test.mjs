@@ -6,7 +6,7 @@ import path from 'node:path';
 import { validateData, isDirectExecution } from './validate-data.mjs';
 import { pathToFileURL } from 'node:url';
 
-const entry = { round: 900, title: '개발용 표본', questionCount: 50, timeLimitMinutes: 90, file: '900.json' };
+const entry = { round: 900, year: 2026, title: '개발용 표본', questionCount: 50, timeLimitMinutes: 90, file: '900.json' };
 function sample() {
   return { formatVersion: 1, round: 900, title: entry.title, timeLimitMinutes: 90,
     subjects: [1, 2, 3].map(id => ({ id, name: `표본 과목 ${id}` })),
@@ -25,6 +25,14 @@ async function check(mutate = () => {}, list = [entry]) {
 test('valid 50 questions and empty list pass', async () => {
   expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50 });
   expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0 });
+});
+
+test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid round year %s', async year => {
+  expect((await check(undefined, [{ ...entry, year }])).errors).toEqual(['회차 900 : year는 2000 ~ 2100 정수 필요']);
+});
+
+test.each([2000, 2100])('accepts year boundary %s', async year => {
+  expect((await check(undefined, [{ ...entry, year }])).errors).toEqual([]);
 });
 test('validator direct execution compares junction real paths', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'adsp-entry-'));

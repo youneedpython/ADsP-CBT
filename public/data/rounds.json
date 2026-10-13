@@ -1,6 +1,7 @@
 [
   {
     "round": 50,
+    "year": 2026,
     "title": "ADsP 제50회 기출 복원문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -8,6 +9,7 @@
   },
   {
     "round": 49,
+    "year": 2026,
     "title": "ADsP 제49회 복원 자료 기반 학습문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -15,6 +17,7 @@
   },
   {
     "round": 48,
+    "year": 2026,
     "title": "ADsP 제48회 기출 복원문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -22,6 +25,7 @@
   },
   {
     "round": 47,
+    "year": 2025,
     "title": "ADsP 제47회 기출 복원문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -29,6 +33,7 @@
   },
   {
     "round": 46,
+    "year": 2025,
     "title": "ADsP 제46회 기출 복원문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -36,6 +41,7 @@
   },
   {
     "round": 45,
+    "year": 2025,
     "title": "ADsP 제45회 기출 복원문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,

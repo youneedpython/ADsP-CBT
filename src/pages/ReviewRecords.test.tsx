@@ -11,7 +11,7 @@ const data: RoundData = { formatVersion: 1, round: 50, title: '개발 표본', t
   questions: [1, 2, 3, 4].map((number): Question => ({ number, subject: 1,
     question: `표본 문제 ${number} <b>글</b>`, stimulus: [], choices: ['가', '나', '다', '라'],
     answer: 2, explanation: `표본 해설 ${number} <script>글</script>` })) };
-const summary = (round: number) => ({ round, title: '개발 표본', questionCount: 4, timeLimitMinutes: 90, file: `${round}.json` });
+const summary = (round: number) => ({ round, year: 2026, title: '개발 표본', questionCount: 4, timeLimitMinutes: 90, file: `${round}.json` });
 const result = (answers: Record<number, number> = { 1: 2, 2: 1, 4: 2 }, passed = false) => ({
   answers, score: passed ? 8 : 4, passed, subjectCorrect: { 1: 2, 2: 0, 3: 0 },
   elapsedSeconds: 30, submittedAt: '2026-10-11T00:00:00Z', questionCount: 4 });
@@ -100,7 +100,7 @@ test('all correct disables wrong scope and falls back to all', async () => {
   await waitFor(() => expect(window.location.hash).toBe('#/rounds/50/review?q=1'));
 });
 test('list displays independent records and uses summaries without loading round files', async () => {
-  window.location.hash = '#/';
+  window.location.hash = '#/rounds';
   fetchMock.mockResolvedValue({ ok: true, json: async () => [50, 49, 48, 47, 46, 45].map(summary) });
   localStorage.setItem(recordKey(49, 'exam'), JSON.stringify({ answers: { 1: 2, 3: 1 }, current: 3, elapsedSeconds: 1800, startedAt: '2026-10-11T00:00:00Z' }));
   localStorage.setItem(recordKey(48, 'result'), JSON.stringify(result({}, true)));
@@ -108,18 +108,17 @@ test('list displays independent records and uses summaries without loading round
   localStorage.setItem(recordKey(46, 'exam'), JSON.stringify({ answers: { 1: 1 }, current: 2, elapsedSeconds: 5400, startedAt: '2026-10-11T00:00:00Z' }));
   localStorage.setItem(recordKey(46, 'result'), JSON.stringify(result()));
   localStorage.setItem(recordKey(45, 'result'), 'invalid');
-  render(<App />); await screen.findByRole('heading', { name: '50회' });
-  await screen.findByRole('link', { name: '49회 시험 이어 풀기' });
+  render(<App />); await screen.findByRole('link', { name: '50회, 4문항 90분, 기록 없음' });
+  await screen.findByRole('link', { name: '49회, 4문항 90분, 시험 2 / 4' });
   const cards = screen.getAllByRole('listitem');
   await waitFor(() => expect(within(cards[0]).getByText('기록 없음')).toBeTruthy());
   await waitFor(() => expect(within(cards[0]).queryByText('결과 보기')).toBeNull());
-  await waitFor(() => expect(within(cards[1]).getByText('시험 2/4 진행 중 · 남은 시간 60:00')).toBeTruthy());
-  expect(await screen.findByRole('link', { name: '49회 시험 이어 풀기' })).toBeTruthy();
-  await waitFor(() => expect(within(cards[2]).getByText('최근 8점 · 합격')).toBeTruthy());
-  await waitFor(() => expect(within(cards[3]).getByText('최근 4점 · 불합격')).toBeTruthy());
-  await waitFor(() => expect(within(cards[4]).getByText('시험 1/4 진행 중 · 시간 초과')).toBeTruthy());
-  await waitFor(() => expect(screen.getByRole('link', { name: '46회 결과 보기' }).getAttribute('href')).toBe('#/rounds/46/result'));
-  expect(await screen.findByRole('link', { name: '48회 시험' })).toBeTruthy();
+  await waitFor(() => expect(within(cards[1]).getByText('시험 2 / 4')).toBeTruthy());
+  await waitFor(() => expect(within(cards[2]).getByText('8점 합격')).toBeTruthy());
+  await waitFor(() => expect(within(cards[3]).getByText('4점 불합격')).toBeTruthy());
+  await waitFor(() => expect(within(cards[4]).getByText('시험 1 / 4')).toBeTruthy());
+  await waitFor(() => expect(screen.getByRole('link', { name: '46회, 4문항 90분, 시험 1 / 4' }).getAttribute('href')).toBe('#/rounds/46'));
+  expect(await screen.findByRole('link', { name: '48회, 4문항 90분, 8점 합격' })).toBeTruthy();
   await waitFor(() => expect(within(cards[5]).getByText('기록 없음')).toBeTruthy());
   await waitFor(() => expect(localStorage.getItem(recordKey(45, 'result'))).toBeNull());
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));

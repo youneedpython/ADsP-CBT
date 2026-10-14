@@ -2,6 +2,12 @@
 export const PASS_SCORE = 60;
 export const POINTS_PER_QUESTION = 2;
 export const SUBJECT_PASS_PERCENT = 40;
+export function minimumSubjectCorrect(count: number) {
+  return Math.ceil(count * SUBJECT_PASS_PERCENT / 100);
+}
+export function meetsSubjectMinimum(correct: number, count: number) {
+  return correct * 100 >= count * SUBJECT_PASS_PERCENT;
+}
 export const EXAM_SUBJECTS = [
   { id: 1, name: '데이터 이해', questionCount: 10 },
   { id: 2, name: '데이터 분석 기획', questionCount: 10 },
@@ -11,7 +17,7 @@ export const EXAM_SUBJECTS = [
 export function evaluatePassExample(correctCounts: readonly number[]) {
   const score = correctCounts.reduce((sum, count) => sum + count, 0) * POINTS_PER_QUESTION;
   const passed = score >= PASS_SCORE && EXAM_SUBJECTS.every((subject, index) =>
-    (correctCounts[index] ?? 0) * 100 >= subject.questionCount * SUBJECT_PASS_PERCENT);
+    meetsSubjectMinimum(correctCounts[index] ?? 0, subject.questionCount));
   return { score, passed };
 }
 

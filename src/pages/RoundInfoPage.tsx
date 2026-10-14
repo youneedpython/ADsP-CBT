@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { minimumSubjectCorrect } from '../domain/passRule';
 import { Link } from 'react-router';
 import { RoundPage } from '../components/RoundPage';
 import type { PageProps } from '../components/LoadingState';
@@ -7,7 +8,7 @@ import { answeredCount, isPracticeInProgress } from '../domain/roundOverview';
 import { getTiming, formatRemainingTime } from '../domain/session';
 import { useRecordStore } from '../storage/RecordStoreContext';
 export function RoundInfoPage(props: PageProps) {
-  return <RoundPage {...props}>{data => <RoundInfo key={data.round} data={data} />}</RoundPage>;
+  return <RoundPage {...props} showStateTitle>{data => <RoundInfo key={data.round} data={data} />}</RoundPage>;
 }
 function RoundInfo({ data }: { data: RoundData }) {
   const store = useRecordStore();
@@ -31,6 +32,6 @@ function RoundInfo({ data }: { data: RoundData }) {
       {practice && <p>연습 {answeredCount(practice)} / {data.questions.length}</p>}
       {!records.result && !records.exam && !practice && <p>아직 기록이 없습니다.</p>}
     </section>
-    <section className="overview-panel subject-composition"><h2>과목 구성과 과락 기준</h2><table><thead><tr><th scope="col">과목</th><th scope="col">문항</th><th scope="col">최소 정답</th></tr></thead><tbody>{subjects.map(subject => <tr key={subject.id}><th scope="row">{subject.id}과목 {subject.name}</th><td>{subject.count}</td><td>{Math.ceil(subject.count * 0.4)}문항</td></tr>)}</tbody></table></section>
+    <section className="overview-panel subject-composition"><h2>과목 구성과 과락 기준</h2><table><thead><tr><th scope="col">과목</th><th scope="col">문항</th><th scope="col">최소 정답</th></tr></thead><tbody>{subjects.map(subject => <tr key={subject.id}><th scope="row">{subject.id}과목 {subject.name}</th><td>{subject.count}</td><td>{minimumSubjectCorrect(subject.count)}문항</td></tr>)}</tbody></table></section>
   </div>;
 }

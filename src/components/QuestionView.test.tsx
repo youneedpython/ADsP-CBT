@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 import { QuestionView } from './QuestionView';
 import { QuestionBoard } from './QuestionBoard';
@@ -8,9 +8,22 @@ afterEach(cleanup);
 const question: Question = { number: 1, subject: 1, question: '개발 표본 문제', stimulus: [], choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설' };
 const subjects: RoundData['subjects'] = [{ id: 1, name: '표본 과목' }];
 const text = (value: string): Stimulus => ({ type: 'text', text: value });
+test.each([
+  ['practice', false, false], ['practice', true, true], ['review', false, true], ['exam', true, false],
+] as const)('report visibility in %s confirmed=%s', (mode, confirmed, visible) => {
+  render(<QuestionView round={50} question={{ ...question, number: 12 }} subjects={subjects} selected={1} confirmed={confirmed} mode={mode} choose={() => {}} />);
+  const link = screen.queryByRole('link', { name: '50회 12번 문제 오류 신고' });
+  expect(Boolean(link)).toBe(visible);
+  if (link) {
+    expect(link.textContent).toBe('문제 오류 신고');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(screen.getByText('표본 해설').compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  }
+});
 test.each(['practice', 'exam', 'review'] as const)('groups text safely in %s', async mode => {
   const { container } = render(<QuestionView question={{ ...question, stimulus: [text('가. <b>표본</b>'), text('나. $x$'), text('다. 마지막')] }} subjects={subjects} mode={mode} choose={() => {}} />);
-  await waitFor(() => expect(container.querySelectorAll('.stimulus').length).toBe(1));
+  await waitFor(() => expect(container.querySelector('.formula')).not.toBeNull());
   const paragraphs = container.querySelectorAll('.stimulus p');
   expect([...paragraphs].map(p => p.textContent)).toEqual(['가. <b>표본</b>', '나. x', '다. 마지막']);
   expect(container.querySelector('b')).toBeNull();

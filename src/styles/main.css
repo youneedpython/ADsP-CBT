@@ -245,3 +245,5 @@ button:disabled { cursor: default; }
 .result-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; margin-bottom: 16px; }
 .result-grid a { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700; }
 @media (max-width: 479px) { .exam-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .exam-nav > :last-child { grid-column: 1 / -1; } }
+.question-report { display: inline-block; font-size: 0.8125rem; color: #526176; }
+.question-report:hover { text-decoration-thickness: 2px; }

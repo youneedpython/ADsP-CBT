@@ -1,4 +1,5 @@
 import type { Answer, RoundData, SubjectId } from '../data/types';
+import { meetsSubjectMinimum } from './passRule';
 
 export type Answers = Readonly<Record<number, number>>;
 export function isAnswer(value: unknown): value is Answer {
@@ -33,7 +34,7 @@ export function scoreRound(round: RoundData, answers: Answers): ScoringResult {
       const indices = round.questions.flatMap((question, index) => question.subject === subject ? [index] : []);
       const correctCount = indices.filter(index => questions[index].correct).length;
       return { subject, name: round.subjects.find(item => item.id === subject)?.name ?? `${subject}과목`,
-        correctCount, questionCount: indices.length, failed: correctCount * 100 < indices.length * 40 };
+        correctCount, questionCount: indices.length, failed: !meetsSubjectMinimum(correctCount, indices.length) };
     });
   const correctCount = questions.filter(question => question.correct).length;
   const score = correctCount * 2;

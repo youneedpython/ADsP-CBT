@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'react';
 import type { Answer, Question, RoundData } from '../data/types';
 import { dataUrl } from '../data/loadRound';
 import { MathText } from './MathText';
+import { reportQuestionUrl } from '../domain/reportQuestion';
 const circled = ['①', '②', '③', '④'];
-export function QuestionView({ question: q, subjects, selected, choose, mode = 'practice', confirmed = selected !== undefined }: {
+export function QuestionView({ question: q, subjects, round, selected, choose, mode = 'practice', confirmed = selected !== undefined }: {
+  round?: number;
   question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
 }) {
   const title = useRef<HTMLHeadingElement>(null);
@@ -50,10 +52,12 @@ export function QuestionView({ question: q, subjects, selected, choose, mode = '
     {mode === 'review' && <section className="feedback" aria-label="풀이 결과">
       {selected === undefined && <p>풀지 않음</p>}
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
+      {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
     {mode === 'practice' && confirmed && selected !== undefined && <section className="feedback" aria-label="풀이 결과">
       <p ref={result} tabIndex={-1} role="status">{selected === q.answer ? '맞았습니다.' : `틀렸습니다. 정답은 ${circled[q.answer - 1]}번입니다.`}</p>
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
+      {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
   </article>;
 }

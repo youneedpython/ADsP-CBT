@@ -2,6 +2,24 @@ import { cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 import { useQuestionKeys } from './useQuestionKeys';
 afterEach(cleanup);
+test('S toggles independently of answers and respects all editable, modifier and modal guards', () => {
+  const toggleMark = vi.fn(), choose = vi.fn();
+  function Host({ blocked = false }) {
+    useQuestionKeys({ blocked, choose, toggleMark });
+    return <><button /><a href="#">Link</a><input /><textarea /><select /><div contentEditable><span>editable</span></div></>;
+  }
+  const view = render(<Host />);
+  fireEvent.keyDown(window, { key: 's' });
+  fireEvent.keyDown(view.container.querySelector('button')!, { key: 'S' });
+  fireEvent.keyDown(view.container.querySelector('a')!, { key: 's' });
+  expect(toggleMark).toHaveBeenCalledTimes(3);
+  for (const modifier of ['ctrlKey', 'altKey', 'metaKey']) fireEvent.keyDown(window, { key: 's', [modifier]: true });
+  for (const target of view.container.querySelectorAll('input, textarea, select, span')) fireEvent.keyDown(target, { key: 'S' });
+  view.rerender(<Host blocked />);
+  fireEvent.keyDown(window, { key: 's' });
+  expect(toggleMark).toHaveBeenCalledTimes(3);
+  expect(choose).not.toHaveBeenCalled();
+});
 test('Enter confirms only outside interactive targets and respects shortcut guards', () => {
   const confirm = vi.fn();
   function Host({ blocked = false, enabled = true }) {

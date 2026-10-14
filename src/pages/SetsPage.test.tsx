@@ -28,7 +28,7 @@ test('missing topics provider shows the error state and safely retries', async (
 });
 test('overview cards, counts, selected subject, frequency order/filter and destinations', async () => {
   await ready();
-  expect(screen.getByText('0문항')).toBeTruthy();
+  expect(screen.getAllByText('0문항')).toHaveLength(2);
   expect(screen.getByText('틀린 문제가 없습니다.')).toBeTruthy();
   expect((screen.getByRole('button', { name: '틀린 문제 풀기' }) as HTMLButtonElement).disabled).toBe(true);
   expect(screen.queryByRole('link', { name: '틀린 문제 풀기' })).toBeNull();
@@ -63,13 +63,13 @@ test('loading waits for all round files and retry handles a failed request', asy
   expect(screen.queryByText('0문항')).toBeNull();
   expect(screen.getByRole('status').textContent).toBe('문제를 불러오는 중입니다.');
   release?.();
-  await screen.findByText('0문항');
+  await screen.findAllByText('0문항');
   cleanup();
   fetchMock.mockRejectedValueOnce(Error('sample failure'));
   render(<App />);
   await screen.findByRole('alert');
   fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
-  await screen.findByText('0문항');
+  await screen.findAllByText('0문항');
 });
 test('subject practice confirms only on demand, reports source and resumes progress', async () => {
   await ready('/sets/subject/2');
@@ -134,7 +134,7 @@ test('a round-file failure offers retry without showing partial counts', async (
   await screen.findByRole('alert');
   expect(screen.queryByText('0문항')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
-  await screen.findByText('0문항');
+  await screen.findAllByText('0문항');
 });
 test.each(['/sets/wrong', '/sets/subject/4', '/sets/topic/T999', '/sets/unknown', '/sets/subject/1/extra'])('empty or missing set %s shows return link', async path => {
   window.history.replaceState(null, '', `#${path}`);

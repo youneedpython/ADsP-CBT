@@ -1,3 +1,4 @@
+import { useMarks } from '../storage/useMarks';
 import { Modal } from '../components/Modal';
 import { useQuestionKeys } from '../components/useQuestionKeys';
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +17,7 @@ export function ExamPage(props: PageProps) {
 }
 function ExamRound({ data }: { data: RoundData }) {
   const store = useRecordStore();
+  const marks = useMarks();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const [record, setRecord] = useState(() => store.read(data.round, 'exam', data.questions.length)
@@ -103,7 +105,7 @@ function ExamRound({ data }: { data: RoundData }) {
     announced.current = false; setExpired(false); setRestartConfirm(false);
     setRecord(live.current); save(); setParams({ q: '1' }, { replace: true });
   };
-  useQuestionKeys({ blocked: confirm || restartConfirm, previous: current > 1 ? () => move(current - 1) : undefined, next: current < data.questions.length ? () => move(current + 1) : undefined, choose });
+  useQuestionKeys({ toggleMark: () => marks.toggle(data.round, current), blocked: confirm || restartConfirm, previous: current > 1 ? () => move(current - 1) : undefined, next: current < data.questions.length ? () => move(current + 1) : undefined, choose });
   const submit = () => {
     tick();
     finished.current = true;
@@ -122,12 +124,12 @@ function ExamRound({ data }: { data: RoundData }) {
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
         {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>
-    {!persistent && <p className="notice exam-notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
+    {(!persistent || !marks.persistent) && <p className="notice exam-notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
     {expired && <div role="alert" className="notice expiry-notice exam-notice">시간이 끝났습니다. 계속 풀거나 제출할 수 있습니다.<button className="secondary" onClick={() => setExpired(false)}>닫기</button></div>}
     <div className="practice-layout"><div className="practice-main">
-      <QuestionView mode="exam" question={question} subjects={data.subjects} selected={record.answers[question.number] as Answer | undefined} choose={choose} />
+      <QuestionView round={data.round} marked={Boolean(marks.marked[`${data.round}:${current}`])} toggleMark={() => marks.toggle(data.round, current)} mode="exam" question={question} subjects={data.subjects} selected={record.answers[question.number] as Answer | undefined} choose={choose} />
       <nav className="practice-nav exam-nav" aria-label="문제 이동"><button className="secondary" disabled={current === 1} onClick={() => move(current - 1)}>이전</button><button className="secondary" disabled={current === data.questions.length} onClick={() => move(current + 1)}>다음</button><button onClick={() => setConfirm(true)}>제출하고 채점</button></nav>
-    </div><aside className="exam-board" aria-label="문항 번호판"><QuestionBoard mode="exam" data={data} current={current} answers={record.answers} move={move} restart={() => setRestartConfirm(true)} /></aside></div>
+    </div><aside className="exam-board" aria-label="문항 번호판"><QuestionBoard marked={marks.marked} mode="exam" data={data} current={current} answers={record.answers} move={move} restart={() => setRestartConfirm(true)} /></aside></div>
     {restartConfirm && <Modal label="시험 다시 시작 확인" close={() => setRestartConfirm(false)}>
       <p>진행 중인 시험을 지우고 처음부터 다시 시작할까요? {progress.answeredCount ? `고른 답 ${progress.answeredCount}개와 지난 시간이 지워집니다.` : '고른 답과 지난 시간이 지워집니다.'}</p>
       <div className="round-actions"><button className="secondary" onClick={() => setRestartConfirm(false)}>취소</button><button onClick={restart}>다시 시작</button></div>

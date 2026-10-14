@@ -53,7 +53,7 @@ test('drafts toggle and change without grading or saving, survive navigation but
   for (const [key, selected] of [['1', '1'], ['2', '2'], ['2', undefined], ['3', '3']]) {
     fireEvent.keyDown(window, { key });
     await waitFor(() => {
-      const choices = within(screen.getByRole('article')).getAllByRole('button');
+      const choices = within(screen.getByRole('article')).getAllByRole('button', { name: /^[1-4]\./ });
       choices.forEach((choice, index) => expect(choice.getAttribute('aria-pressed')).toBe(String(String(index + 1) === selected)));
     });
   }
@@ -74,7 +74,7 @@ test('drafts toggle and change without grading or saving, survive navigation but
   expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!).answers).toEqual({});
   cleanup();
   await ready();
-  await waitFor(() => within(screen.getByRole('article')).getAllByRole('button').forEach(button => expect(button.getAttribute('aria-pressed')).toBe('false')));
+  await waitFor(() => within(screen.getByRole('article')).getAllByRole('button', { name: /^[1-4]\./ }).forEach(button => expect(button.getAttribute('aria-pressed')).toBe('false')));
 });
 test('click selection can change and clear, and interactive Enter only activates its own control', async () => {
   await ready();

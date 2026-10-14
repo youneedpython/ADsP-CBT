@@ -1,6 +1,66 @@
 {
   "formatVersion": 1,
   "rounds": {
+    "44": {
+      "type1": {
+        "file": "pdf/44-type1.pdf",
+        "bytes": 295204
+      },
+      "type2": {
+        "file": "pdf/44-type2.pdf",
+        "bytes": 350673
+      }
+    },
+    "45": {
+      "type1": {
+        "file": "pdf/45-type1.pdf",
+        "bytes": 282552
+      },
+      "type2": {
+        "file": "pdf/45-type2.pdf",
+        "bytes": 336585
+      }
+    },
+    "46": {
+      "type1": {
+        "file": "pdf/46-type1.pdf",
+        "bytes": 296569
+      },
+      "type2": {
+        "file": "pdf/46-type2.pdf",
+        "bytes": 351164
+      }
+    },
+    "47": {
+      "type1": {
+        "file": "pdf/47-type1.pdf",
+        "bytes": 313386
+      },
+      "type2": {
+        "file": "pdf/47-type2.pdf",
+        "bytes": 374367
+      }
+    },
+    "48": {
+      "type1": {
+        "file": "pdf/48-type1.pdf",
+        "bytes": 198021
+      },
+      "type2": {
+        "file": "pdf/48-type2.pdf",
+        "bytes": 243177
+      }
+    },
+    "49": {
+      "type1": {
+        "file": "pdf/49-type1.pdf",
+        "bytes": 174501
+      },
+      "type2": {
+        "file": "pdf/49-type2.pdf",
+        "bytes": 216854
+      }
+    },
     "50": {
       "type1": {
         "file": "pdf/50-type1.pdf",

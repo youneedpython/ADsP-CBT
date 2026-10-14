@@ -42,7 +42,7 @@ function ReviewRound({ data }: { data: RoundData }) {
       <button aria-pressed={!filtered} onClick={() => move(result.questions[0].number, false)}>전체 {result.questionCount}</button>
       <button aria-pressed={filtered} disabled={wrong.length === 0} onClick={() => move(wrong[0].number, true)}>틀린 문제 {wrong.length}</button>
     </nav>
-    <QuestionView question={data.questions.find(question => question.number === current)!} subjects={data.subjects}
+    <QuestionView round={data.round} question={data.questions.find(question => question.number === current)!} subjects={data.subjects}
       selected={result.questions.find(question => question.number === current)!.selected ?? undefined} mode="review" choose={() => {}} />
     <nav className="practice-nav" aria-label="문제 이동">
       <button className="secondary" disabled={position === 0} onClick={() => move(scope[position - 1].number)}>이전</button>

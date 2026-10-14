@@ -83,7 +83,7 @@ function PracticeRound({ data }: { data: RoundData }) {
     <div className="practice-heading"><div className="practice-heading-row"><h2>{data.round}회 · 연습</h2><p>{current} / {data.questions.length}</p><button className="board-toggle secondary" onClick={() => setOpen(true)}>문항 번호판</button></div><progress aria-label="현재 문제 위치" value={current} max={data.questions.length} /></div>
     {!persistent && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
     <div className="practice-layout"><div className="practice-main">
-      <QuestionView question={question} subjects={data.subjects} selected={answers[current] ?? draft} confirmed={confirmed} choose={choose} />
+      <QuestionView round={data.round} question={question} subjects={data.subjects} selected={answers[current] ?? draft} confirmed={confirmed} choose={choose} />
       <nav className="practice-nav" aria-label="문제 이동"><button className="secondary" disabled={current === 1} onClick={() => move(current - 1)}>이전</button><button className={!confirmed && draft !== undefined ? '' : 'secondary'} aria-disabled={confirmed || draft === undefined} onClick={confirm}>정답 확인</button>
         {current === data.questions.length ? <Link className={`button ${confirmed ? '' : 'secondary'}`} to="/rounds">회차 목록</Link> : <button className={confirmed ? '' : 'secondary'} onClick={() => move(current + 1)}>다음</button>}
       </nav>

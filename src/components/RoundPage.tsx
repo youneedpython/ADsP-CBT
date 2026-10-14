@@ -4,14 +4,14 @@ import { LoadingState, type PageProps } from './LoadingState';
 import { loadRound } from '../data/loadRound';
 import type { RoundData, RoundSummary } from '../data/types';
 
-export function RoundPage({ state, retry, children }: PageProps & { children: (data: RoundData) => ReactNode }) {
+export function RoundPage({ state, retry, children, showStateTitle = false }: PageProps & { children: (data: RoundData) => ReactNode; showStateTitle?: boolean }) {
   const { round } = useParams();
-  if (state.status !== 'success') return <LoadingState state={state} retry={retry} />;
+  if (state.status !== 'success') return <>{showStateTitle && <h1 className="page-title">{round}회</h1>}<LoadingState state={state} retry={retry} /></>;
   const summary = state.rounds.find(item => String(item.round) === round);
-  if (!summary) return <div className="state-panel"><p>없는 회차입니다.</p><Link to="/rounds">회차 목록으로</Link></div>;
-  return <RoundLoader key={round} summary={summary}>{children}</RoundLoader>;
+  if (!summary) return <div className="state-panel">{showStateTitle && <h1 className="page-title">없는 회차</h1>}<p>없는 회차입니다.</p><Link to="/rounds">회차 목록으로</Link></div>;
+  return <RoundLoader key={round} summary={summary} showStateTitle={showStateTitle}>{children}</RoundLoader>;
 }
-function RoundLoader({ summary, children }: { summary: RoundSummary; children: (data: RoundData) => ReactNode }) {
+function RoundLoader({ summary, children, showStateTitle }: { summary: RoundSummary; children: (data: RoundData) => ReactNode; showStateTitle: boolean }) {
   const [data, setData] = useState<RoundData>();
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -21,6 +21,6 @@ function RoundLoader({ summary, children }: { summary: RoundSummary; children: (
       .catch(() => { if (!controller.signal.aborted) setError(true); });
     return () => controller.abort();
   }, [summary, attempt]);
-  if (!data) return <LoadingState state={{ status: error ? 'error' : 'loading' }} retry={() => { setError(false); setAttempt(value => value + 1); }} />;
+  if (!data) return <>{showStateTitle && <h1 className="page-title">{summary.round}회</h1>}<LoadingState state={{ status: error ? 'error' : 'loading' }} retry={() => { setError(false); setAttempt(value => value + 1); }} /></>;
   return children(data);
 }

@@ -12,18 +12,23 @@ import { SetPractice } from './SetPractice';
 export interface SetsData { summaries: RoundSummary[]; rounds: RoundData[]; topics: TopicsData }
 function SetsLoader({ state, retry, children }: PageProps & { children: (data: SetsData) => ReactNode }) {
   const topicsSource = useTopics();
+  const getTopics = topicsSource?.get;
   const [loaded, setLoaded] = useState<{ status: 'loading' | 'error' } | { status: 'success'; data: SetsData }>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     setLoaded({ status: 'loading' });
     if (state.status === 'success') {
-      Promise.all([Promise.all(state.rounds.map(summary => loadRound(summary, controller.signal))), topicsSource!.get()])
+      if (!getTopics) {
+        setLoaded({ status: 'error' });
+        return () => controller.abort();
+      }
+      Promise.all([Promise.all(state.rounds.map(summary => loadRound(summary, controller.signal))), getTopics()])
         .then(([rounds, topics]) => { if (!controller.signal.aborted) setLoaded({ status: 'success', data: { summaries: state.rounds, rounds, topics } }); })
         .catch(() => { if (!controller.signal.aborted) setLoaded({ status: 'error' }); });
     }
     return () => controller.abort();
-  }, [state, attempt]);
+  }, [state, attempt, getTopics]);
   if (state.status !== 'success') return <LoadingState state={state} retry={retry} />;
   if (loaded.status !== 'success') return <LoadingState state={loaded} retry={() => { topicsSource?.retryFailed(); setAttempt(value => value + 1); }} />;
   return children(loaded.data);
@@ -39,7 +44,7 @@ function SetsOverview({ data }: { data: SetsData }) {
   const items = collectQuestions(data.summaries, data.rounds);
   const records = Object.fromEntries(data.rounds.map(round => [round.round, { practice: store.read(round.round, 'practice', round.questions.length), result: store.read(round.round, 'result', round.questions.length) }]));
   const wrong = wrongQuestions(items, records, store.readResolved());
-  const statistics = topicStatistics(items, data.topics, data.summaries);
+  const statistics = topicStatistics(data.topics, data.summaries);
   const subjectName = data.rounds.flatMap(round => round.subjects).find(item => item.id === subject)?.name;
   return <>
     <h1 className="page-title">모아 풀기</h1><p className="page-lead">회차를 넘나들며 필요한 문제만 모아 연습합니다. 정답 확인과 해설은 연습과 같습니다.</p>

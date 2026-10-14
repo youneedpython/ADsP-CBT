@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { collectQuestions, frequency, questionKey, subjectQuestions, topicQuestions, topicStatistics, wrongQuestions, type RoundRecords } from './practiceSets';
+import { collectQuestions, frequency, questionKey, subjectQuestions, topicQuestions, topicStatistics, topicSummary, wrongQuestions, type RoundRecords } from './practiceSets';
 import { rounds, summaries, topics } from '../test/setFixtures';
 import type { ResultRecord } from '../storage/records';
 const items = collectQuestions(summaries, rounds);
@@ -23,9 +23,25 @@ test('no records or confirmed correct practice answers produce no wrong question
 test('counts by question subject, but filters topics by their representative subject', () => {
   expect(subjectQuestions(items, 2).map(questionKey)).toEqual(['50:2', '49:2']);
   expect(topicQuestions(items, topics, 'T301').map(questionKey)).toEqual(['50:3', '49:2', '49:3']);
-  const stats = topicStatistics(items, topics, summaries);
+  const stats = topicStatistics(topics, summaries);
   expect(stats.map(topic => topic.id)).toEqual(['T301', 'T101', 'T201']);
   expect(stats[0]).toMatchObject({ questionCount: 3, roundCount: 2, rounds: [true, true], frequency: '높음' });
   expect(stats[2]).toMatchObject({ questionCount: 1, roundCount: 1, rounds: [true, false], frequency: '보통' });
+});
+test('topic summaries match practice order and ignore unregistered rounds', () => {
+  const source = { ...topics, questions: { ...topics.questions, 99: { 1: 'T301' } } };
+  for (const registered of [summaries, summaries.slice(0, 1)]) {
+    const collected = collectQuestions(registered, rounds);
+    for (const topic of topics.topics) {
+      const summary = topicSummary(source, registered, topic.id);
+      expect(summary.questions.map(item => `${item.round}:${item.number}`)).toEqual(topicQuestions(collected, source, topic.id).map(questionKey));
+    }
+  }
+  expect(topicSummary(source, summaries, 'T301')).toEqual({
+    questions: [{ round: 50, number: 3 }, { round: 49, number: 2 }, { round: 49, number: 3 }],
+    questionCount: 3, roundCount: 2, rounds: [true, true],
+  });
+  expect(topicSummary(source, summaries, 'missing')).toEqual({ questions: [], questionCount: 0, roundCount: 0, rounds: [false, false] });
+  expect(topicSummary(source, [], 'T301')).toEqual({ questions: [], questionCount: 0, roundCount: 0, rounds: [] });
 });
 test.each([[7, 7, '높음'], [6, 7, '높음'], [5, 7, '보통'], [4, 7, '보통'], [3, 7, '낮음'], [0, 0, '낮음'], [8, 10, '높음'], [5, 10, '보통']])('frequency %s/%s is %s', (count, total, label) => expect(frequency(Number(count), Number(total))).toBe(label));

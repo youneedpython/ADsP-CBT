@@ -26,12 +26,18 @@ export const topicQuestions = (items: SetQuestion[], topics: TopicsData, id: str
 export function frequency(count: number, total: number): '높음' | '보통' | '낮음' {
   return total > 0 && count / total >= .8 ? '높음' : total > 0 && count / total >= .5 ? '보통' : '낮음';
 }
-export function topicStatistics(items: SetQuestion[], topics: TopicsData, summaries: RoundSummary[]) {
+export function topicSummary(topics: TopicsData, summaries: RoundSummary[], id: string) {
+  const registered = [...summaries].sort((a, b) => b.round - a.round);
+  const questions = registered.flatMap(summary => Object.entries(topics.questions[summary.round] ?? {})
+    .filter(([, topic]) => topic === id).map(([number]) => ({ round: summary.round, number: Number(number) }))
+    .sort((a, b) => a.number - b.number));
+  const appeared = new Set(questions.map(item => item.round));
+  return { questions, questionCount: questions.length, roundCount: appeared.size,
+    rounds: registered.map(summary => appeared.has(summary.round)) };
+}
+export function topicStatistics(topics: TopicsData, summaries: RoundSummary[]) {
   return topics.topics.map(topic => {
-    const questions = topicQuestions(items, topics, topic.id);
-    const rounds = new Set(questions.map(item => item.round));
-    return { ...topic, questionCount: questions.length, roundCount: rounds.size,
-      rounds: [...summaries].sort((a, b) => b.round - a.round).map(summary => rounds.has(summary.round)),
-      frequency: frequency(rounds.size, summaries.length) };
+    const summary = topicSummary(topics, summaries, topic.id);
+    return { ...topic, ...summary, frequency: frequency(summary.roundCount, summaries.length) };
   }).sort((a, b) => b.roundCount - a.roundCount || b.questionCount - a.questionCount || a.id.localeCompare(b.id));
 }

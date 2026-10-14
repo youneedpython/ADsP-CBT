@@ -4,7 +4,10 @@ import { selectResume, answeredCount } from '../domain/roundOverview';
 import { getTiming, formatRemainingTime } from '../domain/session';
 import { useRecordStore } from '../storage/RecordStoreContext';
 import { EXAM_SUBJECTS, PASS_EXAMPLES, PASS_SCORE, POINTS_PER_QUESTION, SUBJECT_PASS_PERCENT, evaluatePassExample } from '../domain/passRule';
+import { useDownloads } from '../components/DownloadsContext';
 export function HomePage({ state, retry }: PageProps) {
+  const downloads = useDownloads();
+  const hasPDF = downloads.state.status === 'success' && Object.values(downloads.state.data.rounds).some(files => files.type1 || files.type2);
   const store = useRecordStore();
   const rounds = state.status === 'success' ? state.rounds : [];
   const numbers = rounds.map(round => round.round);
@@ -29,6 +32,7 @@ export function HomePage({ state, retry }: PageProps) {
       <section className="overview-panel"><span className="step-number" aria-hidden="true">2</span><h3>시험</h3><p>50문항을 90분 안에 풉니다. 제출하기 전에는 정답이 보이지 않습니다.</p></section>
       <section className="overview-panel"><span className="step-number" aria-hidden="true">3</span><h3>결과와 다시 보기</h3><p>총점과 과목별 점수, 합격 여부를 보고 틀린 문제만 골라 해설을 다시 읽습니다.</p></section>
     </div></section>
+    {hasPDF && <p className="home-download-link"><Link to="/downloads">종이로 풀고 싶다면 PDF 내려받기 ›</Link></p>}
     <section className="pass-rule-section" aria-labelledby="pass-rule-title">
       <h2 id="pass-rule-title">합격 기준</h2>
       <p className="pass-rule-lead">두 조건을 모두 만족해야 합격입니다.</p>

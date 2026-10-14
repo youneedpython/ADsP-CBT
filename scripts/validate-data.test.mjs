@@ -22,6 +22,7 @@ async function check(mutate = () => {}, list = [entry], mutateTopics = () => {})
     const data = sample();
     mutate(data);
     await writeFile(path.join(dir, 'rounds.json'), JSON.stringify(list));
+    await writeFile(path.join(dir, 'downloads.json'), JSON.stringify({ formatVersion: 1, rounds: {} }));
     await writeFile(path.join(dir, '900.json'), JSON.stringify(data));
     const topics = sampleTopics(list);
     mutateTopics(topics);
@@ -30,8 +31,8 @@ async function check(mutate = () => {}, list = [entry], mutateTopics = () => {})
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 test('valid 50 questions and empty list pass', async () => {
-  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1 });
-  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0 });
+  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1, pdfCount: 0 });
+  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0, pdfCount: 0 });
 });
 
 test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid round year %s', async year => {

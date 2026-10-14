@@ -76,6 +76,7 @@ test('subject practice confirms only on demand, reports source and resumes progr
   expect(screen.getByText('1 / 2')).toBeTruthy();
   expect(screen.getByText('50회 2번')).toBeTruthy();
   fireEvent.keyDown(window, { key: '1' });
+  await waitFor(() => expect(screen.getByRole('button', { name: /^1\./ }).getAttribute('aria-pressed')).toBe('true'));
   expect(localStorage.getItem('adsp-cbt:v1:set:subject-2')).toBeNull();
   expect(screen.queryByText('정답')).toBeNull();
   fireEvent.keyDown(window, { key: 'Enter' });

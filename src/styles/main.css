@@ -319,3 +319,16 @@ button:disabled { cursor: default; }
 @media (max-width: 479px) { .exam-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .exam-nav > :last-child { grid-column: 1 / -1; } }
 .question-report { display: inline-block; font-size: 0.8125rem; color: #526176; }
 .question-report:hover { text-decoration-thickness: 2px; }
+.download-list { list-style: none; padding: 0; display: grid; gap: 1rem; }
+.download-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.download-row h2 { margin: 0 0 .25rem; }
+.download-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.download-actions small { margin-left: .5rem; }
+.download-actions p { margin-bottom: 0; }
+.round-downloads { margin-top: var(--space-medium); }
+.home-download-link { margin: 1.5rem 0; }
+@media (max-width: 767px) {
+  .service-bar nav .pdf-nav { display: none; }
+  .download-row { align-items: stretch; flex-direction: column; }
+  .round-downloads .download-actions { align-items: stretch; flex-direction: column; }
+}

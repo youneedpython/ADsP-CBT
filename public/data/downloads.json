@@ -1,0 +1,15 @@
+{
+  "formatVersion": 1,
+  "rounds": {
+    "50": {
+      "type1": {
+        "file": "pdf/50-type1.pdf",
+        "bytes": 292346
+      },
+      "type2": {
+        "file": "pdf/50-type2.pdf",
+        "bytes": 345713
+      }
+    }
+  }
+}

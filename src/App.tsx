@@ -12,10 +12,13 @@ import { HomePage } from './pages/HomePage';
 import { RoundInfoPage } from './pages/RoundInfoPage';
 import { SetsPage } from './pages/SetsPage';
 import { TopicsProvider } from './components/TopicsContext';
+import { DownloadsProvider } from './components/DownloadsContext';
+import { DownloadsPage } from './pages/DownloadsPage';
 export default function App() {
   const [store] = useState(() => createRecordStore());
-  return <RecordStoreContext.Provider value={store}><HashRouter><AppShell>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
+  return <RecordStoreContext.Provider value={store}><HashRouter><DownloadsProvider><AppShell>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
     <Route path="/" element={<HomePage {...props} />} />
+    <Route path="/downloads" element={<DownloadsPage {...props} />} />
     <Route path="/rounds" element={<RoundList {...props} />} />
     <Route path="/sets/*" element={<SetsPage {...props} />} />
     <Route path="/rounds/:round" element={<RoundInfoPage {...props} />} />
@@ -24,5 +27,5 @@ export default function App() {
     <Route path="/rounds/:round/result" element={<ResultPage {...props} />} />
     <Route path="/rounds/:round/review" element={<ReviewPage {...props} />} />
     <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes></TopicsProvider>}</AppShell></HashRouter></RecordStoreContext.Provider>;
+  </Routes></TopicsProvider>}</AppShell></DownloadsProvider></HashRouter></RecordStoreContext.Provider>;
 }

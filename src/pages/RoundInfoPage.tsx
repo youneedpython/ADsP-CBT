@@ -7,6 +7,7 @@ import type { RoundData } from '../data/types';
 import { answeredCount, isPracticeInProgress } from '../domain/roundOverview';
 import { getTiming, formatRemainingTime } from '../domain/session';
 import { useRecordStore } from '../storage/RecordStoreContext';
+import { RoundDownloads } from '../components/DownloadLinks';
 export function RoundInfoPage(props: PageProps) {
   return <RoundPage {...props} showStateTitle>{data => <RoundInfo key={data.round} data={data} />}</RoundPage>;
 }
@@ -26,6 +27,7 @@ function RoundInfo({ data }: { data: RoundData }) {
       <fieldset className="mode-fieldset"><legend>풀이 방식</legend><div className="mode-options">{(['practice', 'exam'] as const).map(value => <label key={value} className={`mode-option${mode === value ? ' active' : ''}`}><span><input type="radio" name="mode" value={value} checked={mode === value} onChange={() => setMode(value)} /> <strong>{value === 'practice' ? '연습' : '시험'}</strong></span><span className="mode-description">{value === 'practice' ? '문제마다 정답과 해설 확인 · 시간 제한 없음' : `다 풀고 한 번에 채점 · ${data.timeLimitMinutes}분`}</span></label>)}</div></fieldset>
       <Link className="button start-link" to={`/rounds/${data.round}/${mode}`}>{mode === 'practice' ? practice ? '연습 이어 풀기' : '연습 시작' : records.exam ? '시험 이어 풀기' : '시험 시작'}</Link>
     </section>
+    <RoundDownloads round={data.round} />
     <section className="overview-panel info-records"><h2>내 기록</h2>
       {records.result && <><p><strong className="saved-score">{records.result.score}점</strong> <span className={`record-${records.result.passed ? 'pass' : 'fail'}`}>{records.result.passed ? '합격' : '불합격'}</span></p><p className="record-details">최근 시험 · 걸린 시간 {formatRemainingTime(records.result.elapsedSeconds)}{subjects.map(subject => ` · ${subject.id}과목 ${records.result!.subjectCorrect[subject.id]} / ${subject.count}`).join('')}</p><div className="overview-actions"><Link className="button secondary" to={`/rounds/${data.round}/result`}>결과 보기</Link><Link className="button secondary" to={`/rounds/${data.round}/review${wrong ? '?filter=wrong' : ''}`}>{wrong ? '틀린 문제 다시 보기' : '다시 보기'}</Link></div></>}
       {records.exam && <p>시험 {answeredCount(records.exam)} / {data.questions.length} 진행 중 · {remaining <= 0 ? '시간 초과' : `남은 시간 ${formatRemainingTime(remaining)}`}</p>}

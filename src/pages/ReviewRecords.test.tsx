@@ -1,3 +1,4 @@
+vi.mock('../data/loadDownloads', () => ({ loadDownloads: async () => ({ formatVersion: 1, rounds: {} }) }));
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';

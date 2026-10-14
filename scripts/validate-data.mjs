@@ -2,6 +2,7 @@ import { readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateTopics } from './validate-topics.mjs';
+import { validateDownloads } from './validate-downloads.mjs';
 
 export async function isDirectExecution(moduleUrl, argument = process.argv[1]) {
   if (!argument) return false;
@@ -105,12 +106,14 @@ export async function validateData(directory = defaultDirectory()) {
     errors.push(...validateTopics(topics, expectedTopics));
     if (Array.isArray(topics?.topics)) topicCount = topics.topics.length;
   } catch { add(undefined, undefined, 'topics.json 읽기 / JSON 오류'); }
-  return { errors, roundCount, questionCount, topicCount };
+  const downloads = await validateDownloads(directory, rounds);
+  errors.push(...downloads.errors);
+  return { errors, roundCount, questionCount, topicCount, pdfCount: downloads.pdfCount };
 }
 
 if (await isDirectExecution(import.meta.url)) {
   const result = await validateData(process.argv[2]);
   if (result.errors.length) result.errors.forEach(error => console.error(error));
-  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개 검사 통과`);
+  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개, PDF ${result.pdfCount}개 검사 통과`);
   process.exitCode = result.errors.length ? 1 : 0;
 }

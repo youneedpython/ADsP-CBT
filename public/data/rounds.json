@@ -46,5 +46,13 @@
     "questionCount": 50,
     "timeLimitMinutes": 90,
     "file": "45.json"
+  },
+  {
+    "round": 44,
+    "year": 2025,
+    "title": "ADsP 제44회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "44.json"
   }
 ]

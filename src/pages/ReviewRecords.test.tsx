@@ -61,7 +61,7 @@ test('all scope shows correct and own answers, explanations and unanswered quest
   await waitFor(() => expect(article.textContent).toContain('<b>글</b>'));
   expect(await screen.findByRole('heading', { name: '해설' })).toBeTruthy();
   await waitFor(() => expect((screen.getByRole('button', { name: '이전' }) as HTMLButtonElement).disabled).toBe(true));
-  for (const button of within(article).getAllByRole('button')) await waitFor(() => expect((button as HTMLButtonElement).disabled).toBe(true));
+  for (const button of within(article).getAllByRole('button', { name: /^[1-4]\./ })) await waitFor(() => expect((button as HTMLButtonElement).disabled).toBe(true));
   fireEvent.click(screen.getByRole('button', { name: '1. 가' }));
   expect(await screen.findByRole('button', { name: '2. 나 정답 내 답' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '다음' }));

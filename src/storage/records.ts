@@ -2,6 +2,7 @@ import type { Answers } from '../domain/scoring';
 import { isAnswer } from '../domain/scoring';
 import { validResolved, validSetRecord, type SetRecord } from './setRecords';
 import type { ResolvedQuestions } from '../domain/practiceSets';
+import { validMarked, type MarkedQuestions } from './marked';
 
 export interface PracticeRecord { answers: Answers; current: number }
 export interface ExamRecord extends PracticeRecord { startedAt: string; elapsedSeconds: number }
@@ -78,6 +79,13 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
     }
   }
   return {
+    readMarked: () => readExtra('adsp-cbt:v1:marked', validMarked) ?? {},
+    writeMarked: (value: MarkedQuestions) => writeExtra('adsp-cbt:v1:marked', value),
+    readSetAnswers: (ids: string[], keys: string[]) => ids.flatMap(id => {
+      const value = readExtra(`adsp-cbt:v1:set:${id}`, (value): value is SetRecord => object(value)
+        && typeof value.signature === 'string' && validSetRecord(value, value.signature, keys));
+      return value ? [value.answers] : [];
+    }),
     readSet: (id: string, signature: string, keys: string[]) => readExtra(`adsp-cbt:v1:set:${id}`, (value): value is SetRecord => validSetRecord(value, signature, keys)),
     writeSet: (id: string, value: SetRecord) => writeExtra(`adsp-cbt:v1:set:${id}`, value),
     readResolved: () => readExtra('adsp-cbt:v1:set-resolved', validResolved) ?? {},

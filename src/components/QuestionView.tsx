@@ -5,7 +5,8 @@ import { MathText } from './MathText';
 import { reportQuestionUrl } from '../domain/reportQuestion';
 import { RelatedQuestions } from './RelatedQuestions';
 const circled = ['①', '②', '③', '④'];
-export function QuestionView({ question: q, subjects, round, selected, choose, currentTopic, mode = 'practice', confirmed = selected !== undefined }: {
+export function QuestionView({ question: q, subjects, round, selected, choose, currentTopic, marked = false, toggleMark, mode = 'practice', confirmed = selected !== undefined }: {
+  marked?: boolean; toggleMark?: () => void;
   currentTopic?: string;
   round?: number;
   question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
@@ -29,7 +30,8 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
     previous.current = q.number;
   }, [q.number]);
   return <article className="question-card">
-    <p className="question-subject">{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
+    <div className="question-top"><p className="question-subject">{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
+    {toggleMark && <button className={`secondary mark-button ${marked ? 'marked' : ''}`} aria-label={`${round}회 ${q.number}번 문제 표시`} aria-keyshortcuts="S" aria-pressed={marked} onClick={toggleMark}>{marked ? '★ 표시함' : '☆ 표시'}</button>}</div>
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
     {stimuli.map((group, index) => {
       const item = group[0];

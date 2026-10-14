@@ -41,6 +41,7 @@ test.each(['exam', 'practice'] as const)('legend explains %s states with hidden 
   const data: RoundData = { formatVersion: 1, round: 1, title: '개발 표본', timeLimitMinutes: 90, subjects, questions: [question] };
   const { container } = render(<QuestionBoard data={data} mode={mode} current={1} answers={{}} move={() => {}} />);
   const labels = mode === 'exam' ? ['푼 문제', '안 푼 문제', '현재 문제'] : ['맞은 문제', '틀린 문제', '안 푼 문제', '현재 문제'];
-  await waitFor(() => expect([...container.querySelectorAll('.board-legend > span')].map(item => item.textContent)).toEqual(labels));
+  await waitFor(() => expect([...container.querySelectorAll('.board-legend > span')].map(item => item.textContent)).toEqual(['★표시한 문제', ...labels]));
+  expect(container.querySelector('.board-legend > span > span')?.getAttribute('aria-hidden')).toBe('true');
   expect(container.querySelectorAll('.legend-sample[aria-hidden="true"]').length).toBe(labels.length);
 });

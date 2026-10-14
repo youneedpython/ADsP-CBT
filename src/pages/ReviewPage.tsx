@@ -1,3 +1,4 @@
+import { useMarks } from '../storage/useMarks';
 import { useQuestionKeys } from '../components/useQuestionKeys';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
@@ -13,6 +14,7 @@ export function ReviewPage(props: PageProps) {
 }
 function ReviewRound({ data }: { data: RoundData }) {
   const store = useRecordStore();
+  const marks = useMarks();
   const [record] = useState(() => store.read(data.round, 'result', data.questions.length));
   const [params, setParams] = useSearchParams();
   const result = scoreRound(data, record?.answers ?? {});
@@ -32,17 +34,18 @@ function ReviewRound({ data }: { data: RoundData }) {
       setParams({ ...(filtered ? { filter: 'wrong' } : {}), q: String(current) }, { replace: true });
     }
   }, [record, raw, current, params, filtered, setParams]);
-  useQuestionKeys({ blocked: !record, previous: position > 0 ? () => move(scope[position - 1].number) : undefined, next: position < scope.length - 1 ? () => move(scope[position + 1].number) : undefined });
+  useQuestionKeys({ toggleMark: () => marks.toggle(data.round, current), blocked: !record, previous: position > 0 ? () => move(scope[position - 1].number) : undefined, next: position < scope.length - 1 ? () => move(scope[position + 1].number) : undefined });
   if (!record) return <div className="state-panel"><p>시험 기록이 없습니다.</p><Link className="button" to={`/rounds/${data.round}/exam`}>시험 시작</Link></div>;
   return <>
     <div className="practice-heading"><h2>{data.round}회 · 다시 보기</h2>
       <p>{filtered ? '틀린 문제' : '전체'} {position + 1} / {scope.length}</p>
     </div>
+    {!marks.persistent && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
     <nav className="round-actions" aria-label="다시 보기 범위">
       <button aria-pressed={!filtered} onClick={() => move(result.questions[0].number, false)}>전체 {result.questionCount}</button>
       <button aria-pressed={filtered} disabled={wrong.length === 0} onClick={() => move(wrong[0].number, true)}>틀린 문제 {wrong.length}</button>
     </nav>
-    <QuestionView round={data.round} question={data.questions.find(question => question.number === current)!} subjects={data.subjects}
+    <QuestionView marked={Boolean(marks.marked[`${data.round}:${current}`])} toggleMark={() => marks.toggle(data.round, current)} round={data.round} question={data.questions.find(question => question.number === current)!} subjects={data.subjects}
       selected={result.questions.find(question => question.number === current)!.selected ?? undefined} mode="review" choose={() => {}} />
     <nav className="practice-nav" aria-label="문제 이동">
       <button className="secondary" disabled={position === 0} onClick={() => move(scope[position - 1].number)}>이전</button>

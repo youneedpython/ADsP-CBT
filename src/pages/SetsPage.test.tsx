@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';
+import { MemoryRouter } from 'react-router';
+import { SetsPage } from './SetsPage';
 import { rounds, summaries, topics } from '../test/setFixtures';
 const fetchMock = vi.fn();
 beforeEach(() => {
@@ -16,6 +18,14 @@ async function ready(path = '/sets') {
   render(<App />);
   await screen.findByText(path === '/sets' ? '자주 나오는 주제부터' : /^모아 풀기 ·/);
 }
+test('missing topics provider shows the error state and safely retries', async () => {
+  render(<MemoryRouter initialEntries={['/sets']}><SetsPage state={{ status: 'success', rounds: summaries }} retry={() => {}} /></MemoryRouter>);
+  expect((await screen.findByRole('alert')).textContent).toContain('문제를 불러오지 못했습니다.');
+  expect(fetchMock).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
+  expect((await screen.findByRole('alert')).textContent).toContain('문제를 불러오지 못했습니다.');
+  expect(screen.queryByText('자주 나오는 주제부터')).toBeNull();
+});
 test('overview cards, counts, selected subject, frequency order/filter and destinations', async () => {
   await ready();
   expect(screen.getByText('0문항')).toBeTruthy();

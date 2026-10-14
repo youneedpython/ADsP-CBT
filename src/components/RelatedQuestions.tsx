@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import type { TopicsData } from '../data/types';
-import { frequency } from '../domain/practiceSets';
+import { frequency, topicSummary } from '../domain/practiceSets';
 import { useTopics } from './TopicsContext';
 import { FrequencyBar } from './FrequencyBar';
 
@@ -16,11 +16,7 @@ export function RelatedQuestions({ round, number, currentTopic }: { round: numbe
   }, [get]);
   const topic = data?.topics.find(topic => topic.id === data.questions[round]?.[number]);
   if (!topic || !data || !source) return null;
-  const registered = [...source.summaries].sort((a, b) => b.round - a.round);
-  const items = registered.flatMap(summary => Object.entries(data.questions[summary.round] ?? {})
-    .filter(([, id]) => id === topic.id).map(([number]) => ({ round: summary.round, number: Number(number) })).sort((a, b) => a.number - b.number));
-  const rounds = registered.map(summary => items.some(item => item.round === summary.round));
-  const count = rounds.filter(Boolean).length;
+  const { questions: items, rounds, roundCount: count } = topicSummary(data, source.summaries, topic.id);
   return <section className="related-questions" aria-label={`관련 문제 · ${topic.name}`}>
     <h3>관련 문제 · {topic.name}</h3>
     <div className="related-frequency"><FrequencyBar rounds={rounds} /><div><strong>출제 빈도 {frequency(count, rounds.length)}</strong><p>{rounds.length}개 회차 중 {count}회 · {items.length}문항</p></div></div>

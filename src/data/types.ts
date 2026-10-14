@@ -7,6 +7,16 @@ export interface RoundSummary {
   file: string;
 }
 export type SubjectId = 1 | 2 | 3;
+export interface Topic {
+  id: string;
+  name: string;
+  subject: SubjectId;
+}
+export interface TopicsData {
+  formatVersion: 1;
+  topics: Topic[];
+  questions: Record<string, Record<string, string>>;
+}
 export type Answer = 1 | 2 | 3 | 4;
 export type Stimulus =
   | { type: 'text' | 'code'; text: string }

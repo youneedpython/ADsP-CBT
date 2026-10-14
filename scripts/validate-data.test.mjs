@@ -12,19 +12,26 @@ function sample() {
     subjects: [1, 2, 3].map(id => ({ id, name: `표본 과목 ${id}` })),
     questions: Array.from({ length: 50 }, (_, i) => ({ number: i + 1, subject: i < 10 ? 1 : i < 20 ? 2 : 3, question: `표본 문제 ${i + 1}`, stimulus: [], choices: ['표본 1', '표본 2', '표본 3', '표본 4'], answer: 1, explanation: '표본 해설' })) };
 }
-async function check(mutate = () => {}, list = [entry]) {
+function sampleTopics(list = [entry]) {
+  return { formatVersion: 1, topics: list.length ? [{ id: 'T101', name: '개발용 표본 주제', subject: 1 }] : [],
+    questions: Object.fromEntries(list.map(e => [e.round, Object.fromEntries(Array.from({ length: 50 }, (_, i) => [i + 1, 'T101']))])) };
+}
+async function check(mutate = () => {}, list = [entry], mutateTopics = () => {}) {
   const dir = await mkdtemp(path.join(tmpdir(), 'adsp-validate-'));
   try {
     const data = sample();
     mutate(data);
     await writeFile(path.join(dir, 'rounds.json'), JSON.stringify(list));
     await writeFile(path.join(dir, '900.json'), JSON.stringify(data));
+    const topics = sampleTopics(list);
+    mutateTopics(topics);
+    if (topics.formatVersion !== 'missing') await writeFile(path.join(dir, 'topics.json'), topics.formatVersion === 'malformed' ? '{' : JSON.stringify(topics));
     return await validateData(dir);
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 test('valid 50 questions and empty list pass', async () => {
-  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50 });
-  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0 });
+  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1 });
+  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0 });
 });
 
 test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid round year %s', async year => {
@@ -110,4 +117,35 @@ test('missing and malformed files fail', async () => {
     await writeFile(path.join(dir, '900.json'), '{');
     expect((await validateData(dir)).errors[0]).toContain('회차 900');
   } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test.each([
+  ['missing', t => t.formatVersion = 'missing', '읽기 / JSON'],
+  ['malformed', t => t.formatVersion = 'malformed', '읽기 / JSON'],
+  ['version', t => t.formatVersion = 2, 'formatVersion'],
+  ['root key', t => t.extra = 1, '정의하지 않은'],
+  ['topics array', t => t.topics = {}, '배열'],
+  ['topic object', t => t.topics[0] = null, '객체'],
+  ['topic key', t => t.topics[0].extra = 1, '정의하지 않은'],
+  ['topic id', t => t.topics[0].id = 'T1', 'ID 형식'],
+  ['duplicate topic', t => t.topics.push({ ...t.topics[0] }), 'ID 중복'],
+  ['empty name', t => t.topics[0].name = ' ', '빈 이름'],
+  ['subject', t => t.topics[0].subject = 4, '과목 값'],
+  ['questions object', t => t.questions = [], '객체'],
+  ['round object', t => t.questions[900] = [], '객체'],
+  ['missing round', t => delete t.questions[900], '회차 누락'],
+  ['missing question', t => delete t.questions[900][1], '주제 누락'],
+  ['extra round', t => t.questions[901] = { 1: 'T101' }, '등록되지 않은 회차'],
+  ['extra question', t => t.questions[900][51] = 'T101', '없는 문항'],
+  ['bad round key', t => t.questions['0900'] = { 1: 'T101' }, '양의 정수'],
+  ['bad question key', t => t.questions[900]['01'] = 'T101', '양의 정수'],
+  ['unknown id', t => t.questions[900][1] = 'T999', '목록에 없는'],
+  ['multiple topics', t => t.questions[900][1] = ['T101'], '목록에 없는'],
+  ['unused topic', t => t.topics.push({ id: 'T201', name: '미사용 표본', subject: 2 }), '쓰이지 않는'],
+])('rejects topics %s', async (_name, mutate, reason) => {
+  expect((await check(undefined, [entry], mutate)).errors.some(e => e.includes(reason))).toBe(true);
+});
+
+test('topic subject may differ from question subject', async () => {
+  expect((await check(undefined, [entry], t => t.topics[0].subject = 3)).errors).toEqual([]);
 });

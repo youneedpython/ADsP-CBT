@@ -3,8 +3,10 @@ import type { Answer, Question, RoundData } from '../data/types';
 import { dataUrl } from '../data/loadRound';
 import { MathText } from './MathText';
 import { reportQuestionUrl } from '../domain/reportQuestion';
+import { RelatedQuestions } from './RelatedQuestions';
 const circled = ['①', '②', '③', '④'];
-export function QuestionView({ question: q, subjects, round, selected, choose, mode = 'practice', confirmed = selected !== undefined }: {
+export function QuestionView({ question: q, subjects, round, selected, choose, currentTopic, mode = 'practice', confirmed = selected !== undefined }: {
+  currentTopic?: string;
   round?: number;
   question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
 }) {
@@ -59,5 +61,6 @@ export function QuestionView({ question: q, subjects, round, selected, choose, m
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
       {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
+    {round !== undefined && (mode === 'review' || mode === 'practice' && confirmed && selected !== undefined) && <RelatedQuestions round={round} number={q.number} currentTopic={currentTopic} />}
   </article>;
 }

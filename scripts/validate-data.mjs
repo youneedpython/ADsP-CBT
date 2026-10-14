@@ -1,6 +1,7 @@
 import { readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateTopics } from './validate-topics.mjs';
 
 export async function isDirectExecution(moduleUrl, argument = process.argv[1]) {
   if (!argument) return false;
@@ -28,6 +29,8 @@ export async function validateData(directory = defaultDirectory()) {
   const errors = [];
   let roundCount = 0;
   let questionCount = 0;
+  let topicCount = 0;
+  const expectedTopics = {};
   const add = (round, number, reason) => errors.push(`회차 ${round ?? '?'}${number === undefined ? '' : ` 문항 ${number}`} : ${reason}`);
   const keys = (value, allowed, round, number) => {
     if (!object(value)) { add(round, number, '객체 형식 필요'); return false; }
@@ -49,6 +52,7 @@ export async function validateData(directory = defaultDirectory()) {
     if (!Number.isInteger(entry.year) || entry.year < 2000 || entry.year > 2100) add(r, undefined, 'year는 2000 ~ 2100 정수 필요');
     if (!Number.isInteger(r) || r < 1 || seen.has(r)) add(r, undefined, '회차 번호 오류 / 중복');
     seen.add(r);
+    expectedTopics[r] = [];
     string(entry.title, r, undefined, 'title', true);
     if (!Number.isInteger(entry.questionCount) || entry.questionCount < 0) add(r, undefined, 'questionCount 오류');
     if (entry.timeLimitMinutes !== 90) add(r, undefined, 'timeLimitMinutes는 90 필요');
@@ -64,6 +68,7 @@ export async function validateData(directory = defaultDirectory()) {
     if (Array.isArray(data.subjects)) for (const s of data.subjects) if (keys(s, ['id', 'name'], r)) string(s.name, r, undefined, 'subject name', true);
     if (!Array.isArray(data.questions)) { add(r, undefined, 'questions 배열 필요'); continue; }
     questionCount += data.questions.length;
+    expectedTopics[r] = data.questions.map(q => q?.number);
     if (data.questions.length !== entry.questionCount) add(r, undefined, 'questionCount 불일치');
     const counts = [0, 0, 0];
     for (const [index, q] of data.questions.entries()) {
@@ -95,12 +100,17 @@ export async function validateData(directory = defaultDirectory()) {
     }
     if (counts.some((count, i) => count !== [10, 10, 30][i])) add(r, undefined, '과목별 문항 수 10 / 10 / 30 필요');
   }
-  return { errors, roundCount, questionCount };
+  try {
+    const topics = JSON.parse(await readFile(path.join(directory, 'topics.json'), 'utf8'));
+    errors.push(...validateTopics(topics, expectedTopics));
+    if (Array.isArray(topics?.topics)) topicCount = topics.topics.length;
+  } catch { add(undefined, undefined, 'topics.json 읽기 / JSON 오류'); }
+  return { errors, roundCount, questionCount, topicCount };
 }
 
 if (await isDirectExecution(import.meta.url)) {
   const result = await validateData(process.argv[2]);
   if (result.errors.length) result.errors.forEach(error => console.error(error));
-  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개 검사 통과`);
+  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개 검사 통과`);
   process.exitCode = result.errors.length ? 1 : 0;
 }

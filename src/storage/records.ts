@@ -1,5 +1,7 @@
 import type { Answers } from '../domain/scoring';
 import { isAnswer } from '../domain/scoring';
+import { validResolved, validSetRecord, type SetRecord } from './setRecords';
+import type { ResolvedQuestions } from '../domain/practiceSets';
 
 export interface PracticeRecord { answers: Answers; current: number }
 export interface ExamRecord extends PracticeRecord { startedAt: string; elapsedSeconds: number }
@@ -47,6 +49,27 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
   catch { /* Access can be blocked before any method is called. */ }
   let persistent = storage !== undefined;
 
+  function readExtra<T>(key: string, validate: (value: unknown) => value is T): T | null {
+    let raw = memory.get(key) ?? null;
+    if (persistent) {
+      try { raw = storage!.getItem(key); } catch { persistent = false; }
+    }
+    if (raw !== null) {
+      try {
+        const value: unknown = JSON.parse(raw);
+        if (validate(value)) { memory.set(key, raw); return value; }
+      } catch { /* Invalid records are discarded. */ }
+    }
+    memory.delete(key);
+    if (storage && raw !== null) { try { storage.removeItem(key); } catch { persistent = false; } }
+    return null;
+  }
+  function writeExtra(key: string, value: unknown) {
+    const raw = JSON.stringify(value);
+    memory.set(key, raw);
+    if (persistent) { try { storage!.setItem(key, raw); } catch { persistent = false; } }
+  }
+
   function remove(round: number, kind: RecordKind): void {
     const key = recordKey(round, kind);
     memory.delete(key);
@@ -55,6 +78,10 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
     }
   }
   return {
+    readSet: (id: string, signature: string, keys: string[]) => readExtra(`adsp-cbt:v1:set:${id}`, (value): value is SetRecord => validSetRecord(value, signature, keys)),
+    writeSet: (id: string, value: SetRecord) => writeExtra(`adsp-cbt:v1:set:${id}`, value),
+    readResolved: () => readExtra('adsp-cbt:v1:set-resolved', validResolved) ?? {},
+    writeResolved: (value: ResolvedQuestions) => writeExtra('adsp-cbt:v1:set-resolved', value),
     canPersist: () => persistent,
     read<K extends RecordKind>(round: number, kind: K, questionCount: number): RecordTypes[K] | null {
       const key = recordKey(round, kind);

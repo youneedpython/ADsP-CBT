@@ -1,3 +1,4 @@
+import '../test/asyncQueries';
 vi.mock('../data/loadDownloads', () => ({ loadDownloads: async () => ({ formatVersion: 1, rounds: {} }) }));
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -203,8 +204,8 @@ test.each([1, 2])('grades selection %s once and preserves state through navigati
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe(answer === 2 ? '맞았습니다.' : '틀렸습니다. 정답은 ②번입니다.'));
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(window.location.hash).toContain('q=2'));
-  expect(await screen.findByRole('link', { name: '회차 목록' })).toBeTruthy();
-  expect(screen.getByRole('link', { name: '회차 목록' }).getAttribute('href')).toBe('#/rounds');
+  expect(await screen.findByRole('link', { name: '회차 정보로' })).toBeTruthy();
+  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/rounds/50');
   await waitFor(() => expect(screen.queryByRole('button', { name: '다음' })).toBeNull());
   fireEvent.click(screen.getByRole('button', { name: '이전' }));
   await waitFor(() => expect(screen.getByRole('status').textContent).toContain(answer === 2 ? '맞았습니다' : '틀렸습니다'));

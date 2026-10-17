@@ -2,7 +2,7 @@ import { useMarks } from '../storage/useMarks';
 import { Modal } from '../components/Modal';
 import { useQuestionKeys } from '../components/useQuestionKeys';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { RoundPage } from '../components/RoundPage';
 import type { PageProps } from '../components/LoadingState';
 import { QuestionView } from '../components/QuestionView';
@@ -120,7 +120,7 @@ function ExamRound({ data }: { data: RoundData }) {
   };
   const question = data.questions[current - 1];
   return <>
-    <div className="practice-heading"><h2>{data.round}회 · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
+    <div className="practice-heading"><h2><Link to={`/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
         {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>

@@ -37,7 +37,7 @@ function ReviewRound({ data }: { data: RoundData }) {
   useQuestionKeys({ toggleMark: () => marks.toggle(data.round, current), blocked: !record, previous: position > 0 ? () => move(scope[position - 1].number) : undefined, next: position < scope.length - 1 ? () => move(scope[position + 1].number) : undefined });
   if (!record) return <div className="state-panel"><p>시험 기록이 없습니다.</p><Link className="button" to={`/rounds/${data.round}/exam`}>시험 시작</Link></div>;
   return <>
-    <div className="practice-heading"><h2>{data.round}회 · 다시 보기</h2>
+    <div className="practice-heading"><h2><Link to={`/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 다시 보기</h2>
       <p>{filtered ? '틀린 문제' : '전체'} {position + 1} / {scope.length}</p>
     </div>
     {!marks.persistent && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}

@@ -17,7 +17,7 @@ function ResultRound({ data }: { data: RoundData }) {
   const result = scoreRound(data, record.answers);
   const wrong = result.questionCount - result.correctCount;
   return <section className="result-panel">
-    <div className="result-heading"><h2>{data.round}회 · 결과</h2><p>걸린 시간 {formatRemainingTime(record.elapsedSeconds)}</p></div>
+    <div className="result-heading"><h2><Link to={`/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 결과</h2><p>걸린 시간 {formatRemainingTime(record.elapsedSeconds)}</p></div>
     {!store.canPersist() && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
     <div className="result-summary"><p className="result-score">{result.score}점</p><p className={`result-verdict ${result.passed ? 'correct' : 'wrong'}`}>{result.passed ? '합격' : '불합격'}</p>
     {result.failureReasons.map(reason => <p key={reason}>{reason}</p>)}
@@ -28,6 +28,6 @@ function ResultRound({ data }: { data: RoundData }) {
     </section>)}</div>
     <h3>문항별 결과</h3>
     <div className="result-grid">{result.questions.map(question => <Link key={question.number} className={question.correct ? 'correct' : 'wrong'} aria-label={`${question.number}번, ${question.correct ? '맞은 문제' : '틀린 문제'}`} to={`/rounds/${data.round}/review?q=${question.number}`}>{question.number}</Link>)}</div><p>틀린 문제 {wrong}</p>
-    <nav className="round-actions"><Link className="button secondary" to="/rounds">회차 목록</Link><Link className="button" to={`/rounds/${data.round}/review${wrong ? '?filter=wrong' : ''}`}>{wrong ? '틀린 문제 보기' : '전체 문제 보기'}</Link></nav>
+    <nav className="round-actions"><Link className="button secondary" to={`/rounds/${data.round}`}>회차 정보로</Link><Link className="button" to={`/rounds/${data.round}/review${wrong ? '?filter=wrong' : ''}`}>{wrong ? '틀린 문제 보기' : '전체 문제 보기'}</Link></nav>
   </section>;
 }

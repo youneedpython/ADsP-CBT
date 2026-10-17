@@ -1,3 +1,4 @@
+import '../test/asyncQueries';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router';

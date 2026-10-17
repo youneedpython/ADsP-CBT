@@ -1,3 +1,4 @@
+import './test/asyncQueries';
 vi.mock('./data/loadDownloads', () => ({ loadDownloads: async () => ({ formatVersion: 1, rounds: {} }) }));
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -130,6 +131,25 @@ test.each(['#/rounds/999', '#/rounds/999/practice'])('unknown round %s provides 
   window.location.hash = hash; render(<App />); await screen.findByText('없는 회차입니다.');
   expect(screen.getByRole('link', { name: '회차 목록으로' }).getAttribute('href')).toBe('#/rounds'); footer();
 });
+test.each(['practice', 'exam', 'result', 'review'] as const)('%s heading links only the round name to its information', async page => {
+  save(50, 'result', result);
+  window.location.hash = `#/rounds/50/${page}`;
+  render(<App />);
+  const link = await screen.findByRole('link', { name: '50회' });
+  // Question screens normalize their initial query asynchronously. Finish that
+  // navigation before clicking, otherwise it can replace the destination route.
+  if (page !== 'result') {
+    await waitFor(() => expect(window.location.hash).toBe(`#/rounds/50/${page}?q=1`));
+  }
+  expect(link.getAttribute('href')).toBe('#/rounds/50');
+  expect(link.textContent).toBe('50회');
+  expect(link.parentElement?.tagName).toBe('H2');
+  expect(link.parentElement?.textContent).toBe(`50회 · ${{ practice: '연습', exam: '시험', result: '결과', review: '다시 보기' }[page]}`);
+  fireEvent.click(link);
+  await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' });
+  expect(screen.queryByRole('dialog')).toBeNull();
+});
+
 test('unknown routes redirect to home', async () => {
   window.location.hash = '#/unknown'; render(<App />); await screen.findByRole('link', { name: '최신 50회 풀기' }); await waitFor(() => expect(window.location.hash).toBe('#/'));
 });

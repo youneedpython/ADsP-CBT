@@ -1,3 +1,4 @@
+import '../test/asyncQueries';
 import { cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';
@@ -37,6 +38,9 @@ test.each([true, false])('round info section with both / one types: %s', async b
   await screen.findByRole('heading', { name: 'PDF 내려받기' });
   expect(screen.getByRole('link', { name: /900회 풀이용 PDF 내려받기/ })).toBeTruthy();
   expect(!!screen.queryByRole('link', { name: /900회 해설용 PDF 내려받기/ })).toBe(both);
+  const actions = screen.getByRole('link', { name: /900회 풀이용 PDF 내려받기/ }).closest('.download-actions')!;
+  expect(within(actions as HTMLElement).getAllByRole('link')).toHaveLength(both ? 2 : 1);
+  expect(actions.children).toHaveLength(both ? 2 : 1);
   expect(downloadCalls()).toHaveLength(1);
 });
 test('no PDFs hides home link, header link and info section', async () => {

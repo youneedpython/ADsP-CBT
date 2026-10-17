@@ -1,3 +1,4 @@
+import '../test/asyncQueries';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';
@@ -36,6 +37,28 @@ async function ready() {
 const readExam = () => JSON.parse(localStorage.getItem(recordKey(50, 'exam'))!);
 const choice = (number: number) => screen.getByRole('button', { name: new RegExp(`^${number}\\. 표본`) });
 const openSubmit = () => fireEvent.click(screen.getByRole('button', { name: '제출하고 채점' }));
+
+test('round heading exit saves answers and elapsed time and pauses until returning', async () => {
+  exam({}, 1, 60);
+  await ready();
+  fireEvent.click(choice(2));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  await act(async () => { vi.advanceTimersByTime(3000); });
+  fireEvent.click(screen.getByRole('link', { name: '50회' }));
+  await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' });
+  expect(screen.queryByRole('dialog')).toBeNull();
+  const saved = readExam();
+  expect(saved.answers).toEqual({ 1: 2 });
+  expect(saved.elapsedSeconds).toBe(63);
+  await act(async () => { vi.advanceTimersByTime(10000); });
+  expect(readExam()).toEqual(saved);
+  fireEvent.click(screen.getByRole('link', { name: '시험 이어 풀기' }));
+  await screen.findByRole('heading', { name: '50회 · 시험' });
+  expect(choice(2).getAttribute('aria-pressed')).toBe('true');
+  expect(screen.getByText('남은 시간 88:57')).toBeTruthy();
+  expect(readExam().answers).toEqual(saved.answers);
+  expect(readExam().elapsedSeconds).toBe(63);
+});
 
 test('exam keyboard toggles choices and submit dialog traps and restores focus', async () => {
   await ready();
@@ -311,7 +334,7 @@ test.each([
 test.each([false, true])('question result links, counts and review action, perfect=%s', async perfect => {
   result(answersFor(perfect ? all : [1])); window.location.hash = '#/rounds/50/result'; render(<App />);
   await screen.findByRole('heading', { name: '50회 · 결과' });
-  expect(screen.getByRole('link', { name: '회차 목록' }).getAttribute('href')).toBe('#/rounds');
+  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/rounds/50');
   await waitFor(() => expect(screen.getByRole('link', { name: '1번, 맞은 문제' }).getAttribute('href')).toBe('#/rounds/50/review?q=1'));
   await waitFor(() => expect(screen.getByRole('link', { name: `3번, ${perfect ? '맞은 문제' : '틀린 문제'}` }).getAttribute('href')).toBe('#/rounds/50/review?q=3'));
   expect(await screen.findByText(`틀린 문제 ${perfect ? 0 : 49}`)).toBeTruthy();

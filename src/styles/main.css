@@ -380,6 +380,7 @@ button:disabled { cursor: default; }
 .notes-article h2 small { color: var(--muted); font-size: .875rem; font-weight: normal; }
 .notes-article h3 { border-bottom: 1px solid #dbe5ff; padding-bottom: .4rem; scroll-margin-top: 1rem; }
 .notes-article h4 { margin-bottom: .5rem; }
+.notes-code { max-width: 100%; overflow-x: auto; white-space: pre; overflow-wrap: normal; margin: 1.25rem 0; padding: 1rem; border-radius: 10px; background: #17243b; color: #f1f5f9; }
 .notes-box { padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 10px; }
 .notes-box > :first-child { margin-top: 0; }
 .notes-box > :last-child { margin-bottom: 0; }

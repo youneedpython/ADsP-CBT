@@ -1,10 +1,10 @@
 export type NoteItem = { text: string; items?: NoteItem[] };
-export type NoteBlock = { type: 'heading' | 'subheading' | 'paragraph'; text: string }
+export type NoteBlock = { type: 'heading' | 'subheading' | 'paragraph' | 'code'; text: string }
   | { type: 'list'; items: NoteItem[] }
   | { type: 'table'; head?: string[]; rows: string[][] }
   | { type: 'figure'; src: string; width: number; height: number; alt: string; caption?: string }
   | { type: 'box'; style: 'note' | 'exam'; title?: string; blocks: NoteBlock[] };
-export type NotesData = { formatVersion: 1; id: string; subject: number; chapter?: number; title: string; pdf: string; units: { number: number; title: string; ref: string; topics: string[]; blocks: NoteBlock[] }[] };
+export type NotesData = { formatVersion: 1; id: string; subject: number; chapter?: number; title: string; pdf: string; units: { number: number; title: string; ref?: string; topics: string[]; blocks: NoteBlock[] }[] };
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const keys = (v: Record<string, unknown>, allowed: string[]) => Object.keys(v).every(k => allowed.includes(k));
 const text = (v: unknown): v is string => typeof v === 'string' && !!v.trim();
@@ -17,7 +17,7 @@ function block(v: unknown, id: string, inside = false): boolean {
   if (!object(v)) return false;
   if (inside && !['paragraph', 'list', 'table'].includes(v.type as string)) return false;
   switch (v.type) {
-    case 'heading': case 'subheading': case 'paragraph': return keys(v, ['type', 'text']) && text(v.text);
+    case 'heading': case 'subheading': case 'paragraph': case 'code': return keys(v, ['type', 'text']) && text(v.text);
     case 'list': return keys(v, ['type', 'items']) && items(v.items);
     case 'table': {
       if (!keys(v, ['type', 'head', 'rows']) || !Array.isArray(v.rows) || !v.rows.length) return false;
@@ -39,7 +39,7 @@ export function isNotesData(v: unknown): v is NotesData {
     || (v.id.includes('-') ? v.chapter !== Number(v.id[2]) : 'chapter' in v) || !text(v.title)
     || typeof v.pdf !== 'string' || !/^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(v.pdf) || !Array.isArray(v.units) || !v.units.length) return false;
   return v.units.every((u, i) => object(u) && keys(u, ['number', 'title', 'ref', 'topics', 'blocks']) && u.number === i + 1
-    && text(u.title) && text(u.ref) && Array.isArray(u.topics) && u.topics.every(t => typeof t === 'string' && /^T\d{3}$/.test(t))
+    && text(u.title) && (!('ref' in u) || text(u.ref)) && Array.isArray(u.topics) && u.topics.every(t => typeof t === 'string' && /^T\d{3}$/.test(t))
     && new Set(u.topics).size === u.topics.length && Array.isArray(u.blocks) && u.blocks.length > 0 && u.blocks.every(b => block(b, v.id as string)));
 }
 export async function loadNotes(id: string, signal?: AbortSignal): Promise<NotesData> {

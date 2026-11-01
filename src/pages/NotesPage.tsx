@@ -23,6 +23,7 @@ export function Blocks({ blocks, prefix = 'block' }: { blocks: NoteBlock[]; pref
       case 'heading': return <h3 id={id} key={id}><Bold text={b.text} /></h3>;
       case 'subheading': return <h4 key={id}><Bold text={b.text} /></h4>;
       case 'paragraph': return <p key={id}><Bold text={b.text} /></p>;
+      case 'code': return <pre className="notes-code" key={id}>{b.text}</pre>;
       case 'list': return <Items key={id} items={b.items} />;
       case 'table': return <div className="notes-table" key={id}><table>{b.head && <thead><tr>{b.head.map((c, j) => <th key={j}><Bold text={c} /></th>)}</tr></thead>}<tbody>{b.rows.map((r, j) => <tr key={j}>{r.map((c, k) => <td key={k}><Bold text={c} /></td>)}</tr>)}</tbody></table></div>;
       case 'box': return <aside className={`notes-box notes-${b.style}`} key={id}>{b.title && <h3 id={id}><Bold text={b.title} /></h3>}<Blocks blocks={b.blocks} prefix={id} /></aside>;
@@ -81,7 +82,7 @@ export function NotesPage() {
     <div className="notes-header"><div><h1 className="page-title">{name} {data.title}</h1><p className="page-lead">핵심 요약 · {data.units.length}단원 · {subject.summary?.pages}쪽</p></div><a className="button secondary" href={`${import.meta.env.BASE_URL}${data.pdf}`} target="_blank" rel="noopener"><PdfIcon kind="open" />PDF로 보기</a></div>
     {subjects.length > 1 && <nav className="notes-subjects" aria-label="핵심 요약 과목">{subjects.map(s => <Link className="button secondary" aria-current={s.id === id ? 'page' : undefined} key={s.id} to={`/notes/${s.id}`}>{s.subject}과목{s.chapter && ` ${s.chapter}장`}</Link>)}</nav>}
     <div className="notes-layout"><aside className="notes-toc"><h2>목차</h2><button className="notes-toc-toggle" aria-expanded={expanded} aria-controls="notes-contents" onClick={() => setExpanded(!expanded)}>목차 · {unit.number}단원 {unit.title} ▾</button><nav id="notes-contents" className={expanded ? 'expanded' : ''} aria-label="단원 목차">{data.units.map(u => <div key={u.number}><Link aria-current={u === unit ? 'page' : undefined} to={unitLink(u.number)}>{u.number}단원 {u.title}</Link>{u === unit && u.blocks.map((b, i) => (b.type === 'heading' || b.type === 'box' && b.style === 'exam' && b.title) && <button className="notes-anchor" key={i} onClick={() => { document.getElementById(`unit-${u.number}-${i}`)?.scrollIntoView({ block: 'start' }); setExpanded(false); }}><Bold text={b.type === 'box' ? b.title! : b.text} /></button>)}</div>)}</nav></aside>
-      <div className="notes-body"><article className="overview-panel notes-article"><h2><span className="subject-badge">{unit.number}단원</span> {unit.title} <small>({unit.ref})</small></h2><Blocks key={`${id}-${unit.number}`} blocks={unit.blocks} prefix={`unit-${unit.number}`} />
+      <div className="notes-body"><article className="overview-panel notes-article"><h2><span className="subject-badge">{unit.number}단원</span> {unit.title}{unit.ref && <> <small>({unit.ref})</small></>}</h2><Blocks key={`${id}-${unit.number}`} blocks={unit.blocks} prefix={`unit-${unit.number}`} />
         {topics && unit.topics.length > 0 && <section className="notes-practice"><h3>이 단원의 기출 문제 풀기</h3><p>등록된 회차에서 이 단원 주제로 나온 문제입니다. 모아 풀기의 주제별 모음으로 갑니다.</p>{unit.topics.map(topicId => {
           const topic = topics.topics.find(t => t.id === topicId);
           if (!topic) return null;

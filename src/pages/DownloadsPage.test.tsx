@@ -2,7 +2,7 @@ import '../test/asyncQueries';
 import { cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';
-const files = { type1: { file: 'pdf/900-type1.pdf', bytes: 286627 }, type2: { file: 'pdf/900-type2.pdf', bytes: 1048576 } };
+const files = { type1: { file: 'pdf/900-type1.pdf', bytes: 286627, pages: 23 }, type2: { file: 'pdf/900-type2.pdf', bytes: 1048576, pages: 23 } };
 let downloads: unknown;
 const fetchMock = vi.fn();
 const round = { formatVersion: 1, round: 900, title: '개발용 표본', timeLimitMinutes: 90, subjects: [1, 2, 3].map(id => ({ id, name: `표본 ${id}` })), questions: [{ number: 1, subject: 1, question: '개발용 표본 문제', choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설', stimulus: [] }] };
@@ -71,21 +71,21 @@ test('failed list hides PDF links while keeping home and info; download screen r
   expect(downloadCalls()).toHaveLength(2);
 });
 
-const subject = { id: '3-2', label: '3과목 2장', name: '개발용 표본 통계', questionCount: 94,
-  summary: { file: 'pdf/subject-3-2-summary.pdf', bytes: 1048576 }, solutions: { file: 'pdf/subject-3-2-solutions.pdf', bytes: 2048 } };
+const subject = { id: '3-2', subject: 3, subjectName: '데이터 분석', chapter: 2, name: '개발용 표본 통계', questionCount: 94,
+  summary: { file: 'pdf/subject-3-2-summary.pdf', bytes: 1048576, pages: 23 }, solutions: { file: 'pdf/subject-3-2-solutions.pdf', bytes: 2048, pages: 23 } };
 test('subject and round groups have viewing and download actions', async () => {
   downloads = { formatVersion: 1, rounds: { 900: files }, subjects: [subject] }; render(<App />);
-  await screen.findByRole('heading', { name: '과목별 공부 자료' });
-  expect(screen.getByRole('heading', { name: '회차별 문제지' })).toBeTruthy();
-  expect(screen.getByText('풀이 모음 · 94문항')).toBeTruthy();
+  await screen.findByRole('tab', { name: '과목별 공부 자료' });
+  expect(screen.getByRole('tab', { name: '과목별 공부 자료' }).getAttribute('aria-selected')).toBe('true');
+  expect(screen.getByText('94문항 · 23쪽')).toBeTruthy();
   for (const [label, file, filename, size] of [
-    ['쉬운 설명', subject.summary.file, 'ADsP_3과목_2장_쉬운설명.pdf', '1.0 MB'],
+    ['핵심 요약', subject.summary.file, 'ADsP_3과목_2장_핵심요약.pdf', '1.0 MB'],
     ['풀이 모음', subject.solutions.file, 'ADsP_3과목_2장_풀이모음.pdf', '2 KB'],
   ]) {
     const view = screen.getByRole('link', { name: `3과목 2장 ${label} PDF 새 탭에서 보기` });
     expect(view.getAttribute('href')).toBe(`${import.meta.env.BASE_URL}${file}`);
     expect(view.getAttribute('target')).toBe('_blank'); expect(view.getAttribute('rel')).toBe('noopener');
-    expect(view.querySelector('span')?.getAttribute('aria-hidden')).toBe('true');
+    expect(view.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
     const save = screen.getByRole('link', { name: `3과목 2장 ${label} PDF 내려받기, ${size}` });
     expect(save.getAttribute('href')).toBe(view.getAttribute('href')); expect(save.getAttribute('download')).toBe(filename);
   }
@@ -99,4 +99,36 @@ test.each([undefined, []])('absent or empty subjects omit their group', async su
   downloads = { formatVersion: 1, rounds: { 900: files }, ...(subjects ? { subjects } : {}) }; render(<App />);
   await screen.findByRole('heading', { name: '회차별 문제지' });
   expect(screen.queryByRole('heading', { name: '과목별 공부 자료' })).toBeNull();
+  expect(screen.queryByRole('tablist')).toBeNull();
+});
+
+test('tabs use address, selection and arrow keys with focus', async () => {
+  downloads = { formatVersion: 1, rounds: { 900: files }, subjects: [subject] };
+  window.location.hash = '#/downloads?tab=rounds'; render(<App />);
+  const rounds = await screen.findByRole('tab', { name: '회차별 문제지' });
+  const subjects = screen.getByRole('tab', { name: '과목별 공부 자료' });
+  expect(rounds.getAttribute('aria-selected')).toBe('true');
+  expect(screen.getByRole('tabpanel').getAttribute('aria-labelledby')).toBe(rounds.id);
+  fireEvent.keyDown(rounds, { key: 'ArrowLeft' });
+  await waitFor(() => expect(subjects.getAttribute('aria-selected')).toBe('true'));
+  expect(document.activeElement).toBe(subjects);
+  expect(window.location.hash).toBe('#/downloads');
+  expect(subjects.getAttribute('tabindex')).toBe('0');
+  expect(rounds.getAttribute('tabindex')).toBe('-1');
+  fireEvent.keyDown(subjects, { key: 'ArrowRight' });
+  await waitFor(() => expect(window.location.hash).toBe('#/downloads?tab=rounds'));
+  expect(document.activeElement).toBe(rounds);
+  fireEvent.click(subjects);
+  await waitFor(() => expect(window.location.hash).toBe('#/downloads'));
+});
+
+test('whole subjects and chapters have grouped titles and card names', async () => {
+  const whole = [1, 2].map(n => ({ id: `${n}`, subject: n, subjectName: `표본 ${n}`, name: `표본 ${n}`, questionCount: 60, summary: subject.summary, solutions: subject.solutions }));
+  const chapters = [1, 2, 3].map(n => ({ ...subject, id: `3-${n}`, chapter: n, name: `표본 장 ${n}` }));
+  downloads = { formatVersion: 1, rounds: {}, subjects: [...chapters.reverse(), ...whole.reverse()] }; render(<App />);
+  await screen.findByRole('heading', { name: '1과목 · 2과목', level: 2 });
+  expect(screen.getByRole('heading', { name: /^3과목\s*데이터 분석 · 3개 장$/, level: 2 })).toBeTruthy();
+  expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['1과목', '2과목', '1장', '2장', '3장']);
+  expect(screen.getAllByText('60문항 · 23쪽')).toHaveLength(2);
+  expect(screen.getAllByText('23쪽')).toHaveLength(5);
 });

@@ -4,143 +4,175 @@
     "44": {
       "type1": {
         "file": "pdf/44-type1.pdf",
-        "bytes": 295204
+        "bytes": 295204,
+        "pages": 11
       },
       "type2": {
         "file": "pdf/44-type2.pdf",
-        "bytes": 350673
+        "bytes": 350673,
+        "pages": 14
       }
     },
     "45": {
       "type1": {
         "file": "pdf/45-type1.pdf",
-        "bytes": 282552
+        "bytes": 282552,
+        "pages": 11
       },
       "type2": {
         "file": "pdf/45-type2.pdf",
-        "bytes": 336585
+        "bytes": 336585,
+        "pages": 13
       }
     },
     "46": {
       "type1": {
         "file": "pdf/46-type1.pdf",
-        "bytes": 296569
+        "bytes": 296569,
+        "pages": 13
       },
       "type2": {
         "file": "pdf/46-type2.pdf",
-        "bytes": 351164
+        "bytes": 351164,
+        "pages": 14
       }
     },
     "47": {
       "type1": {
         "file": "pdf/47-type1.pdf",
-        "bytes": 313386
+        "bytes": 313386,
+        "pages": 11
       },
       "type2": {
         "file": "pdf/47-type2.pdf",
-        "bytes": 374367
+        "bytes": 374367,
+        "pages": 14
       }
     },
     "48": {
       "type1": {
         "file": "pdf/48-type1.pdf",
-        "bytes": 198021
+        "bytes": 198021,
+        "pages": 8
       },
       "type2": {
         "file": "pdf/48-type2.pdf",
-        "bytes": 243177
+        "bytes": 243177,
+        "pages": 10
       }
     },
     "49": {
       "type1": {
         "file": "pdf/49-type1.pdf",
-        "bytes": 174501
+        "bytes": 174501,
+        "pages": 8
       },
       "type2": {
         "file": "pdf/49-type2.pdf",
-        "bytes": 216854
+        "bytes": 216854,
+        "pages": 8
       }
     },
     "50": {
       "type1": {
         "file": "pdf/50-type1.pdf",
-        "bytes": 292346
+        "bytes": 292346,
+        "pages": 10
       },
       "type2": {
         "file": "pdf/50-type2.pdf",
-        "bytes": 345713
+        "bytes": 345713,
+        "pages": 11
       }
     }
   },
   "subjects": [
     {
       "id": "1",
-      "label": "1과목",
+      "subject": 1,
+      "subjectName": "데이터 이해",
       "name": "데이터 이해",
       "questionCount": 60,
       "summary": {
         "file": "pdf/subject-1-summary.pdf",
-        "bytes": 922005
+        "bytes": 922005,
+        "pages": 13
       },
       "solutions": {
         "file": "pdf/subject-1-solutions.pdf",
-        "bytes": 1089441
+        "bytes": 1089441,
+        "pages": 23
       }
     },
     {
       "id": "2",
-      "label": "2과목",
+      "subject": 2,
+      "subjectName": "데이터 분석 기획",
       "name": "데이터 분석 기획",
       "questionCount": 60,
       "summary": {
         "file": "pdf/subject-2-summary.pdf",
-        "bytes": 728922
+        "bytes": 728922,
+        "pages": 10
       },
       "solutions": {
         "file": "pdf/subject-2-solutions.pdf",
-        "bytes": 912219
+        "bytes": 912219,
+        "pages": 20
       }
     },
     {
       "id": "3-1",
-      "label": "3과목 1장",
+      "subject": 3,
+      "subjectName": "데이터 분석",
+      "chapter": 1,
       "name": "R 기초와 데이터 마트",
       "questionCount": 9,
       "summary": {
         "file": "pdf/subject-3-1-summary.pdf",
-        "bytes": 478401
+        "bytes": 478401,
+        "pages": 6
       },
       "solutions": {
         "file": "pdf/subject-3-1-solutions.pdf",
-        "bytes": 340702
+        "bytes": 340702,
+        "pages": 5
       }
     },
     {
       "id": "3-2",
-      "label": "3과목 2장",
+      "subject": 3,
+      "subjectName": "데이터 분석",
+      "chapter": 2,
       "name": "통계 분석",
       "questionCount": 94,
       "summary": {
         "file": "pdf/subject-3-2-summary.pdf",
-        "bytes": 4121035
+        "bytes": 4121035,
+        "pages": 30
       },
       "solutions": {
         "file": "pdf/subject-3-2-solutions.pdf",
-        "bytes": 2222434
+        "bytes": 2222434,
+        "pages": 41
       }
     },
     {
       "id": "3-3",
-      "label": "3과목 3장",
+      "subject": 3,
+      "subjectName": "데이터 분석",
+      "chapter": 3,
       "name": "정형 데이터 마이닝",
       "questionCount": 77,
       "summary": {
         "file": "pdf/subject-3-3-summary.pdf",
-        "bytes": 1646808
+        "bytes": 1646808,
+        "pages": 15
       },
       "solutions": {
         "file": "pdf/subject-3-3-solutions.pdf",
-        "bytes": 1625322
+        "bytes": 1625322,
+        "pages": 29
       }
     }
   ]

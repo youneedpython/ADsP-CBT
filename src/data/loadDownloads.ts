@@ -1,6 +1,6 @@
 export type DownloadType = 'type1' | 'type2';
-export type DownloadFile = { file: string; bytes: number };
-export type SubjectDownload = { id: string; label: string; name: string; questionCount: number; summary?: DownloadFile; solutions?: DownloadFile };
+export type DownloadFile = { file: string; bytes: number; pages: number };
+export type SubjectDownload = { id: string; subject: number; subjectName: string; chapter?: number; name: string; questionCount: number; summary?: DownloadFile; solutions?: DownloadFile };
 export type DownloadsData = { formatVersion: 1; rounds: Record<string, Partial<Record<DownloadType, DownloadFile>>>; subjects?: SubjectDownload[] };
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const keys = (v: Record<string, unknown>, allowed: string[]) => Object.keys(v).every(k => allowed.includes(k));
@@ -10,9 +10,10 @@ export function isDownloadsData(v: unknown): v is DownloadsData {
     if (!Array.isArray(v.subjects)) return false;
     const ids = new Set<string>();
     for (const s of v.subjects) {
-      if (!object(s) || !keys(s, ['id', 'label', 'name', 'questionCount', 'summary', 'solutions'])
+      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions'])
         || typeof s.id !== 'string' || !/^[1-9](-[1-9])?$/.test(s.id) || ids.has(s.id)
-        || typeof s.label !== 'string' || !s.label.trim() || typeof s.name !== 'string' || !s.name.trim()
+        || s.subject !== Number(s.id[0]) || typeof s.subjectName !== 'string' || !s.subjectName.trim()
+        || (s.id.includes('-') ? s.chapter !== Number(s.id[2]) : 'chapter' in s) || typeof s.name !== 'string' || !s.name.trim()
         || !Number.isSafeInteger(s.questionCount) || (s.questionCount as number) <= 0
         || !('summary' in s || 'solutions' in s)
         || ['summary', 'solutions'].some(k => k in s && !isDownloadFile(s[k]))) return false;
@@ -20,13 +21,12 @@ export function isDownloadsData(v: unknown): v is DownloadsData {
     }
   }
   return Object.entries(v.rounds).every(([round, files]) => /^[1-9]\d*$/.test(round) && Number.isSafeInteger(Number(round))
-    && object(files) && keys(files, ['type1', 'type2']) && Object.values(files).every(f => object(f)
-      && keys(f, ['file', 'bytes']) && typeof f.file === 'string' && /^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(f.file)
-      && Number.isSafeInteger(f.bytes) && (f.bytes as number) > 0));
+    && object(files) && keys(files, ['type1', 'type2']) && Object.values(files).every(isDownloadFile));
 }
 function isDownloadFile(f: unknown): f is DownloadFile {
-  return object(f) && keys(f, ['file', 'bytes']) && typeof f.file === 'string'
-    && /^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(f.file) && Number.isSafeInteger(f.bytes) && (f.bytes as number) > 0;
+  return object(f) && keys(f, ['file', 'bytes', 'pages']) && typeof f.file === 'string'
+    && /^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(f.file) && Number.isSafeInteger(f.bytes) && (f.bytes as number) > 0
+    && Number.isSafeInteger(f.pages) && (f.pages as number) > 0;
 }
 export async function loadDownloads(signal?: AbortSignal): Promise<DownloadsData> {
   const response = await fetch(`${import.meta.env.BASE_URL}data/downloads.json`, { signal, cache: 'no-cache' });

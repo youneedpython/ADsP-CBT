@@ -14,10 +14,12 @@ import { SetsPage } from './pages/SetsPage';
 import { TopicsProvider } from './components/TopicsContext';
 import { DownloadsProvider } from './components/DownloadsContext';
 import { DownloadsPage } from './pages/DownloadsPage';
+import { NotesPage } from './pages/NotesPage';
 export default function App() {
   const [store] = useState(() => createRecordStore());
   return <RecordStoreContext.Provider value={store}><HashRouter><DownloadsProvider><AppShell>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
     <Route path="/" element={<HomePage {...props} />} />
+    <Route path="/notes/:id" element={<NotesPage />} />
     <Route path="/downloads" element={<DownloadsPage {...props} />} />
     <Route path="/rounds" element={<RoundList {...props} />} />
     <Route path="/sets/*" element={<SetsPage {...props} />} />

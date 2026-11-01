@@ -77,7 +77,9 @@ test('subject and round groups have viewing and download actions', async () => {
   downloads = { formatVersion: 1, rounds: { 900: files }, subjects: [subject] }; render(<App />);
   await screen.findByRole('tab', { name: '과목별 공부 자료' });
   expect(screen.getByRole('tab', { name: '과목별 공부 자료' }).getAttribute('aria-selected')).toBe('true');
-  expect(screen.getByText('94문항 · 23쪽')).toBeTruthy();
+  const info = screen.getByText('94문항').closest('.pdf-info')!;
+  expect(info.textContent).toBe('94문항 · 23쪽 · 2 KB');
+  expect(Array.from(info.children).map(segment => segment.textContent)).toEqual(['94문항', '23쪽', '2 KB']);
   for (const [label, file, filename, size] of [
     ['핵심 요약', subject.summary.file, 'ADsP_3과목_2장_핵심요약.pdf', '1.0 MB'],
     ['풀이 모음', subject.solutions.file, 'ADsP_3과목_2장_풀이모음.pdf', '2 KB'],
@@ -86,8 +88,10 @@ test('subject and round groups have viewing and download actions', async () => {
     expect(view.getAttribute('href')).toBe(`${import.meta.env.BASE_URL}${file}`);
     expect(view.getAttribute('target')).toBe('_blank'); expect(view.getAttribute('rel')).toBe('noopener');
     expect(view.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(view.firstChild?.nodeName).toBe('svg');
     const save = screen.getByRole('link', { name: `3과목 2장 ${label} PDF 내려받기, ${size}` });
     expect(save.getAttribute('href')).toBe(view.getAttribute('href')); expect(save.getAttribute('download')).toBe(filename);
+    expect(save.firstChild?.nodeName).toBe('svg');
   }
 });
 test('subject-only PDFs expose home and header links', async () => {
@@ -129,6 +133,6 @@ test('whole subjects and chapters have grouped titles and card names', async () 
   await screen.findByRole('heading', { name: '1과목 · 2과목', level: 2 });
   expect(screen.getByRole('heading', { name: /^3과목\s*데이터 분석 · 3개 장$/, level: 2 })).toBeTruthy();
   expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(['1과목', '2과목', '1장', '2장', '3장']);
-  expect(screen.getAllByText('60문항 · 23쪽')).toHaveLength(2);
-  expect(screen.getAllByText('23쪽')).toHaveLength(5);
+  expect(screen.getAllByText((_, element) => element?.className === 'pdf-info' && /^60문항 · 23쪽 ·/.test(element.textContent ?? ''))).toHaveLength(2);
+  expect(screen.getAllByText((_, element) => element?.className === 'pdf-info' && /^23쪽 ·/.test(element.textContent ?? ''))).toHaveLength(5);
 });

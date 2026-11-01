@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-export function Modal({ label, close, children }: { label: string; close: () => void; children: ReactNode }) {
+export function Modal({ label, close, children, closeOnBackdrop = false }: { label: string; close: () => void; children: ReactNode; closeOnBackdrop?: boolean }) {
   const panel = useRef<HTMLElement>(null);
   const closeRef = useRef(close);
   closeRef.current = close;
@@ -29,5 +29,5 @@ export function Modal({ label, close, children }: { label: string; close: () => 
       if (opener?.isConnected) opener.focus();
     };
   }, []);
-  return createPortal(<div className="submit-overlay"><section ref={panel} role="dialog" aria-modal="true" aria-label={label} className="mobile-board">{children}</section></div>, document.body);
+  return createPortal(<div className="submit-overlay" onClick={event => { if (closeOnBackdrop && event.target === event.currentTarget) close(); }}><section ref={panel} role="dialog" aria-modal="true" aria-label={label} className="mobile-board">{children}</section></div>, document.body);
 }

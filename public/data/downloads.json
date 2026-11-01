@@ -93,6 +93,7 @@
       "subjectName": "데이터 이해",
       "name": "데이터 이해",
       "questionCount": 60,
+      "notes": "notes/1.json",
       "summary": {
         "file": "pdf/subject-1-summary.pdf",
         "bytes": 922005,

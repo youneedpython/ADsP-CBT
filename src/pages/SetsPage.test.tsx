@@ -169,3 +169,13 @@ test('unavailable persistence keeps progress through navigation and displays not
   fireEvent.click(screen.getByRole('link', { name: '1과목 풀기' }));
   expect((await screen.findByRole('status')).textContent).toBe('맞았습니다.');
 });
+
+test.each([true, false])('subject PDF link is conditional: %s', async present => {
+  fetchMock.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('downloads.json')
+    ? { formatVersion: 1, rounds: {}, subjects: present ? [{ id: '1', label: '1과목', name: '개발용 표본', questionCount: 1, summary: { file: 'pdf/sample.pdf', bytes: 10 } }] : [] }
+    : url.endsWith('rounds.json') ? summaries : url.endsWith('topics.json') ? topics : rounds.find(round => url.endsWith(`${round.round}.json`)) }));
+  await ready();
+  const link = screen.queryByRole('link', { name: '과목별 PDF 자료 ›' });
+  expect(!!link).toBe(present);
+  if (link) expect(link.getAttribute('href')).toBe('#/downloads');
+});

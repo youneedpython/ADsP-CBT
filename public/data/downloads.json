@@ -71,5 +71,77 @@
         "bytes": 345713
       }
     }
-  }
+  },
+  "subjects": [
+    {
+      "id": "1",
+      "label": "1과목",
+      "name": "데이터 이해",
+      "questionCount": 60,
+      "summary": {
+        "file": "pdf/subject-1-summary.pdf",
+        "bytes": 922005
+      },
+      "solutions": {
+        "file": "pdf/subject-1-solutions.pdf",
+        "bytes": 1089441
+      }
+    },
+    {
+      "id": "2",
+      "label": "2과목",
+      "name": "데이터 분석 기획",
+      "questionCount": 60,
+      "summary": {
+        "file": "pdf/subject-2-summary.pdf",
+        "bytes": 728922
+      },
+      "solutions": {
+        "file": "pdf/subject-2-solutions.pdf",
+        "bytes": 912219
+      }
+    },
+    {
+      "id": "3-1",
+      "label": "3과목 1장",
+      "name": "R 기초와 데이터 마트",
+      "questionCount": 9,
+      "summary": {
+        "file": "pdf/subject-3-1-summary.pdf",
+        "bytes": 478401
+      },
+      "solutions": {
+        "file": "pdf/subject-3-1-solutions.pdf",
+        "bytes": 340702
+      }
+    },
+    {
+      "id": "3-2",
+      "label": "3과목 2장",
+      "name": "통계 분석",
+      "questionCount": 94,
+      "summary": {
+        "file": "pdf/subject-3-2-summary.pdf",
+        "bytes": 4121035
+      },
+      "solutions": {
+        "file": "pdf/subject-3-2-solutions.pdf",
+        "bytes": 2222434
+      }
+    },
+    {
+      "id": "3-3",
+      "label": "3과목 3장",
+      "name": "정형 데이터 마이닝",
+      "questionCount": 77,
+      "summary": {
+        "file": "pdf/subject-3-3-summary.pdf",
+        "bytes": 1646808
+      },
+      "solutions": {
+        "file": "pdf/subject-3-3-solutions.pdf",
+        "bytes": 1625322
+      }
+    }
+  ]
 }

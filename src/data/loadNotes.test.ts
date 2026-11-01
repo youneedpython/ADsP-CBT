@@ -2,6 +2,29 @@ import { afterEach, expect, test, vi } from 'vitest';
 import { isNotesData, loadNotes } from './loadNotes';
 import { notesFixture } from '../test/notesFixture';
 afterEach(() => vi.unstubAllGlobals());
+test('code preserves whitespace and units may omit ref', () => {
+  const data = notesFixture();
+  delete data.units[0].ref;
+  const code = '  x <- 1\n    **literal** <tag>';
+  data.units[0].blocks.push({ type: 'code', text: code });
+  expect(isNotesData(data)).toBe(true);
+  expect(data.units[0].blocks.at(-1)).toEqual({ type: 'code', text: code });
+});
+test.each([
+  { type: 'code', text: '' },
+  { type: 'code', text: ' \n\t' },
+  { type: 'code', text: 'x', extra: true },
+  { type: 'box', style: 'note', blocks: [{ type: 'code', text: 'x' }] },
+])('rejects invalid code block %j', block => {
+  const data = notesFixture();
+  data.units[0].blocks = [block] as any;
+  expect(isNotesData(data)).toBe(false);
+});
+test.each(['', ' \n', null, 1, undefined])('rejects present invalid ref %s', ref => {
+  const data = notesFixture();
+  (data.units[0] as any).ref = ref;
+  expect(isNotesData(data)).toBe(false);
+});
 test('valid notes and no-cache / abort signal', async () => {
   const fetcher = vi.fn(async () => ({ ok: true, json: async () => notesFixture() }));
   vi.stubGlobal('fetch', fetcher);

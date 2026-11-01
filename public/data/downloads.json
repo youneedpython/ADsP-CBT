@@ -111,6 +111,7 @@
       "subjectName": "데이터 분석 기획",
       "name": "데이터 분석 기획",
       "questionCount": 60,
+      "notes": "notes/2.json",
       "summary": {
         "file": "pdf/subject-2-summary.pdf",
         "bytes": 728922,
@@ -129,6 +130,7 @@
       "chapter": 1,
       "name": "R 기초와 데이터 마트",
       "questionCount": 9,
+      "notes": "notes/3-1.json",
       "summary": {
         "file": "pdf/subject-3-1-summary.pdf",
         "bytes": 478401,
@@ -147,9 +149,10 @@
       "chapter": 2,
       "name": "통계 분석",
       "questionCount": 94,
+      "notes": "notes/3-2.json",
       "summary": {
         "file": "pdf/subject-3-2-summary.pdf",
-        "bytes": 4121035,
+        "bytes": 4156598,
         "pages": 30
       },
       "solutions": {
@@ -165,6 +168,7 @@
       "chapter": 3,
       "name": "정형 데이터 마이닝",
       "questionCount": 77,
+      "notes": "notes/3-3.json",
       "summary": {
         "file": "pdf/subject-3-3-summary.pdf",
         "bytes": 1646808,

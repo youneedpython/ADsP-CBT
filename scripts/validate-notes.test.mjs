@@ -23,6 +23,12 @@ async function check(mutate = () => {}, files = {}) {
   } finally { await rm(root, { recursive: true, force: true }); }
 }
 test('accepts valid sample notes and PNG', async () => expect(await check()).toEqual({ errors: [], notesCount: 1 }));
+test('accepts code blocks and a unit without ref', async () => {
+  expect(await check(d => {
+    delete d.units[0].ref;
+    d.units[0].blocks.push({ type: 'code', text: '  x <- 1\n    print(x)' });
+  })).toEqual({ errors: [], notesCount: 1 });
+});
 test.each([
   d => d.id = '2', d => d.subject = 2, d => d.chapter = 1, d => d.pdf = 'pdf/other.pdf',
   d => d.units[0].topics = ['T999'], d => d.units[0].number = 2,

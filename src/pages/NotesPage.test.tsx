@@ -21,6 +21,20 @@ beforeEach(() => {
   }));
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+test('code is literal preformatted text and missing ref omits the subtitle', async () => {
+  const data = notesFixture();
+  delete data.units[0].ref;
+  const code = '  x <- 1\n    **literal** <img src=x>\n';
+  data.units[0].blocks.push({ type: 'code', text: code });
+  notes = data;
+  const { container } = render(<App />);
+  const heading = await screen.findByRole('heading', { name: '1단원 첫 단원' });
+  expect(heading.querySelector('small')).toBeNull();
+  expect(heading.textContent).not.toMatch(/[()]/);
+  const pre = container.querySelector('pre.notes-code');
+  expect(pre?.textContent).toBe(code);
+  expect(pre?.querySelector('strong, img')).toBeNull();
+});
 test('unpaired and empty bold markers remain literal text', () => {
   const { container, rerender } = render(<Bold text="" />);
   for (const text of ['**', '****', '*plain*', '**unfinished']) {

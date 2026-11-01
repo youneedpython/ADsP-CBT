@@ -8,6 +8,7 @@ import type { RoundData, RoundSummary, TopicsData } from '../data/types';
 import { collectQuestions, questionKey, subjectQuestions, wrongQuestions } from '../domain/practiceSets';
 import { studyStatistics } from '../domain/weakTopics';
 import { useRecordStore } from '../storage/RecordStoreContext';
+import { useDownloads } from '../components/DownloadsContext';
 import { SetPractice } from './SetPractice';
 
 export interface SetsData { summaries: RoundSummary[]; rounds: RoundData[]; topics: TopicsData }
@@ -40,6 +41,7 @@ export function SetsPage(props: PageProps) {
 }
 function SetsOverview({ data }: { data: SetsData }) {
   const store = useRecordStore();
+  const downloads = useDownloads();
   const [subject, setSubject] = useState(1);
   const [filter, setFilter] = useState(0);
   const items = collectQuestions(data.summaries, data.rounds);
@@ -54,7 +56,7 @@ function SetsOverview({ data }: { data: SetsData }) {
     <h1 className="page-title">모아 풀기</h1><p className="page-lead">회차를 넘나들며 필요한 문제만 모아 연습합니다. 정답 확인과 해설은 연습과 같습니다.</p>
     <div className="sets-grid">
       <section className="overview-panel set-card"><h2 className="eyebrow">틀린 문제</h2><strong className="set-count">{wrong.length}문항</strong><p>시험과 연습에서 틀린 문제입니다. 다시 맞히면 목록에서 빠집니다.</p>{wrong.length === 0 && <p>틀린 문제가 없습니다.</p>}{wrong.length ? <Link className="button set-action" to="/sets/wrong">틀린 문제 풀기</Link> : <button className="set-action" disabled>틀린 문제 풀기</button>}</section>
-      <section className="overview-panel set-card"><h2 className="eyebrow">과목별</h2><strong>{subject}과목 {subjectName}</strong><p>{data.summaries.length}개 회차 · {subjectQuestions(items, subject).length}문항</p><div className="set-filters" role="group" aria-label="과목 고르기">{[1, 2, 3].map(id => <button className="secondary" key={id} aria-pressed={subject === id} onClick={() => setSubject(id)}>{id}과목 {subjectQuestions(items, id).length}</button>)}</div><Link className="button secondary set-action" to={`/sets/subject/${subject}`}>{subject}과목 풀기</Link></section>
+      <section className="overview-panel set-card"><h2 className="eyebrow">과목별</h2><strong>{subject}과목 {subjectName}</strong><p>{data.summaries.length}개 회차 · {subjectQuestions(items, subject).length}문항</p>{downloads.state.status === 'success' && !!downloads.state.data.subjects?.length && <Link className="subject-pdf-link" to="/downloads">과목별 PDF 자료 ›</Link>}<div className="set-filters" role="group" aria-label="과목 고르기">{[1, 2, 3].map(id => <button className="secondary" key={id} aria-pressed={subject === id} onClick={() => setSubject(id)}>{id}과목 {subjectQuestions(items, id).length}</button>)}</div><Link className="button secondary set-action" to={`/sets/subject/${subject}`}>{subject}과목 풀기</Link></section>
       <section className="overview-panel set-card"><h2 className="eyebrow">주제별</h2><strong>자주 나오는 주제부터</strong><p>{statistics.length}개 주제 · 출제 빈도 순</p><a className="button secondary set-action" href="#topics" onClick={event => { event.preventDefault(); document.getElementById('topics')?.scrollIntoView({ behavior: 'smooth' }); document.getElementById('topics')?.focus(); }}>주제 고르기</a></section>
       <section className="overview-panel set-card"><h2 className="eyebrow">표시한 문제</h2><strong className="set-count">{markedCount}문항</strong><p>별표를 해 둔 문제입니다. 맞힌 문제도 다시 볼 수 있습니다.</p>{markedCount === 0 && <p>표시한 문제가 없습니다.</p>}{markedCount ? <Link className="button secondary set-action" to="/sets/marked">표시한 문제 풀기</Link> : <button className="set-action" disabled>표시한 문제 풀기</button>}</section>
     </div>

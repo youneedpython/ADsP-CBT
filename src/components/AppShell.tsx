@@ -5,7 +5,7 @@ import type { LoadState, PageProps } from "./LoadingState";
 import { useDownloads } from "./DownloadsContext";
 export function AppShell({ children }: { children: (props: PageProps) => ReactNode }) {
   const downloads = useDownloads();
-  const hasPDF = downloads.state.status === 'success' && Object.values(downloads.state.data.rounds).some(files => files.type1 || files.type2);
+  const hasPDF = downloads.state.status === 'success' && (!!downloads.state.data.subjects?.length || Object.values(downloads.state.data.rounds).some(files => files.type1 || files.type2));
   const practice = useMatch('/rounds/:round/practice');
   const exam = useMatch('/rounds/:round/exam');
   const { pathname } = useLocation();

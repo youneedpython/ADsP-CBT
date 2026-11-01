@@ -161,8 +161,10 @@
 .round-number { font-size: var(--font-heading); }
 .card-status { display: flex; justify-content: space-between; gap: var(--space-small); margin-top: var(--space-medium); }
 .card-open, .breadcrumb a { color: var(--accent); }
-.round-title-link { color: var(--accent); text-decoration: none; }
-.round-title-link:hover, .round-title-link:focus { text-decoration: underline; }
+.round-title-link, .subject-pdf-link, .home-download-link a { color: var(--accent); text-decoration: none; }
+.round-title-link:hover, .round-title-link:focus,
+.subject-pdf-link:hover, .subject-pdf-link:focus,
+.home-download-link a:hover, .home-download-link a:focus { text-decoration: underline; }
 .round-card.in-progress { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 .record-exam, .record-pass, .record-fail { display: inline-block; font-weight: 700; padding: var(--chip-padding-block) var(--chip-padding-inline); border-radius: var(--radius-pill); }
 .record-exam { color: var(--accent); background: var(--accent-soft); }
@@ -333,7 +335,12 @@ button:disabled { cursor: default; }
 .round-downloads .download-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 .round-downloads .download-actions > div { min-width: 0; text-align: center; }
 .round-downloads .download-actions > div:only-child { grid-column: 1 / -1; }
-.round-downloads .button { width: 100%; }
+.pdf-group { min-width: 0; display: grid; gap: .5rem; }
+.pdf-buttons { display: flex; gap: .5rem; flex-wrap: wrap; min-width: 0; }
+.pdf-buttons .button { max-width: 100%; width: auto; flex-wrap: wrap; }
+.round-downloads .pdf-buttons { justify-content: center; }
+.download-row h3 { margin: 0 0 .25rem; }
+.subject-pdf-link { font-size: var(--font-small); white-space: nowrap; }
 .round-downloads { margin-top: var(--space-medium); }
 .home-download-link { margin: 1.5rem 0; }
 @media (max-width: 767px) {

@@ -17,6 +17,25 @@ async function check(mutate = () => {}, content = '%PDF-sample', extra = false, 
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 test('valid sample PDF', async () => expect(await check()).toEqual({ errors: [], pdfCount: 1 }));
+test('rejects a subject-prefixed key inside rounds', async () => {
+  const result = await check(d => {
+    d.rounds['subject-1'] = { summary: d.rounds[900].type1 };
+  });
+  expect(result.errors).toContain('PDF 없는 회차 subject-1');
+  expect(result.errors).toContain('PDF 유형 오류 subject-1');
+});
+const subject = { id: '3-2', label: '3과목 2장', name: '개발용 표본', questionCount: 94, summary: { file: 'pdf/900-type1.pdf', bytes: 11 } };
+test('counts subject PDFs and accepts either kind', async () => {
+  expect(await check(d => d.subjects = [subject])).toEqual({ errors: [], pdfCount: 2 });
+  expect(await check(d => d.subjects = [{ ...subject, summary: undefined, solutions: subject.summary }])).toEqual({ errors: [], pdfCount: 2 });
+});
+test.each([
+  {}, [null], [{ ...subject, id: '3-0' }], [subject, subject], [{ ...subject, label: ' ' }],
+  [{ ...subject, name: '' }], [{ ...subject, questionCount: 0 }], [{ ...subject, questionCount: 1.5 }],
+  [{ id: '1', label: '표본', name: '표본', questionCount: 1 }], [{ ...subject, other: true }],
+  [{ ...subject, summary: { file: 'pdf/../outside.pdf', bytes: 11 } }],
+  [{ ...subject, summary: { file: 'pdf/900-type1.pdf', bytes: 12 } }],
+])('rejects malformed subjects %j', async subjects => expect((await check(d => d.subjects = subjects)).errors.length).toBeGreaterThan(0));
 test('skips malformed round entries before a valid round', async () => {
   const rounds = [null, false, 900, '900', [], {}, { round: '900' }, { round: 900 }];
   expect(await check(undefined, undefined, false, rounds)).toEqual({ errors: [], pdfCount: 1 });

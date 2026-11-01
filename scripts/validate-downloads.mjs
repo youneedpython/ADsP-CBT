@@ -13,9 +13,10 @@ export async function validateDownloads(directory, rounds, pdfDirectory = path.j
   if ('subjects' in data) {
     if (!Array.isArray(data.subjects)) errors.push('PDF 과목 배열 오류');
     else for (const s of data.subjects) {
-      if (!object(s) || !keys(s, ['id', 'label', 'name', 'questionCount', 'summary', 'solutions'])
+      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions'])
         || typeof s.id !== 'string' || !/^[1-9](-[1-9])?$/.test(s.id) || ids.has(s.id)
-        || typeof s.label !== 'string' || !s.label.trim() || typeof s.name !== 'string' || !s.name.trim()
+        || s.subject !== Number(s.id[0]) || typeof s.subjectName !== 'string' || !s.subjectName.trim()
+        || (s.id.includes('-') ? s.chapter !== Number(s.id[2]) : 'chapter' in s) || typeof s.name !== 'string' || !s.name.trim()
         || !Number.isSafeInteger(s.questionCount) || s.questionCount <= 0 || !('summary' in s || 'solutions' in s)) {
         errors.push('PDF 과목 형식 오류'); continue;
       }
@@ -27,7 +28,7 @@ export async function validateDownloads(directory, rounds, pdfDirectory = path.j
     if (!subject && (!/^[1-9]\d*$/.test(round) || !rounds.some(r => object(r) && Number.isSafeInteger(r.round) && r.round > 0 && r.round === Number(round)))) errors.push(`PDF 없는 회차 ${round}`);
     if (!object(files) || !keys(files, subject ? ['summary', 'solutions'] : ['type1', 'type2'])) { errors.push(`PDF 유형 오류 ${round}`); continue; }
     for (const file of Object.values(files)) {
-      if (!object(file) || !keys(file, ['file', 'bytes']) || typeof file.file !== 'string' || !/^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(file.file) || !Number.isSafeInteger(file.bytes) || file.bytes <= 0) { errors.push(`PDF 파일 형식 오류 ${round}`); continue; }
+      if (!object(file) || !keys(file, ['file', 'bytes', 'pages']) || typeof file.file !== 'string' || !/^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(file.file) || !Number.isSafeInteger(file.bytes) || file.bytes <= 0 || !Number.isSafeInteger(file.pages) || file.pages <= 0) { errors.push(`PDF 파일 형식 오류 ${round}`); continue; }
       listed.add(file.file.slice(4));
       try {
         const root = await realpath(pdfDirectory), target = await realpath(path.join(pdfDirectory, file.file.slice(4)));

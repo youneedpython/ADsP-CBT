@@ -1,6 +1,6 @@
 export type DownloadType = 'type1' | 'type2';
 export type DownloadFile = { file: string; bytes: number; pages: number };
-export type SubjectDownload = { id: string; subject: number; subjectName: string; chapter?: number; name: string; questionCount: number; summary?: DownloadFile; solutions?: DownloadFile };
+export type SubjectDownload = { id: string; subject: number; subjectName: string; chapter?: number; notes?: string; name: string; questionCount: number; summary?: DownloadFile; solutions?: DownloadFile };
 export type DownloadsData = { formatVersion: 1; rounds: Record<string, Partial<Record<DownloadType, DownloadFile>>>; subjects?: SubjectDownload[] };
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const keys = (v: Record<string, unknown>, allowed: string[]) => Object.keys(v).every(k => allowed.includes(k));
@@ -10,7 +10,8 @@ export function isDownloadsData(v: unknown): v is DownloadsData {
     if (!Array.isArray(v.subjects)) return false;
     const ids = new Set<string>();
     for (const s of v.subjects) {
-      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions'])
+      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions', 'notes'])
+        || ('notes' in s && (typeof s.notes !== 'string' || !/^notes\/[A-Za-z0-9-]+\.json$/.test(s.notes)))
         || typeof s.id !== 'string' || !/^[1-9](-[1-9])?$/.test(s.id) || ids.has(s.id)
         || s.subject !== Number(s.id[0]) || typeof s.subjectName !== 'string' || !s.subjectName.trim()
         || (s.id.includes('-') ? s.chapter !== Number(s.id[2]) : 'chapter' in s) || typeof s.name !== 'string' || !s.name.trim()

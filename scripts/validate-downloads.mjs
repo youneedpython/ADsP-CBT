@@ -13,7 +13,8 @@ export async function validateDownloads(directory, rounds, pdfDirectory = path.j
   if ('subjects' in data) {
     if (!Array.isArray(data.subjects)) errors.push('PDF 과목 배열 오류');
     else for (const s of data.subjects) {
-      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions'])
+      if (!object(s) || !keys(s, ['id', 'subject', 'subjectName', 'chapter', 'name', 'questionCount', 'summary', 'solutions', 'notes'])
+        || ('notes' in s && (typeof s.notes !== 'string' || !/^notes\/[A-Za-z0-9-]+\.json$/.test(s.notes)))
         || typeof s.id !== 'string' || !/^[1-9](-[1-9])?$/.test(s.id) || ids.has(s.id)
         || s.subject !== Number(s.id[0]) || typeof s.subjectName !== 'string' || !s.subjectName.trim()
         || (s.id.includes('-') ? s.chapter !== Number(s.id[2]) : 'chapter' in s) || typeof s.name !== 'string' || !s.name.trim()

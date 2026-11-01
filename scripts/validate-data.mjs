@@ -2,6 +2,7 @@ import { readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateTopics } from './validate-topics.mjs';
+import { validateNotes } from './validate-notes.mjs';
 import { validateDownloads } from './validate-downloads.mjs';
 
 export async function isDirectExecution(moduleUrl, argument = process.argv[1]) {
@@ -108,12 +109,14 @@ export async function validateData(directory = defaultDirectory()) {
   } catch { add(undefined, undefined, 'topics.json 읽기 / JSON 오류'); }
   const downloads = await validateDownloads(directory, rounds);
   errors.push(...downloads.errors);
-  return { errors, roundCount, questionCount, topicCount, pdfCount: downloads.pdfCount };
+  const notes = await validateNotes(directory);
+  errors.push(...notes.errors);
+  return { errors, roundCount, questionCount, topicCount, pdfCount: downloads.pdfCount, notesCount: notes.notesCount };
 }
 
 if (await isDirectExecution(import.meta.url)) {
   const result = await validateData(process.argv[2]);
   if (result.errors.length) result.errors.forEach(error => console.error(error));
-  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개, PDF ${result.pdfCount}개 검사 통과`);
+  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개, PDF ${result.pdfCount}개, 핵심 요약 ${result.notesCount}개 검사 통과`);
   process.exitCode = result.errors.length ? 1 : 0;
 }

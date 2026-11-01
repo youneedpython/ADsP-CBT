@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import type { CSSProperties } from 'react';
 import type { SubjectDownload } from '../data/loadDownloads';
 import { useDownloads } from '../components/DownloadsContext';
@@ -14,7 +14,7 @@ function SubjectCards({ subjects }: { subjects: SubjectDownload[] }) {
     <ul className="download-list" style={{ '--pdf-columns': Math.min(3, group.length) } as CSSProperties}>{group.map(subject => {
       const name = `${subject.subject}과목${subject.chapter === undefined ? '' : ` ${subject.chapter}장`}`;
       return <li className="overview-panel pdf-card" key={subject.id}><header><h3>{subject.chapter === undefined ? `${subject.subject}과목` : `${subject.chapter}장`}</h3><span>{subject.name}</span></header>
-        {subjectTypes.map(type => subject[type] && <PdfItem key={type} kind={type} label={subjectLabels[type]} file={subject[type]} name={`${name} ${subjectLabels[type]}`} filename={`ADsP_${name.replace(/\s/g, '_')}_${subjectLabels[type].replace(/\s/g, '')}.pdf`} questionCount={type === 'solutions' ? subject.questionCount : undefined} />)}</li>;
+        {subjectTypes.map(type => subject[type] && <PdfItem key={type} kind={type} label={subjectLabels[type]} file={subject[type]} name={`${name} ${subjectLabels[type]}`} filename={`ADsP_${name.replace(/\s/g, '_')}_${subjectLabels[type].replace(/\s/g, '')}.pdf`} questionCount={type === 'solutions' ? subject.questionCount : undefined} />)}{subject.notes && <Link className="button notes-card-link" to={`/notes/${subject.id}`}>핵심 요약 웹으로 읽기 ›</Link>}</li>;
     })}</ul>
   </section>);
 }
@@ -32,7 +32,7 @@ export function DownloadsPage({ state, retry }: PageProps) {
     {downloads.state.status === 'error' ? <div role="alert" className="state-panel"><p>PDF 목록을 불러오지 못했습니다.</p><button onClick={downloads.retry}>다시 시도</button></div>
       : downloads.state.status === 'loading' ? <p role="status" className="state-panel">PDF 목록을 불러오는 중입니다.</p>
       : <>
-        {!!subjects.length && <div role="tablist" aria-label="PDF 자료 종류" className="pdf-tabs">{['과목별 공부 자료', '회차별 문제지'].map((label, i) => <button key={label} role="tab" id={`pdf-tab-${i}`} aria-controls={`pdf-panel-${i}`} aria-selected={rounds === !!i} tabIndex={rounds === !!i ? 0 : -1} onClick={() => select(!!i)} onKeyDown={event => {
+        {!!subjects.length && <div role="tablist" aria-label="PDF 자료 종류" className="pdf-tabs">{['과목별 공부 자료', '회차별 문제지'].map((label, i) => <button key={label} role="tab" id={`pdf-tab-${i}`} aria-controls={rounds === !!i ? `pdf-panel-${i}` : undefined} aria-selected={rounds === !!i} tabIndex={rounds === !!i ? 0 : -1} onClick={() => select(!!i)} onKeyDown={event => {
           if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
             event.preventDefault(); select(!rounds);
             document.getElementById(`pdf-tab-${i === 0 ? 1 : 0}`)?.focus();

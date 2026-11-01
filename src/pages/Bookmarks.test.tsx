@@ -17,7 +17,7 @@ async function ready(path: string) {
 }
 test.each(['practice', 'exam', 'review'])('marks toggle, persist and never alter answers in %s', async mode => {
   if (mode === 'review') localStorage.setItem('adsp-cbt:v1:50:result', JSON.stringify({ answers: { 1: 2 }, score: 2, subjectCorrect: { 1: 1, 2: 0, 3: 0 }, passed: false, elapsedSeconds: 1, submittedAt: time, questionCount: 3 }));
-  await ready(`/rounds/50/${mode}`);
+  await ready(`/adsp/rounds/50/${mode}`);
   const before = localStorage.getItem(`adsp-cbt:v1:50:${mode === 'review' ? 'result' : mode}`);
   const button = screen.getByRole('button', { name: '50회 1번 문제 표시' });
   expect(button.getAttribute('aria-pressed')).toBe('false');
@@ -39,11 +39,11 @@ test.each(['practice', 'exam', 'review'])('marks toggle, persist and never alter
   expect(button.getAttribute('aria-pressed')).toBe('true');
   expect(localStorage.getItem(`adsp-cbt:v1:50:${mode === 'review' ? 'result' : mode}`)).toBe(before);
   cleanup();
-  await ready(`/rounds/50/${mode}`);
+  await ready(`/adsp/rounds/50/${mode}`);
   expect(screen.getByRole('button', { name: '50회 1번 문제 표시' }).getAttribute('aria-pressed')).toBe('true');
 });
 test('S ignores inputs, modifiers and an open question board', async () => {
-  await ready('/rounds/50/practice');
+  await ready('/adsp/rounds/50/practice');
   const button = screen.getByRole('button', { name: '50회 1번 문제 표시' });
   const input = document.createElement('input');
   document.body.append(input);
@@ -58,7 +58,7 @@ test('S ignores inputs, modifiers and an open question board', async () => {
 });
 test('marked set is sorted and frozen after unmarking, and excludes removed marks on reopening', async () => {
   localStorage.setItem('adsp-cbt:v1:marked', JSON.stringify({ '49:1': time, '50:2': time, '50:1': time }));
-  window.history.replaceState(null, '', '#/sets');
+  window.history.replaceState(null, '', '#/adsp/sets');
   render(<App />);
   fireEvent.click(await screen.findByRole('link', { name: '표시한 문제 풀기' }));
   await screen.findByText('50회 1번');
@@ -80,14 +80,14 @@ test('marked set is sorted and frozen after unmarking, and excludes removed mark
   expect(screen.getByText('1 / 2')).toBeTruthy();
 });
 test('zero marks disables the card and direct navigation offers a return link', async () => {
-  window.history.replaceState(null, '', '#/sets');
+  window.history.replaceState(null, '', '#/adsp/sets');
   render(<App />);
   expect((await screen.findByRole('button', { name: '표시한 문제 풀기' }) as HTMLButtonElement).disabled).toBe(true);
   expect(screen.getByText('표시한 문제가 없습니다.')).toBeTruthy();
   expect(screen.getByText('문제를 더 풀면 먼저 공부할 주제를 알려 드립니다. 주제별로 3문항 이상 풀어야 정답률이 나옵니다.')).toBeTruthy();
   expect(within(screen.getByRole('table')).getAllByText('아직 안 풂')).toHaveLength(3);
   cleanup();
-  window.history.replaceState(null, '', '#/sets/marked');
+  window.history.replaceState(null, '', '#/adsp/sets/marked');
   render(<App />);
   await screen.findByText('풀 문제가 없습니다.');
   expect(screen.getByRole('link', { name: '모아 풀기로' })).toBeTruthy();
@@ -95,19 +95,19 @@ test('zero marks disables the card and direct navigation offers a return link', 
 test('weak topic card and table include rounded accuracy, counts and red low accuracy', async () => {
   localStorage.setItem('adsp-cbt:v1:49:practice', JSON.stringify({ current: 1, answers: { 1: 2, 2: 1, 3: 2 } }));
   localStorage.setItem('adsp-cbt:v1:50:practice', JSON.stringify({ current: 1, answers: { 3: 1 } }));
-  window.history.replaceState(null, '', '#/sets');
+  window.history.replaceState(null, '', '#/adsp/sets');
   render(<App />);
   await screen.findByText('33%');
   expect(screen.getByText('풀어 본 3문항 중 1문항 정답')).toBeTruthy();
   expect(screen.getByText(/내 풀이 기록 4문항 기준/)).toBeTruthy();
-  expect(screen.getByRole('link', { name: '3문항 모아 풀기' }).getAttribute('href')).toBe('#/sets/topic/T301');
+  expect(screen.getByRole('link', { name: '3문항 모아 풀기' }).getAttribute('href')).toBe('#/adsp/sets/topic/T301');
   const table = screen.getByRole('table');
   expect(within(table).getByText('33% (3문항 풂)').className).toBe('low-accuracy');
   expect(within(table).getByText('1문항 풂')).toBeTruthy();
 });
 test('blocked persistence keeps marks while navigating and reports memory-only saving', async () => {
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw Error('blocked'); });
-  await ready('/rounds/50/practice');
+  await ready('/adsp/rounds/50/practice');
   fireEvent.keyDown(window, { key: 's' });
   await screen.findByText('이 브라우저에서는 풀이 기록을 저장할 수 없습니다.');
   fireEvent.click(screen.getByRole('link', { name: '모아 풀기' }));
@@ -116,20 +116,20 @@ test('blocked persistence keeps marks while navigating and reports memory-only s
 });
 test('marked set accepts its ordinal q address and clamps invalid positions', async () => {
   localStorage.setItem('adsp-cbt:v1:marked', JSON.stringify({ '50:1': time, '49:1': time }));
-  window.history.replaceState(null, '', '#/sets/marked?q=2');
+  window.history.replaceState(null, '', '#/adsp/sets/marked?q=2');
   render(<App />);
   await screen.findByText('49회 1번');
   expect(screen.getByText('2 / 2')).toBeTruthy();
   cleanup();
-  window.history.replaceState(null, '', '#/sets/marked?q=999');
+  window.history.replaceState(null, '', '#/adsp/sets/marked?q=999');
   render(<App />);
   await screen.findByText('50회 1번');
-  await waitFor(() => expect(window.location.hash).toBe('#/sets/marked?q=1'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/sets/marked?q=1'));
 });
 test('table accuracy at and above 50 percent uses the secondary text color', async () => {
   localStorage.setItem('adsp-cbt:v1:49:practice', JSON.stringify({ current: 1, answers: { 2: 2, 3: 2 } }));
   localStorage.setItem('adsp-cbt:v1:50:practice', JSON.stringify({ current: 1, answers: { 3: 1 } }));
-  window.history.replaceState(null, '', '#/sets');
+  window.history.replaceState(null, '', '#/adsp/sets');
   render(<App />);
   const accuracy = await screen.findByText('66% (3문항 풂)');
   expect(accuracy.classList.contains('low-accuracy')).toBe(false);

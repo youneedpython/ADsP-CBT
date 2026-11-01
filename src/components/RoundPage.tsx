@@ -8,7 +8,7 @@ export function RoundPage({ state, retry, children, showStateTitle = false }: Pa
   const { round } = useParams();
   if (state.status !== 'success') return <>{showStateTitle && <h1 className="page-title">{round}회</h1>}<LoadingState state={state} retry={retry} /></>;
   const summary = state.rounds.find(item => String(item.round) === round);
-  if (!summary) return <div className="state-panel">{showStateTitle && <h1 className="page-title">없는 회차</h1>}<p>없는 회차입니다.</p><Link to="/rounds">회차 목록으로</Link></div>;
+  if (!summary) return <div className="state-panel">{showStateTitle && <h1 className="page-title">없는 회차</h1>}<p>없는 회차입니다.</p><Link to="/adsp/rounds">회차 목록으로</Link></div>;
   return <RoundLoader key={round} summary={summary} showStateTitle={showStateTitle}>{children}</RoundLoader>;
 }
 function RoundLoader({ summary, children, showStateTitle }: { summary: RoundSummary; children: (data: RoundData) => ReactNode; showStateTitle: boolean }) {

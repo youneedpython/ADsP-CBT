@@ -14,7 +14,7 @@ function SubjectCards({ subjects }: { subjects: SubjectDownload[] }) {
     <ul className="download-list" style={{ '--pdf-columns': Math.min(3, group.length) } as CSSProperties}>{group.map(subject => {
       const name = `${subject.subject}과목${subject.chapter === undefined ? '' : ` ${subject.chapter}장`}`;
       return <li className="overview-panel pdf-card" key={subject.id}><header><h3>{subject.chapter === undefined ? `${subject.subject}과목` : `${subject.chapter}장`}</h3><span>{subject.name}</span></header>
-        {subjectTypes.map(type => subject[type] && <PdfItem key={type} kind={type} label={subjectLabels[type]} file={subject[type]} name={`${name} ${subjectLabels[type]}`} filename={`ADsP_${name.replace(/\s/g, '_')}_${subjectLabels[type].replace(/\s/g, '')}.pdf`} questionCount={type === 'solutions' ? subject.questionCount : undefined} />)}{subject.notes && <Link className="button notes-card-link" to={`/notes/${subject.id}`}>핵심 요약 웹으로 읽기 ›</Link>}</li>;
+        {subjectTypes.map(type => subject[type] && <PdfItem key={type} kind={type} label={subjectLabels[type]} file={subject[type]} name={`${name} ${subjectLabels[type]}`} filename={`ADsP_${name.replace(/\s/g, '_')}_${subjectLabels[type].replace(/\s/g, '')}.pdf`} questionCount={type === 'solutions' ? subject.questionCount : undefined} />)}{subject.notes && <Link className="button notes-card-link" to={`/adsp/notes/${subject.id}`}>핵심 요약 웹으로 읽기 ›</Link>}</li>;
     })}</ul>
   </section>);
 }

@@ -10,7 +10,7 @@ const summary = { file: 'pdf/sample.pdf', pages: 2, bytes: 100 };
 beforeEach(() => {
   notes = notesFixture(); topicError = false;
   subjects = [{ id: '1', subject: 1, subjectName: '표본', name: '개발용 표본', questionCount: 1, notes: 'notes/1.json', summary }];
-  window.location.hash = '#/notes/1';
+  window.location.hash = '#/adsp/notes/1';
   vi.stubGlobal('scrollTo', vi.fn());
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     if (url.endsWith('topics.json') && topicError) throw new Error('sample');
@@ -59,7 +59,7 @@ test('all blocks, safe bold text, topic statistics, links and current PDF nav', 
   expect(screen.getByRole('img', { name: '표본 그림' })).toBeTruthy();
   await screen.findByRole('img', { name: '1개 회차 중 1회 출제' });
   expect(screen.getByText(/1회 중 1회 · 1문항/)).toBeTruthy();
-  expect(screen.getByRole('link', { name: '풀기 ›' }).getAttribute('href')).toBe('#/sets/topic/T101');
+  expect(screen.getByRole('link', { name: '풀기 ›' }).getAttribute('href')).toBe('#/adsp/sets/topic/T101');
   expect(screen.getByRole('link', { name: 'PDF' }).getAttribute('aria-current')).toBe('page');
   const pdf = screen.getByRole('link', { name: 'PDF로 보기' });
   expect(pdf.getAttribute('target')).toBe('_blank');
@@ -70,18 +70,18 @@ test('all blocks, safe bold text, topic statistics, links and current PDF nav', 
   expect(screen.queryByRole('navigation', { name: '핵심 요약 과목' })).toBeNull();
 });
 test('TOC toggle, query navigation, previous / next, invalid query fallback', async () => {
-  window.location.hash = '#/notes/1?unit=bad'; render(<App />);
+  window.location.hash = '#/adsp/notes/1?unit=bad'; render(<App />);
   const toggle = await screen.findByRole('button', { name: /목차 · 1단원/ });
   expect(toggle.getAttribute('aria-expanded')).toBe('false'); fireEvent.click(toggle);
   await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('true'));
   fireEvent.click(screen.getByRole('link', { name: '2단원 다음 단원 ›' }));
-  await screen.findByText('다음 글'); expect(window.location.hash).toBe('#/notes/1?unit=2');
+  await screen.findByText('다음 글'); expect(window.location.hash).toBe('#/adsp/notes/1?unit=2');
   await waitFor(() => expect(screen.getByRole('button', { name: /목차 · 2단원/ }).getAttribute('aria-expanded')).toBe('false'));
   expect(window.scrollTo).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('link', { name: '2단원 다음 단원 ›' })).toBeNull();
   fireEvent.click(screen.getByRole('link', { name: '‹ 1단원 첫 단원' }));
   await screen.findByText('참고 글');
-  expect(window.location.hash).toBe('#/notes/1?unit=1');
+  expect(window.location.hash).toBe('#/adsp/notes/1?unit=1');
   await waitFor(() => expect(window.scrollTo).toHaveBeenCalledTimes(2));
 });
 
@@ -123,10 +123,10 @@ test('multiple web subjects show subject navigation', async () => {
   subjects.push({ ...subjects[0], id: '2', subject: 2, notes: 'notes/2.json' });
   render(<App />); const nav = await screen.findByRole('navigation', { name: '핵심 요약 과목' });
   expect(within(nav).getAllByRole('link')).toHaveLength(2);
-  expect(within(nav).getByRole('link', { name: '2과목' }).getAttribute('href')).toBe('#/notes/2');
+  expect(within(nav).getByRole('link', { name: '2과목' }).getAttribute('href')).toBe('#/adsp/notes/2');
 });
 test('unknown id does not fetch notes', async () => {
-  window.location.hash = '#/notes/9'; render(<App />); await screen.findByText('없는 핵심 요약입니다.');
+  window.location.hash = '#/adsp/notes/9'; render(<App />); await screen.findByText('없는 핵심 요약입니다.');
   expect(screen.getByRole('link', { name: 'PDF 자료로' })).toBeTruthy();
   expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('notes/9'))).toBe(false);
 });
@@ -140,9 +140,9 @@ test('failure retries and loading state is shown', async () => {
 test('PDF cards expose web link only for configured subject', async () => {
   subjects.push({ ...subjects[0], id: '2', subject: 2, notes: undefined });
   delete subjects[1].notes;
-  window.location.hash = '#/downloads'; render(<App />);
+  window.location.hash = '#/adsp/downloads'; render(<App />);
   const link = await screen.findByRole('link', { name: '핵심 요약 웹으로 읽기 ›' });
-  expect(link.getAttribute('href')).toBe('#/notes/1');
+  expect(link.getAttribute('href')).toBe('#/adsp/notes/1');
   expect(screen.getAllByRole('link', { name: '핵심 요약 웹으로 읽기 ›' })).toHaveLength(1);
   const open = screen.getByRole('link', { name: '1과목 핵심 요약 PDF 새 탭에서 보기' });
   expect(open.closest('.pdf-heading')?.querySelector('strong')?.textContent).toBe('핵심 요약');

@@ -18,7 +18,7 @@ const data: RoundData = {
 const mock = vi.fn();
 beforeEach(() => {
   window.localStorage.clear();
-  window.location.hash = '#/rounds/50/practice';
+  window.location.hash = '#/adsp/rounds/50/practice';
   mock.mockReset();
   mock.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('rounds.json') ? [{ round: 50, year: 2026, title: '개발 표본', questionCount: 2, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) }));
   vi.stubGlobal('fetch', mock);
@@ -205,7 +205,7 @@ test.each([1, 2])('grades selection %s once and preserves state through navigati
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(window.location.hash).toContain('q=2'));
   expect(await screen.findByRole('link', { name: '회차 정보로' })).toBeTruthy();
-  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/rounds/50');
+  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/adsp/rounds/50');
   await waitFor(() => expect(screen.queryByRole('button', { name: '다음' })).toBeNull());
   fireEvent.click(screen.getByRole('button', { name: '이전' }));
   await waitFor(() => expect(screen.getByRole('status').textContent).toContain(answer === 2 ? '맞았습니다' : '틀렸습니다'));
@@ -226,7 +226,7 @@ test('board opens, moves, closes and restarts without confirmation', async () =>
   expect(await screen.findByRole('button', { name: '2번, 안 푼 문제' })).toBeTruthy();
 });
 test.each(['0', '999', '1.5', 'abc', '2'])('handles query %s', async q => {
-  window.location.hash = `#/rounds/50/practice?q=${q}`;
+  window.location.hash = `#/adsp/rounds/50/practice?q=${q}`;
   await ready();
   expect(await screen.findByText(q === '2' ? '2 / 2' : '1 / 2')).toBeTruthy();
 });
@@ -243,7 +243,7 @@ test('reopening practice resumes answers and current question', async () => {
   fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   await waitFor(() => expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!)).toEqual({ answers: { 1: 2 }, current: 2 }));
-  fireEvent.click(screen.getByRole('link', { name: 'ADsP 기출 복원 문제' }));
+  fireEvent.click(screen.getByRole('link', { name: '독특한 CBT' }));
   fireEvent.click(await screen.findByRole('link', { name: '이어서 풀기' }));
   await screen.findByRole('heading', { name: '50회 · 연습' });
   expect(await screen.findByText('2 / 2')).toBeTruthy();
@@ -258,14 +258,14 @@ test('a new app instance restores saved answers and position', async () => {
   fireEvent.click(screen.getByRole('button', { name: '정답 확인' }));
   await waitFor(() => expect(JSON.parse(localStorage.getItem('adsp-cbt:v1:50:practice')!)).toEqual({ answers: { 2: 1 }, current: 2 }));
   cleanup();
-  window.location.hash = '#/rounds/50/practice';
+  window.location.hash = '#/adsp/rounds/50/practice';
   await ready();
   expect(await screen.findByText('2 / 2')).toBeTruthy();
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe('틀렸습니다. 정답은 ②번입니다.'));
 });
 test('explicit query overrides the saved position and restart removes the record', async () => {
   localStorage.setItem('adsp-cbt:v1:50:practice', JSON.stringify({ answers: { 2: 2 }, current: 2 }));
-  window.location.hash = '#/rounds/50/practice?q=1';
+  window.location.hash = '#/adsp/rounds/50/practice?q=1';
   await ready();
   expect(await screen.findByText('1 / 2')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '처음부터 다시' }));

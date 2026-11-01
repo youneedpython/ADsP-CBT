@@ -22,7 +22,7 @@ export function RelatedQuestions({ round, number, currentTopic }: { round: numbe
     <div className="related-frequency"><FrequencyBar rounds={rounds} /><div><strong>출제 빈도 {frequency(count, rounds.length)}</strong><p>{rounds.length}개 회차 중 {count}회 · {items.length}문항</p></div></div>
     <div className="related-links">{items.map(item => item.round === round && item.number === number
       ? <button key={`${item.round}:${item.number}`} disabled aria-current="true" aria-label={`${item.round}회 ${item.number}번`}>{item.round}회 {item.number}</button>
-      : <Link className="button secondary" key={`${item.round}:${item.number}`} aria-label={`${item.round}회 ${item.number}번`} to={`/rounds/${item.round}/practice?q=${item.number}`}>{item.round}회 {item.number}</Link>)}</div>
-    {currentTopic !== topic.id && <Link className="button secondary" to={`/sets/topic/${topic.id}`}>이 주제 {items.length}문항 모아 풀기</Link>}
+      : <Link className="button secondary" key={`${item.round}:${item.number}`} aria-label={`${item.round}회 ${item.number}번`} to={`/adsp/rounds/${item.round}/practice?q=${item.number}`}>{item.round}회 {item.number}</Link>)}</div>
+    {currentTopic !== topic.id && <Link className="button secondary" to={`/adsp/sets/topic/${topic.id}`}>이 주제 {items.length}문항 모아 풀기</Link>}
   </section>;
 }

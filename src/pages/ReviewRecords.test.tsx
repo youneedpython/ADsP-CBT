@@ -19,7 +19,7 @@ const result = (answers: Record<number, number> = { 1: 2, 2: 1, 4: 2 }, passed =
   elapsedSeconds: 30, submittedAt: '2026-10-11T00:00:00Z', questionCount: 4 });
 const fetchMock = vi.fn();
 beforeEach(() => {
-  localStorage.clear(); window.location.hash = '#/rounds/50/review';
+  localStorage.clear(); window.location.hash = '#/adsp/rounds/50/review';
   fetchMock.mockReset();
   fetchMock.mockImplementation(async (url: string) => ({ ok: true, json: async () =>
     url.endsWith('rounds.json') ? [summary(50)] : structuredClone(data) }));
@@ -34,7 +34,7 @@ async function ready(answers?: Record<number, number>) {
 test('missing result offers an exam', async () => {
   render(<App />);
   expect(await screen.findByText('시험 기록이 없습니다.')).toBeTruthy();
-  await waitFor(() => expect(screen.getByRole('link', { name: '시험 시작' }).getAttribute('href')).toBe('#/rounds/50/exam'));
+  await waitFor(() => expect(screen.getByRole('link', { name: '시험 시작' }).getAttribute('href')).toBe('#/adsp/rounds/50/exam'));
 });
 test('review keyboard ignores numbers and stays within wrong scope with pressed state', async () => {
   await ready();
@@ -71,18 +71,18 @@ test('all scope shows correct and own answers, explanations and unanswered quest
   fireEvent.click(screen.getByRole('button', { name: '다음' }));
   expect(await screen.findByText('풀지 않음')).toBeTruthy();
   expect(await screen.findByRole('button', { name: '2. 나 정답' })).toBeTruthy();
-  await waitFor(() => expect(screen.getByRole('link', { name: '결과로' }).getAttribute('href')).toBe('#/rounds/50/result'));
+  await waitFor(() => expect(screen.getByRole('link', { name: '결과로' }).getAttribute('href')).toBe('#/adsp/rounds/50/result'));
 });
 test.each([
   ['', 2], ['&q=2', 2], ['&q=3', 3], ['&q=1', 2], ['&q=999', 2], ['&q=abc', 2],
 ])('wrong scope normalizes query %s', async (query, expected) => {
-  window.location.hash = `#/rounds/50/review?filter=wrong${query}`;
+  window.location.hash = `#/adsp/rounds/50/review?filter=wrong${query}`;
   await ready();
   expect(await screen.findByText(`틀린 문제 ${expected === 2 ? 1 : 2} / 2`)).toBeTruthy();
-  await waitFor(() => expect(window.location.hash).toBe(`#/rounds/50/review?filter=wrong&q=${expected}`));
+  await waitFor(() => expect(window.location.hash).toBe(`#/adsp/rounds/50/review?filter=wrong&q=${expected}`));
 });
 test('scope switching resets to first and navigation stays in scope', async () => {
-  window.location.hash = '#/rounds/50/review?q=4'; await ready();
+  window.location.hash = '#/adsp/rounds/50/review?q=4'; await ready();
   fireEvent.click(screen.getByRole('button', { name: '틀린 문제 2' }));
   expect(await screen.findByText('틀린 문제 1 / 2')).toBeTruthy();
   await waitFor(() => expect((screen.getByRole('button', { name: '이전' }) as HTMLButtonElement).disabled).toBe(true));
@@ -92,17 +92,17 @@ test('scope switching resets to first and navigation stays in scope', async () =
   fireEvent.click(screen.getByRole('button', { name: '이전' }));
   expect(await screen.findByText('틀린 문제 1 / 2')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '전체 4' }));
-  await waitFor(() => expect(window.location.hash).toBe('#/rounds/50/review?q=1'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/rounds/50/review?q=1'));
 });
 test('all correct disables wrong scope and falls back to all', async () => {
-  window.location.hash = '#/rounds/50/review?filter=wrong';
+  window.location.hash = '#/adsp/rounds/50/review?filter=wrong';
   await ready({ 1: 2, 2: 2, 3: 2, 4: 2 });
   expect(await screen.findByText('전체 1 / 4')).toBeTruthy();
   await waitFor(() => expect((screen.getByRole('button', { name: '틀린 문제 0' }) as HTMLButtonElement).disabled).toBe(true));
-  await waitFor(() => expect(window.location.hash).toBe('#/rounds/50/review?q=1'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/rounds/50/review?q=1'));
 });
 test('list displays independent records and uses summaries without loading round files', async () => {
-  window.location.hash = '#/rounds';
+  window.location.hash = '#/adsp/rounds';
   fetchMock.mockResolvedValue({ ok: true, json: async () => [50, 49, 48, 47, 46, 45].map(summary) });
   localStorage.setItem(recordKey(49, 'exam'), JSON.stringify({ answers: { 1: 2, 3: 1 }, current: 3, elapsedSeconds: 1800, startedAt: '2026-10-11T00:00:00Z' }));
   localStorage.setItem(recordKey(48, 'result'), JSON.stringify(result({}, true)));
@@ -119,7 +119,7 @@ test('list displays independent records and uses summaries without loading round
   await waitFor(() => expect(within(cards[2]).getByText('8점 합격')).toBeTruthy());
   await waitFor(() => expect(within(cards[3]).getByText('4점 불합격')).toBeTruthy());
   await waitFor(() => expect(within(cards[4]).getByText('시험 1 / 4')).toBeTruthy());
-  await waitFor(() => expect(screen.getByRole('link', { name: '46회, 4문항 90분, 시험 1 / 4' }).getAttribute('href')).toBe('#/rounds/46'));
+  await waitFor(() => expect(screen.getByRole('link', { name: '46회, 4문항 90분, 시험 1 / 4' }).getAttribute('href')).toBe('#/adsp/rounds/46'));
   expect(await screen.findByRole('link', { name: '48회, 4문항 90분, 8점 합격' })).toBeTruthy();
   await waitFor(() => expect(within(cards[5]).getByText('기록 없음')).toBeTruthy());
   await waitFor(() => expect(localStorage.getItem(recordKey(45, 'result'))).toBeNull());

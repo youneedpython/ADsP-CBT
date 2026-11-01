@@ -10,7 +10,7 @@ import { createRecordStore } from '../storage/records';
 vi.mock('../data/loadRound', () => ({ loadRound: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 function show(state: LoadState) {
-  render(<MemoryRouter initialEntries={['/rounds/50']}><RecordStoreContext.Provider value={createRecordStore()}><Routes><Route path="/rounds/:round" element={<RoundInfoPage state={state} retry={() => {}} />} /></Routes></RecordStoreContext.Provider></MemoryRouter>);
+  render(<MemoryRouter initialEntries={['/adsp/rounds/50']}><RecordStoreContext.Provider value={createRecordStore()}><Routes><Route path="/adsp/rounds/:round" element={<RoundInfoPage state={state} retry={() => {}} />} /></Routes></RecordStoreContext.Provider></MemoryRouter>);
 }
 test.each(['loading', 'error'] as const)('round list %s has a single h1', status => {
   show({ status });

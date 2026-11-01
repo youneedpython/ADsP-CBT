@@ -116,11 +116,11 @@ function ExamRound({ data }: { data: RoundData }) {
       passed: result.passed, elapsedSeconds: live.current.elapsedSeconds,
       submittedAt: new Date(submittedAt).toISOString(), questionCount: result.questionCount });
     store.remove(data.round, 'exam');
-    navigate(`/rounds/${data.round}/result`, { replace: true });
+    navigate(`/adsp/rounds/${data.round}/result`, { replace: true });
   };
   const question = data.questions[current - 1];
   return <>
-    <div className="practice-heading"><h2><Link to={`/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
+    <div className="practice-heading"><h2><Link to={`/adsp/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
         {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>

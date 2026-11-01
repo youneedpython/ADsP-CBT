@@ -24,7 +24,7 @@ const answersFor = (numbers: number[]) => Object.fromEntries(numbers.map(number 
 const all = Array.from({ length: 50 }, (_, i) => i + 1);
 beforeEach(() => {
   localStorage.clear();
-  window.location.hash = '#/rounds/50/exam';
+  window.location.hash = '#/adsp/rounds/50/exam';
   vi.stubGlobal('fetch', vi.fn(async (url: string) => ({ ok: true, json: async () => url.endsWith('rounds.json')
     ? [{ round: 50, year: 2026, title: '개발 표본', questionCount: 50, timeLimitMinutes: 90, file: '50.json' }] : structuredClone(data) })));
 });
@@ -141,7 +141,7 @@ test('resumes answers, current question and start; explicit query wins and movem
   fireEvent.click(screen.getByRole('button', { name: '1번, 안 푼 문제' }));
   await waitFor(() => expect((screen.getByRole('button', { name: '이전' }) as HTMLButtonElement).disabled).toBe(true));
   cleanup();
-  window.location.hash = '#/rounds/50/exam?q=3';
+  window.location.hash = '#/adsp/rounds/50/exam?q=3';
   await ready();
   await waitFor(() => expect(readExam().current).toBe(3));
 });
@@ -299,13 +299,13 @@ test('submission saves all result fields, deletes exam and replaces history', as
   expect(saved.elapsedSeconds).toBe(3667);
   expect(Date.parse(saved.submittedAt)).toBeGreaterThanOrEqual(before);
   await waitFor(() => expect(localStorage.getItem(recordKey(50, 'exam'))).toBeNull());
-  await waitFor(() => expect(window.location.hash).toBe('#/rounds/50/result'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/rounds/50/result'));
   await waitFor(() => expect(replace.mock.calls.some(call => String(call[2]).includes('/result'))).toBe(true));
 });
 test.each(['access', 'write'])('unavailable %s storage still submits and renders memory result', async failure => {
   if (failure === 'access') vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => { throw new Error('blocked'); });
   else vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota'); });
-  window.location.hash = '#/rounds/50/exam?q=1';
+  window.location.hash = '#/adsp/rounds/50/exam?q=1';
   await ready();
   expect(await screen.findByText('이 브라우저에서는 풀이 기록을 저장할 수 없습니다.')).toBeTruthy();
   fireEvent.click(choice(2)); openSubmit(); fireEvent.click(screen.getByRole('button', { name: '제출' }));
@@ -313,9 +313,9 @@ test.each(['access', 'write'])('unavailable %s storage still submits and renders
   expect(await screen.findByText('틀린 문제 49')).toBeTruthy();
 });
 test('missing result offers start', async () => {
-  window.location.hash = '#/rounds/50/result'; render(<App />);
+  window.location.hash = '#/adsp/rounds/50/result'; render(<App />);
   expect(await screen.findByText('시험 기록이 없습니다.')).toBeTruthy();
-  await waitFor(() => expect(screen.getByRole('link', { name: '시험 시작' }).getAttribute('href')).toBe('#/rounds/50/exam'));
+  await waitFor(() => expect(screen.getByRole('link', { name: '시험 시작' }).getAttribute('href')).toBe('#/adsp/rounds/50/exam'));
 });
 test.each([
   [all, '합격', []],
@@ -323,7 +323,7 @@ test.each([
   [[1, 2, 3, 4, ...all.slice(20)], '불합격', ['2과목 과락']],
   [[...all.slice(0, 10), ...all.slice(20, 32)], '불합격', ['총점 미달', '2과목 과락']],
 ] as const)('rescoring shows verdict and reasons for %s', async (numbers, verdict, reasons) => {
-  result(answersFor([...numbers])); window.location.hash = '#/rounds/50/result'; render(<App />);
+  result(answersFor([...numbers])); window.location.hash = '#/adsp/rounds/50/result'; render(<App />);
   await screen.findByRole('heading', { name: '50회 · 결과' });
   expect(await screen.findByText(`${numbers.length * 2}점`)).toBeTruthy();
   expect(await screen.findByText(verdict, { exact: true })).toBeTruthy();
@@ -332,12 +332,12 @@ test.each([
   expect(await screen.findByText('걸린 시간 61:07')).toBeTruthy();
 });
 test.each([false, true])('question result links, counts and review action, perfect=%s', async perfect => {
-  result(answersFor(perfect ? all : [1])); window.location.hash = '#/rounds/50/result'; render(<App />);
+  result(answersFor(perfect ? all : [1])); window.location.hash = '#/adsp/rounds/50/result'; render(<App />);
   await screen.findByRole('heading', { name: '50회 · 결과' });
-  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/rounds/50');
-  await waitFor(() => expect(screen.getByRole('link', { name: '1번, 맞은 문제' }).getAttribute('href')).toBe('#/rounds/50/review?q=1'));
-  await waitFor(() => expect(screen.getByRole('link', { name: `3번, ${perfect ? '맞은 문제' : '틀린 문제'}` }).getAttribute('href')).toBe('#/rounds/50/review?q=3'));
+  expect(screen.getByRole('link', { name: '회차 정보로' }).getAttribute('href')).toBe('#/adsp/rounds/50');
+  await waitFor(() => expect(screen.getByRole('link', { name: '1번, 맞은 문제' }).getAttribute('href')).toBe('#/adsp/rounds/50/review?q=1'));
+  await waitFor(() => expect(screen.getByRole('link', { name: `3번, ${perfect ? '맞은 문제' : '틀린 문제'}` }).getAttribute('href')).toBe('#/adsp/rounds/50/review?q=3'));
   expect(await screen.findByText(`틀린 문제 ${perfect ? 0 : 49}`)).toBeTruthy();
-  await waitFor(() => expect(screen.getByRole('link', { name: perfect ? '전체 문제 보기' : '틀린 문제 보기' }).getAttribute('href')).toBe(`#/rounds/50/review${perfect ? '' : '?filter=wrong'}`));
+  await waitFor(() => expect(screen.getByRole('link', { name: perfect ? '전체 문제 보기' : '틀린 문제 보기' }).getAttribute('href')).toBe(`#/adsp/rounds/50/review${perfect ? '' : '?filter=wrong'}`));
   await waitFor(() => expect(screen.getByRole('progressbar', { name: '1과목 맞은 문제' }).getAttribute('value')).toBe(perfect ? '10' : '1'));
 });

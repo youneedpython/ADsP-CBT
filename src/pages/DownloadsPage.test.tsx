@@ -7,7 +7,7 @@ let downloads: unknown;
 const fetchMock = vi.fn();
 const round = { formatVersion: 1, round: 900, title: '개발용 표본', timeLimitMinutes: 90, subjects: [1, 2, 3].map(id => ({ id, name: `표본 ${id}` })), questions: [{ number: 1, subject: 1, question: '개발용 표본 문제', choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설', stimulus: [] }] };
 beforeEach(() => {
-  localStorage.clear(); window.location.hash = '#/downloads';
+  localStorage.clear(); window.location.hash = '#/adsp/downloads';
   downloads = { formatVersion: 1, rounds: { 900: files } };
   fetchMock.mockReset().mockImplementation(async (url: string) => {
     if (url.endsWith('downloads.json') && downloads instanceof Error) throw downloads;
@@ -29,7 +29,7 @@ test('rows newest first, current nav, base URLs, names, sizes and pending types'
   expect(screen.getByRole('heading', { name: '900회', level: 3 })).toBeTruthy();
   expect(screen.getByRole('heading', { name: '899회', level: 3 })).toBeTruthy();
   expect(screen.getByText('풀이용 PDF · 준비 중')).toBeTruthy();
-  fireEvent.click(screen.getByRole('link', { name: '홈' }));
+  fireEvent.click(screen.getByRole('link', { name: 'ADsP 홈' }));
   await screen.findByRole('link', { name: 'PDF로 공부하고 싶다면 PDF 자료 ›' });
   fireEvent.click(screen.getByRole('link', { name: '최신 900회 풀기' }));
   await screen.findByRole('heading', { name: 'PDF 자료' });
@@ -37,7 +37,7 @@ test('rows newest first, current nav, base URLs, names, sizes and pending types'
 });
 test.each([true, false])('round info section with both / one types: %s', async both => {
   downloads = { formatVersion: 1, rounds: { 900: both ? files : { type1: files.type1 } } };
-  window.location.hash = '#/rounds/900'; render(<App />);
+  window.location.hash = '#/adsp/rounds/900'; render(<App />);
   await screen.findByRole('heading', { name: 'PDF 자료' });
   expect(screen.getByRole('link', { name: /900회 풀이용 PDF 내려받기/ })).toBeTruthy();
   expect(!!screen.queryByRole('link', { name: /900회 해설용 PDF 내려받기/ })).toBe(both);
@@ -47,7 +47,7 @@ test.each([true, false])('round info section with both / one types: %s', async b
   expect(downloadCalls()).toHaveLength(1);
 });
 test('no PDFs hides home link, header link and info section', async () => {
-  downloads = { formatVersion: 1, rounds: {} }; window.location.hash = '#/'; render(<App />);
+  downloads = { formatVersion: 1, rounds: {} }; window.location.hash = '#/adsp'; render(<App />);
   await screen.findByRole('link', { name: '최신 900회 풀기' });
   await waitFor(() => expect(downloadCalls()).toHaveLength(1));
   expect(screen.queryByRole('link', { name: 'PDF' })).toBeNull();
@@ -57,13 +57,13 @@ test('no PDFs hides home link, header link and info section', async () => {
   expect(screen.queryByRole('heading', { name: 'PDF 자료' })).toBeNull();
 });
 test('failed list hides PDF links while keeping home and info; download screen retries', async () => {
-  downloads = new Error('표본 실패'); window.location.hash = '#/'; render(<App />);
+  downloads = new Error('표본 실패'); window.location.hash = '#/adsp'; render(<App />);
   await screen.findByRole('link', { name: '최신 900회 풀기' });
   expect(screen.queryByRole('link', { name: 'PDF' })).toBeNull();
   fireEvent.click(screen.getByRole('link', { name: '최신 900회 풀기' }));
   await screen.findByRole('heading', { name: '내 기록' });
   expect(screen.queryByRole('heading', { name: 'PDF 자료' })).toBeNull();
-  window.location.hash = '#/downloads';
+  window.location.hash = '#/adsp/downloads';
   await screen.findByText('PDF 목록을 불러오지 못했습니다.');
   downloads = { formatVersion: 1, rounds: { 900: files } };
   fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
@@ -95,7 +95,7 @@ test('subject and round groups have viewing and download actions', async () => {
   }
 });
 test('subject-only PDFs expose home and header links', async () => {
-  downloads = { formatVersion: 1, rounds: {}, subjects: [subject] }; window.location.hash = '#/'; render(<App />);
+  downloads = { formatVersion: 1, rounds: {}, subjects: [subject] }; window.location.hash = '#/adsp'; render(<App />);
   await screen.findByRole('link', { name: 'PDF로 공부하고 싶다면 PDF 자료 ›' });
   expect(screen.getByRole('link', { name: 'PDF' })).toBeTruthy();
 });
@@ -108,7 +108,7 @@ test.each([undefined, []])('absent or empty subjects omit their group', async su
 
 test('tabs use address, selection and arrow keys with focus', async () => {
   downloads = { formatVersion: 1, rounds: { 900: files }, subjects: [subject] };
-  window.location.hash = '#/downloads?tab=rounds'; render(<App />);
+  window.location.hash = '#/adsp/downloads?tab=rounds'; render(<App />);
   const rounds = await screen.findByRole('tab', { name: '회차별 문제지' });
   const subjects = screen.getByRole('tab', { name: '과목별 공부 자료' });
   expect(rounds.getAttribute('aria-selected')).toBe('true');
@@ -116,14 +116,14 @@ test('tabs use address, selection and arrow keys with focus', async () => {
   fireEvent.keyDown(rounds, { key: 'ArrowLeft' });
   await waitFor(() => expect(subjects.getAttribute('aria-selected')).toBe('true'));
   expect(document.activeElement).toBe(subjects);
-  expect(window.location.hash).toBe('#/downloads');
+  expect(window.location.hash).toBe('#/adsp/downloads');
   expect(subjects.getAttribute('tabindex')).toBe('0');
   expect(rounds.getAttribute('tabindex')).toBe('-1');
   fireEvent.keyDown(subjects, { key: 'ArrowRight' });
-  await waitFor(() => expect(window.location.hash).toBe('#/downloads?tab=rounds'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/downloads?tab=rounds'));
   expect(document.activeElement).toBe(rounds);
   fireEvent.click(subjects);
-  await waitFor(() => expect(window.location.hash).toBe('#/downloads'));
+  await waitFor(() => expect(window.location.hash).toBe('#/adsp/downloads'));
 });
 
 test('whole subjects and chapters have grouped titles and card names', async () => {

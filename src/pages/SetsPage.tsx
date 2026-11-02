@@ -1,3 +1,4 @@
+import { useExam } from '../components/ExamContext';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import { LoadingState, type PageProps } from '../components/LoadingState';
@@ -13,6 +14,7 @@ import { SetPractice } from './SetPractice';
 
 export interface SetsData { summaries: RoundSummary[]; rounds: RoundData[]; topics: TopicsData }
 function SetsLoader({ state, retry, children }: PageProps & { children: (data: SetsData) => ReactNode }) {
+  const exam = useExam();
   const topicsSource = useTopics();
   const getTopics = topicsSource?.get;
   const [loaded, setLoaded] = useState<{ status: 'loading' | 'error' } | { status: 'success'; data: SetsData }>({ status: 'loading' });
@@ -25,21 +27,23 @@ function SetsLoader({ state, retry, children }: PageProps & { children: (data: S
         setLoaded({ status: 'error' });
         return () => controller.abort();
       }
-      Promise.all([Promise.all(state.rounds.map(summary => loadRound(summary, controller.signal))), getTopics()])
+      Promise.all([Promise.all(state.rounds.map(summary => loadRound(summary, controller.signal, exam))), getTopics()])
         .then(([rounds, topics]) => { if (!controller.signal.aborted) setLoaded({ status: 'success', data: { summaries: state.rounds, rounds, topics } }); })
         .catch(() => { if (!controller.signal.aborted) setLoaded({ status: 'error' }); });
     }
     return () => controller.abort();
-  }, [state, attempt, getTopics]);
+  }, [state, attempt, getTopics, exam]);
   if (state.status !== 'success') return <LoadingState state={state} retry={retry} />;
   if (loaded.status !== 'success') return <LoadingState state={loaded} retry={() => { topicsSource?.retryFailed(); setAttempt(value => value + 1); }} />;
   return children(loaded.data);
 }
 export function SetsPage(props: PageProps) {
+  const exam = useExam();
   const { pathname } = useLocation();
-  return <SetsLoader {...props}>{data => pathname === '/adsp/sets' ? <SetsOverview data={data} /> : <SetPractice key={pathname} data={data} pathname={pathname} />}</SetsLoader>;
+  return <SetsLoader {...props}>{data => pathname === `${exam.path}/sets` ? <SetsOverview data={data} /> : <SetPractice key={pathname} data={data} pathname={pathname} />}</SetsLoader>;
 }
 function SetsOverview({ data }: { data: SetsData }) {
+  const exam = useExam();
   const store = useRecordStore();
   const downloads = useDownloads();
   const [subject, setSubject] = useState(1);
@@ -49,22 +53,22 @@ function SetsOverview({ data }: { data: SetsData }) {
   const wrong = wrongQuestions(items, records, store.readResolved());
   const marked = store.readMarked();
   const markedCount = items.filter(item => marked[questionKey(item)]).length;
-  const ids = ['wrong', 'marked', 'subject-1', 'subject-2', 'subject-3', ...data.topics.topics.map(topic => `topic-${topic.id}`)];
+  const ids = ['wrong', 'marked', ...exam.subjects.map(subject => `subject-${subject.id}`), ...data.topics.topics.map(topic => `topic-${topic.id}`)];
   const { statistics, weakest, solvedCount } = studyStatistics(items, data.topics, data.summaries, records, store.readResolved(), store.readSetAnswers(ids, items.map(questionKey)));
   const subjectName = data.rounds.flatMap(round => round.subjects).find(item => item.id === subject)?.name;
   return <>
     <h1 className="page-title">모아 풀기</h1><p className="page-lead">회차를 넘나들며 필요한 문제만 모아 연습합니다. 정답 확인과 해설은 연습과 같습니다.</p>
     <div className="sets-grid">
-      <section className="overview-panel set-card"><h2 className="eyebrow">틀린 문제</h2><strong className="set-count">{wrong.length}문항</strong><p>시험과 연습에서 틀린 문제입니다. 다시 맞히면 목록에서 빠집니다.</p>{wrong.length === 0 && <p>틀린 문제가 없습니다.</p>}{wrong.length ? <Link className="button set-action" to="/adsp/sets/wrong">틀린 문제 풀기</Link> : <button className="set-action" disabled>틀린 문제 풀기</button>}</section>
-      <section className="overview-panel set-card"><h2 className="eyebrow">과목별</h2><strong>{subject}과목 {subjectName}</strong><p>{data.summaries.length}개 회차 · {subjectQuestions(items, subject).length}문항</p>{downloads.state.status === 'success' && !!downloads.state.data.subjects?.length && <Link className="subject-pdf-link" to="/adsp/downloads">과목별 PDF 자료 ›</Link>}<div className="set-filters" role="group" aria-label="과목 고르기">{[1, 2, 3].map(id => <button className="secondary" key={id} aria-pressed={subject === id} onClick={() => setSubject(id)}>{id}과목 {subjectQuestions(items, id).length}</button>)}</div><Link className="button secondary set-action" to={`/adsp/sets/subject/${subject}`}>{subject}과목 풀기</Link></section>
+      <section className="overview-panel set-card"><h2 className="eyebrow">틀린 문제</h2><strong className="set-count">{wrong.length}문항</strong><p>시험과 연습에서 틀린 문제입니다. 다시 맞히면 목록에서 빠집니다.</p>{wrong.length === 0 && <p>틀린 문제가 없습니다.</p>}{wrong.length ? <Link className="button set-action" to={`${exam.path}/sets/wrong`}>틀린 문제 풀기</Link> : <button className="set-action" disabled>틀린 문제 풀기</button>}</section>
+      <section className="overview-panel set-card"><h2 className="eyebrow">과목별</h2><strong>{subject}과목 {subjectName}</strong><p>{data.summaries.length}개 회차 · {subjectQuestions(items, subject).length}문항</p>{exam.hasPDF && downloads.state.status === 'success' && !!downloads.state.data.subjects?.length && <Link className="subject-pdf-link" to={`${exam.path}/downloads`}>과목별 PDF 자료 ›</Link>}<div className="set-filters" role="group" aria-label="과목 고르기">{exam.subjects.map(subject => subject.id).map(id => <button className="secondary" key={id} aria-pressed={subject === id} onClick={() => setSubject(id)}>{id}과목 {subjectQuestions(items, id).length}</button>)}</div><Link className="button secondary set-action" to={`${exam.path}/sets/subject/${subject}`}>{subject}과목 풀기</Link></section>
       <section className="overview-panel set-card"><h2 className="eyebrow">주제별</h2><strong>자주 나오는 주제부터</strong><p>{statistics.length}개 주제 · 출제 빈도 순</p><a className="button secondary set-action" href="#topics" onClick={event => { event.preventDefault(); document.getElementById('topics')?.scrollIntoView({ behavior: 'smooth' }); document.getElementById('topics')?.focus(); }}>주제 고르기</a></section>
-      <section className="overview-panel set-card"><h2 className="eyebrow">표시한 문제</h2><strong className="set-count">{markedCount}문항</strong><p>별표를 해 둔 문제입니다. 맞힌 문제도 다시 볼 수 있습니다.</p>{markedCount === 0 && <p>표시한 문제가 없습니다.</p>}{markedCount ? <Link className="button secondary set-action" to="/adsp/sets/marked">표시한 문제 풀기</Link> : <button className="set-action" disabled>표시한 문제 풀기</button>}</section>
+      <section className="overview-panel set-card"><h2 className="eyebrow">표시한 문제</h2><strong className="set-count">{markedCount}문항</strong><p>별표를 해 둔 문제입니다. 맞힌 문제도 다시 볼 수 있습니다.</p>{markedCount === 0 && <p>표시한 문제가 없습니다.</p>}{markedCount ? <Link className="button secondary set-action" to={`${exam.path}/sets/marked`}>표시한 문제 풀기</Link> : <button className="set-action" disabled>표시한 문제 풀기</button>}</section>
     </div>
     <section className="weak-topics" aria-labelledby="weak-topics"><h2 id="weak-topics">먼저 공부할 주제</h2><p className="page-lead">자주 나오는데 내 정답률이 낮은 주제입니다. 내 풀이 기록 {solvedCount}문항 기준.</p>
-      {weakest.length === 0 ? <p className="overview-panel">문제를 더 풀면 먼저 공부할 주제를 알려 드립니다. 주제별로 3문항 이상 풀어야 정답률이 나옵니다.</p> : <div className="weak-grid">{weakest.map(topic => <article className="overview-panel set-card" key={topic.id}><h3>{topic.name}</h3><p>출제 빈도 {topic.frequency} · {topic.subject}과목</p><strong className="set-count accuracy">{topic.accuracy}%</strong><p>풀어 본 {topic.solvedCount}문항 중 {topic.correctCount}문항 정답</p><Link className="button secondary set-action" to={`/adsp/sets/topic/${topic.id}`}>{topic.questionCount}문항 모아 풀기</Link></article>)}</div>}
+      {weakest.length === 0 ? <p className="overview-panel">문제를 더 풀면 먼저 공부할 주제를 알려 드립니다. 주제별로 3문항 이상 풀어야 정답률이 나옵니다.</p> : <div className="weak-grid">{weakest.map(topic => <article className="overview-panel set-card" key={topic.id}><h3>{topic.name}</h3><p>출제 빈도 {topic.frequency} · {topic.subject}과목</p><strong className="set-count accuracy">{topic.accuracy}%</strong><p>풀어 본 {topic.solvedCount}문항 중 {topic.correctCount}문항 정답</p><Link className="button secondary set-action" to={`${exam.path}/sets/topic/${topic.id}`}>{topic.questionCount}문항 모아 풀기</Link></article>)}</div>}
     </section>
-    <section className="topics-section" aria-labelledby="topics"><h2 id="topics" tabIndex={-1}>주제별 출제 빈도</h2><div className="set-filters" role="group" aria-label="표의 과목 거르기">{[0, 1, 2, 3].map(id => <button className="secondary" key={id} aria-pressed={filter === id} onClick={() => setFilter(id)}>{id === 0 ? '전체' : `${id}과목`}</button>)}</div>
-      <table className="topics-table"><thead><tr><th scope="col">주제</th><th scope="col">출제 회차</th><th scope="col">문항 · 정답률</th><th scope="col">풀기</th></tr></thead><tbody>{statistics.filter(topic => filter === 0 || topic.subject === filter).map(topic => <tr key={topic.id}><th scope="row">{topic.name}<small>{topic.subject}과목 · 출제 빈도 {topic.frequency}</small></th><td className="topic-frequency"><FrequencyBar rounds={topic.rounds} /><small>{data.summaries.length}회 중 {topic.roundCount}회</small></td><td>{topic.questionCount}문항<small className={topic.accuracy !== null && topic.accuracy < 50 ? 'low-accuracy' : undefined}>{topic.accuracy !== null ? `${topic.accuracy}% (${topic.solvedCount}문항 풂)` : topic.solvedCount ? `${topic.solvedCount}문항 풂` : '아직 안 풂'}</small></td><td><Link to={`/adsp/sets/topic/${topic.id}`} aria-label={`${topic.name} 풀기 ›`}>풀기 ›</Link></td></tr>)}</tbody></table>
+    <section className="topics-section" aria-labelledby="topics"><h2 id="topics" tabIndex={-1}>주제별 출제 빈도</h2><div className="set-filters" role="group" aria-label="표의 과목 거르기">{[0, ...exam.subjects.map(subject => subject.id)].map(id => <button className="secondary" key={id} aria-pressed={filter === id} onClick={() => setFilter(id)}>{id === 0 ? '전체' : `${id}과목`}</button>)}</div>
+      <table className="topics-table"><thead><tr><th scope="col">주제</th><th scope="col">출제 회차</th><th scope="col">문항 · 정답률</th><th scope="col">풀기</th></tr></thead><tbody>{statistics.filter(topic => filter === 0 || topic.subject === filter).map(topic => <tr key={topic.id}><th scope="row">{topic.name}<small>{topic.subject}과목 · 출제 빈도 {topic.frequency}</small></th><td className="topic-frequency"><FrequencyBar rounds={topic.rounds} /><small>{data.summaries.length}회 중 {topic.roundCount}회</small></td><td>{topic.questionCount}문항<small className={topic.accuracy !== null && topic.accuracy < 50 ? 'low-accuracy' : undefined}>{topic.accuracy !== null ? `${topic.accuracy}% (${topic.solvedCount}문항 풂)` : topic.solvedCount ? `${topic.solvedCount}문항 풂` : '아직 안 풂'}</small></td><td><Link to={`${exam.path}/sets/topic/${topic.id}`} aria-label={`${topic.name} 풀기 ›`}>풀기 ›</Link></td></tr>)}</tbody></table>
     </section>
   </>;
 }

@@ -1,5 +1,5 @@
 import '../test/asyncQueries';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import App from '../App';
 import { MemoryRouter } from 'react-router';
@@ -18,6 +18,8 @@ async function ready(path = '/adsp/sets') {
   window.history.replaceState(null, '', `#${path}`);
   render(<App />);
   await screen.findByText(path === '/adsp/sets' ? '자주 나오는 주제부터' : /^모아 풀기 ·/);
+  // Flush the async route mount and keyboard subscription before interactions.
+  await act(async () => {});
 }
 test('missing topics provider shows the error state and safely retries', async () => {
   render(<MemoryRouter initialEntries={['/adsp/sets']}><SetsPage state={{ status: 'success', rounds: summaries }} retry={() => {}} /></MemoryRouter>);
@@ -42,7 +44,7 @@ test('overview cards, counts, selected subject, frequency order/filter and desti
   expect(within(nav).getByRole('link', { name: '모아 풀기' }).getAttribute('aria-current')).toBe('page');
   fireEvent.click(screen.getByRole('button', { name: '2과목 2' }));
   expect(screen.getByRole('button', { name: '2과목 2' }).getAttribute('aria-pressed')).toBe('true');
-  expect(screen.getByText('2과목 표본 기획')).toBeTruthy();
+  expect(screen.getByText('2과목 데이터 분석 기획')).toBeTruthy();
   expect(screen.getByRole('link', { name: '2과목 풀기' }).getAttribute('href')).toBe('#/adsp/sets/subject/2');
   const table = screen.getByRole('table');
   expect(within(table).getAllByRole('rowheader').map(row => row.textContent?.split('3과목')[0].split('1과목')[0].split('2과목')[0])).toEqual(['표본 주제 셋', '표본 주제 하나', '표본 주제 둘']);

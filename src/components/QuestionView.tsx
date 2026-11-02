@@ -1,9 +1,11 @@
+import { useExam } from './ExamContext';
 import { useEffect, useRef } from 'react';
 import type { Answer, Question, RoundData } from '../data/types';
 import { dataUrl } from '../data/loadRound';
 import { MathText } from './MathText';
 import { reportQuestionUrl } from '../domain/reportQuestion';
 import { RelatedQuestions } from './RelatedQuestions';
+const stimulusLabel = (item: Question['stimulus'][number]) => item.type === 'text' ? /^\s*<([^<>]+)>\s*$/.exec(item.text)?.[1] : undefined;
 const circled = ['①', '②', '③', '④'];
 export function QuestionView({ question: q, subjects, round, selected, choose, currentTopic, marked = false, toggleMark, mode = 'practice', confirmed = selected !== undefined }: {
   marked?: boolean; toggleMark?: () => void;
@@ -11,6 +13,7 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
   round?: number;
   question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
 }) {
+  const exam = useExam();
   const title = useRef<HTMLHeadingElement>(null);
   const previous = useRef(q.number);
   const result = useRef<HTMLParagraphElement>(null);
@@ -18,7 +21,7 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
   const stimuli: (typeof q.stimulus)[] = [];
   for (const item of q.stimulus) {
     const last = stimuli.at(-1);
-    if (item.type === 'text' && last?.[0].type === 'text') last.push(item);
+    if (item.type === 'text' && !stimulusLabel(item) && last?.[0].type === 'text' && !stimulusLabel(last[0])) last.push(item);
     else stimuli.push([item]);
   }
   useEffect(() => {
@@ -35,6 +38,8 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
     {stimuli.map((group, index) => {
       const item = group[0];
+      const label = stimulusLabel(item);
+      if (label !== undefined) return <p className="stimulus-label" key={index}>{label}</p>;
       return <div className={`stimulus stimulus-${item.type}`} key={index}>
       {item.type === 'text' && group.map((paragraph, paragraphIndex) => paragraph.type === 'text' && <p key={paragraphIndex}><MathText text={paragraph.text} display /></p>)}
       {item.type === 'code' && <pre>{item.text}</pre>}
@@ -63,6 +68,6 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
       {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
-    {round !== undefined && (mode === 'review' || mode === 'practice' && confirmed && selected !== undefined) && <RelatedQuestions round={round} number={q.number} currentTopic={currentTopic} />}
+    {exam.hasSets && round !== undefined && (mode === 'review' || mode === 'practice' && confirmed && selected !== undefined) && <RelatedQuestions round={round} number={q.number} currentTopic={currentTopic} />}
   </article>;
 }

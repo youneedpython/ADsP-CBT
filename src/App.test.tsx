@@ -7,7 +7,7 @@ import App from './App';
 import { recordKey } from './storage/records';
 import type { RoundData } from './data/types';
 const sample = (round = 50, year = 2026, questionCount = 4) => ({ round, year, title: '개발 표본', questionCount, timeLimitMinutes: 30, file: `${round}.json` });
-const data: RoundData = { formatVersion: 1, round: 50, title: '개발 표본', timeLimitMinutes: 30, subjects: [{ id: 1, name: '표본 하나' }, { id: 2, name: '표본 둘' }, { id: 3, name: '표본 셋' }], questions: [1, 2, 3, 4].map(number => ({ number, subject: number === 1 ? 1 : number === 2 ? 2 : 3, question: `새로 만든 표본 문제 ${number}`, stimulus: [], choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설' })) };
+const data: RoundData = { formatVersion: 1, round: 50, title: '개발 표본', timeLimitMinutes: 30, subjects: [{ id: 1, name: '데이터 이해' }, { id: 2, name: '데이터 분석 기획' }, { id: 3, name: '데이터 분석' }], questions: [1, 2, 3, 4].map(number => ({ number, subject: number === 1 ? 1 : number === 2 ? 2 : 3, question: `새로 만든 표본 문제 ${number}`, stimulus: [], choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설' })) };
 const fetchMock = vi.fn();
 const respond = (value: unknown) => ({ ok: true, json: async () => value });
 const practice = { answers: { 1: 2 }, current: 2 };
@@ -104,7 +104,7 @@ test('round info defaults to practice, switches radio/start link, and derives su
   fireEvent.click(screen.getByRole('radio', { name: /^시험/ }));
   expect(screen.getByRole('link', { name: '시험 시작' }).getAttribute('href')).toBe('#/adsp/rounds/50/exam');
   const rows = within(screen.getByRole('table')).getAllByRole('row').slice(1);
-  expect(rows.map(row => Array.from(row.children).map(cell => cell.textContent))).toEqual([['1과목 표본 하나', '1', '1문항'], ['2과목 표본 둘', '1', '1문항'], ['3과목 표본 셋', '2', '1문항']]);
+  expect(rows.map(row => Array.from(row.children).map(cell => cell.textContent))).toEqual([['1과목 데이터 이해', '1', '1문항'], ['2과목 데이터 분석 기획', '1', '1문항'], ['3과목 데이터 분석', '2', '1문항']]);
   footer();
 });
 test.each(['practice', 'exam', 'result'] as const)('round info renders %s record and appropriate start', async kind => {
@@ -177,14 +177,14 @@ test('hub shows dynamic card facts, service link, single exam link and restores 
   window.location.hash = '#/';
   fetchMock.mockResolvedValue(respond([sample(37, 2024, 7), sample(53, 2026, 12)]));
   render(<App />);
-  const card = within(screen.getByRole('article'));
+  const card = within(screen.getAllByRole('article')[0]);
   expect(await card.findByText('37 ~ 53회')).toBeTruthy();
   expect(card.getByText('19문항')).toBeTruthy(); expect(card.getByText('3과목')).toBeTruthy();
   expect(card.getByText(/^30분 · 총점 60점 이상/)).toBeTruthy();
   expect(card.getByRole('link', { name: 'ADsP 풀기 ›' }).getAttribute('href')).toBe('#/adsp');
   const brand = screen.getByRole('link', { name: '독특한 CBT' });
   expect(brand.getAttribute('href')).toBe('#/'); expect(brand.parentElement?.tagName).toBe('DIV');
-  expect(within(screen.getByRole('navigation', { name: '주요 화면' })).getAllByRole('link').map(l => [l.textContent, l.getAttribute('href')])).toEqual([['ADsP', '#/adsp']]);
+  expect(within(screen.getByRole('navigation', { name: '주요 화면' })).getAllByRole('link').map(l => [l.textContent, l.getAttribute('href')])).toEqual([['ADsP', '#/adsp'], ['SQLD', '#/sqld']]);
   expect(screen.queryByRole('heading', { name: '이어 풀기' })).toBeNull();
   expect(document.title).toBe('독특한 CBT · 기출 복원 문제'); footer();
   fireEvent.click(card.getByRole('link', { name: 'ADsP 풀기 ›' }));
@@ -210,19 +210,19 @@ test('hub keeps card during loading and failure and retries round facts', async 
   window.location.hash = '#/';
   fetchMock.mockRejectedValueOnce(new Error('표본 실패'));
   render(<App />);
-  expect(screen.getByRole('status').textContent).toBe('문제를 불러오는 중입니다.');
+  expect(within(screen.getAllByRole('article')[0]).getByRole('status').textContent).toBe('문제를 불러오는 중입니다.');
   expect(screen.getByRole('link', { name: 'ADsP 풀기 ›' })).toBeTruthy();
   await screen.findByText('문제를 불러오지 못했습니다.');
   fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
-  await screen.findByText('50 ~ 50회');
-  expect(fetchMock).toHaveBeenCalledTimes(2);
+  await within(screen.getAllByRole('article')[0]).findByText('50 ~ 50회');
+  expect(fetchMock).toHaveBeenCalledTimes(3);
 });
 
 test('hub empty state retains exam identity, description and start link', async () => {
   window.location.hash = '#/'; fetchMock.mockResolvedValue(respond([])); render(<App />);
-  await screen.findByText('아직 등록된 회차가 없습니다.');
+  await within(screen.getAllByRole('article')[0]).findByText('아직 등록된 회차가 없습니다.');
   expect(screen.getByText('데이터분석 준전문가')).toBeTruthy();
-  expect(screen.getByText(/^총점 60점 이상/)).toBeTruthy();
+  expect(within(screen.getAllByRole('article')[0]).getByText(/^총점 60점 이상/)).toBeTruthy();
   expect(screen.getByRole('link', { name: 'ADsP 풀기 ›' })).toBeTruthy();
   expect(screen.queryByRole('heading', { name: '이어 풀기' })).toBeNull();
 });

@@ -1,3 +1,4 @@
+import { useExam } from '../components/ExamContext';
 import { useMarks } from '../storage/useMarks';
 import { Modal } from '../components/Modal';
 import { useQuestionKeys } from '../components/useQuestionKeys';
@@ -16,6 +17,7 @@ export function ExamPage(props: PageProps) {
   return <RoundPage {...props}>{data => <ExamRound key={data.round} data={data} />}</RoundPage>;
 }
 function ExamRound({ data }: { data: RoundData }) {
+  const activeExam = useExam();
   const store = useRecordStore();
   const marks = useMarks();
   const navigate = useNavigate();
@@ -112,18 +114,18 @@ function ExamRound({ data }: { data: RoundData }) {
     const submittedAt = Date.now();
     const result = scoreRound(data, record.answers);
     store.write(data.round, 'result', { answers: record.answers, score: result.score,
-      subjectCorrect: { 1: 0, 2: 0, 3: 0, ...Object.fromEntries(result.subjects.map(s => [s.subject, s.correctCount])) },
+      subjectCorrect: Object.fromEntries(data.subjects.map(s => [s.id, result.subjects.find(item => item.subject === s.id)?.correctCount ?? 0])),
       passed: result.passed, elapsedSeconds: live.current.elapsedSeconds,
       submittedAt: new Date(submittedAt).toISOString(), questionCount: result.questionCount });
     store.remove(data.round, 'exam');
-    navigate(`/adsp/rounds/${data.round}/result`, { replace: true });
+    navigate(`${activeExam.path}/rounds/${data.round}/result`, { replace: true });
   };
   const question = data.questions[current - 1];
   return <>
-    <div className="practice-heading"><h2><Link to={`/adsp/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
+    <div className="practice-heading"><h2><Link to={`${activeExam.path}/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
-        {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>
+        {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress className={activeExam.id === 'sqld' ? 'sqld-progress' : undefined} aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>
     {(!persistent || !marks.persistent) && <p className="notice exam-notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
     {expired && <div role="alert" className="notice expiry-notice exam-notice">시간이 끝났습니다. 계속 풀거나 제출할 수 있습니다.<button className="secondary" onClick={() => setExpired(false)}>닫기</button></div>}
     <div className="practice-layout"><div className="practice-main">

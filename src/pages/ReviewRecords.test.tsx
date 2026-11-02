@@ -9,7 +9,7 @@ import { recordKey } from '../storage/records';
 vi.mock('katex', () => ({ default: { renderToString: (text: string) =>
   `<span>${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>` } }));
 const data: RoundData = { formatVersion: 1, round: 50, title: '개발 표본', timeLimitMinutes: 90,
-  subjects: [{ id: 1, name: '표본 과목' }],
+  subjects: [{ id: 1, name: '데이터 이해' }, { id: 2, name: '데이터 분석 기획' }, { id: 3, name: '데이터 분석' }],
   questions: [1, 2, 3, 4].map((number): Question => ({ number, subject: 1,
     question: `표본 문제 ${number} <b>글</b>`, stimulus: [], choices: ['가', '나', '다', '라'],
     answer: 2, explanation: `표본 해설 ${number} <script>글</script>` })) };

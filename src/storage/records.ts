@@ -1,3 +1,4 @@
+import { exams, type Exam } from '../domain/exams';
 import type { Answers } from '../domain/scoring';
 import { isAnswer } from '../domain/scoring';
 import { validResolved, validSetRecord, type SetRecord } from './setRecords';
@@ -19,8 +20,8 @@ export interface RecordTypes { practice: PracticeRecord; exam: ExamRecord; resul
 export type RecordKind = keyof RecordTypes;
 export type RecordStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
-export function recordKey(round: number, kind: RecordKind): string {
-  return `adsp-cbt:v1:${round}:${kind}`;
+export function recordKey(round: number, kind: RecordKind, exam: Exam = exams[0]): string {
+  return `${exam.recordPrefix}:${round}:${kind}`;
 }
 function object(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -31,19 +32,19 @@ function integer(value: unknown, min: number, max = Number.MAX_SAFE_INTEGER): bo
 function date(value: unknown): boolean {
   return typeof value === 'string' && value.trim() !== '' && Number.isFinite(Date.parse(value));
 }
-function valid(value: unknown, kind: RecordKind, count: number): boolean {
+function valid(value: unknown, kind: RecordKind, count: number, exam: Exam): boolean {
   if (!integer(count, 1) || !object(value) || !object(value.answers)) return false;
   if (!Object.entries(value.answers).every(([key, answer]) =>
     /^[1-9]\d*$/.test(key) && integer(Number(key), 1, count) && isAnswer(answer))) return false;
   if (kind !== 'result') return integer(value.current, 1, count) && (kind !== 'exam' || (date(value.startedAt) && integer(value.elapsedSeconds, 0)));
-  return value.questionCount === count && integer(value.score, 0, count * 2)
+  return value.questionCount === count && integer(value.score, 0, 100)
     && typeof value.passed === 'boolean' && integer(value.elapsedSeconds, 0) && date(value.submittedAt)
-    && object(value.subjectCorrect) && ['1', '2', '3'].every(key => Object.hasOwn(value.subjectCorrect as object, key))
-    && Object.entries(value.subjectCorrect).every(([key, correct]) => /^[1-3]$/.test(key) && integer(correct, 0, count));
+    && object(value.subjectCorrect) && exam.subjects.map(s => String(s.id)).every(key => Object.hasOwn(value.subjectCorrect as object, key))
+    && Object.entries(value.subjectCorrect).every(([key, correct]) => exam.subjects.some(s => String(s.id) === key) && integer(correct, 0, count));
 }
 
 /** Keep this instance for the browser session so unavailable persistence retains records in memory. */
-export function createRecordStore(provided?: RecordStorage | (() => RecordStorage)) {
+export function createRecordStore(provided?: RecordStorage | (() => RecordStorage), exam: Exam = exams[0]) {
   const memory = new Map<string, string>();
   let storage: RecordStorage | undefined;
   try { storage = typeof provided === 'function' ? provided() : provided ?? window.localStorage; }
@@ -72,27 +73,27 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
   }
 
   function remove(round: number, kind: RecordKind): void {
-    const key = recordKey(round, kind);
+    const key = recordKey(round, kind, exam);
     memory.delete(key);
     if (storage) {
       try { storage!.removeItem(key); } catch { persistent = false; }
     }
   }
   return {
-    readMarked: () => readExtra('adsp-cbt:v1:marked', validMarked) ?? {},
-    writeMarked: (value: MarkedQuestions) => writeExtra('adsp-cbt:v1:marked', value),
+    readMarked: () => readExtra(`${exam.recordPrefix}:marked`, validMarked) ?? {},
+    writeMarked: (value: MarkedQuestions) => writeExtra(`${exam.recordPrefix}:marked`, value),
     readSetAnswers: (ids: string[], keys: string[]) => ids.flatMap(id => {
-      const value = readExtra(`adsp-cbt:v1:set:${id}`, (value): value is SetRecord => object(value)
+      const value = readExtra(`${exam.recordPrefix}:set:${id}`, (value): value is SetRecord => object(value)
         && typeof value.signature === 'string' && validSetRecord(value, value.signature, keys));
       return value ? [value.answers] : [];
     }),
-    readSet: (id: string, signature: string, keys: string[]) => readExtra(`adsp-cbt:v1:set:${id}`, (value): value is SetRecord => validSetRecord(value, signature, keys)),
-    writeSet: (id: string, value: SetRecord) => writeExtra(`adsp-cbt:v1:set:${id}`, value),
-    readResolved: () => readExtra('adsp-cbt:v1:set-resolved', validResolved) ?? {},
-    writeResolved: (value: ResolvedQuestions) => writeExtra('adsp-cbt:v1:set-resolved', value),
+    readSet: (id: string, signature: string, keys: string[]) => readExtra(`${exam.recordPrefix}:set:${id}`, (value): value is SetRecord => validSetRecord(value, signature, keys)),
+    writeSet: (id: string, value: SetRecord) => writeExtra(`${exam.recordPrefix}:set:${id}`, value),
+    readResolved: () => readExtra(`${exam.recordPrefix}:set-resolved`, validResolved) ?? {},
+    writeResolved: (value: ResolvedQuestions) => writeExtra(`${exam.recordPrefix}:set-resolved`, value),
     canPersist: () => persistent,
     read<K extends RecordKind>(round: number, kind: K, questionCount: number): RecordTypes[K] | null {
-      const key = recordKey(round, kind);
+      const key = recordKey(round, kind, exam);
       let raw = memory.get(key) ?? null;
       if (persistent) {
         try { raw = storage!.getItem(key); } catch { persistent = false; }
@@ -100,7 +101,7 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
       if (raw === null) { memory.delete(key); return null; }
       try {
         const value: unknown = JSON.parse(raw);
-        if (valid(value, kind, questionCount)) {
+        if (valid(value, kind, questionCount, exam)) {
           memory.set(key, raw);
           return value as RecordTypes[K];
         }
@@ -109,7 +110,7 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
       return null;
     },
     write<K extends RecordKind>(round: number, kind: K, value: RecordTypes[K]): void {
-      const key = recordKey(round, kind);
+      const key = recordKey(round, kind, exam);
       const raw = JSON.stringify(value);
       memory.set(key, raw);
       if (persistent) {

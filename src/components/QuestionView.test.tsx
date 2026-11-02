@@ -8,6 +8,13 @@ afterEach(cleanup);
 const question: Question = { number: 1, subject: 1, question: '개발 표본 문제', stimulus: [], choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설' };
 const subjects: RoundData['subjects'] = [{ id: 1, name: '표본 과목' }];
 const text = (value: string): Stimulus => ({ type: 'text', text: value });
+
+test('isolated labels are unboxed and do not merge with adjacent text', () => {
+  const { container } = render(<QuestionView question={{ ...question, stimulus: [text('앞 지문'), text(' <TBL1> '), text('a < b'), text('<실행 결과>'), text('일반 지문')] }} subjects={subjects} choose={() => {}} />);
+  expect([...container.querySelectorAll('.stimulus-label')].map(node => node.textContent)).toEqual(['TBL1', '실행 결과']);
+  expect([...container.querySelectorAll('.stimulus')].map(node => node.textContent)).toEqual(['앞 지문', 'a < b', '일반 지문']);
+  expect(screen.getByText('TBL1').closest('.stimulus')).toBeNull();
+});
 test.each([
   ['practice', false, false], ['practice', true, true], ['review', false, true], ['exam', true, false],
 ] as const)('report visibility in %s confirmed=%s', (mode, confirmed, visible) => {

@@ -9,7 +9,7 @@ vi.mock('katex', () => ({ default: { renderToString: (text: string) =>
   `<span>${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>` } }));
 const data: RoundData = {
   formatVersion: 1, round: 50, title: '개발 표본', timeLimitMinutes: 90,
-  subjects: [{ id: 1, name: '표본 과목' }],
+  subjects: [{ id: 1, name: '데이터 이해' }, { id: 2, name: '데이터 분석 기획' }, { id: 3, name: '데이터 분석' }],
   questions: [1, 2].map((number): Question => ({ number, subject: 1, question: `표본 ${number} <b>문제</b> $x$`,
     stimulus: [{ type: 'text', text: '글 $y$' }, { type: 'code', text: '  code $z$\n line' },
       { type: 'table', rows: [['머리 $a$', '열'], ['칸 $b$', '값']] }, { type: 'image', src: '50/sample.png', alt: '표본 그림' }],
@@ -32,7 +32,7 @@ const ready = async () => {
 test('renders all stimuli safely and hides answers before selection', async () => {
   await ready();
   const article = screen.getByRole('article');
-  await waitFor(() => expect(article.textContent).toContain('1과목 표본 과목'));
+  await waitFor(() => expect(article.textContent).toContain('1과목 데이터 이해'));
   await waitFor(() => expect(article.textContent).toContain('<b>문제</b>'));
   await waitFor(() => expect(article.querySelector('b')).toBeNull());
   await waitFor(() => expect(article.querySelector('pre')?.textContent).toBe('  code $z$\n line'));

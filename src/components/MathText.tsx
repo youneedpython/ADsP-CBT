@@ -1,8 +1,10 @@
+import { useExam } from './ExamContext';
 import { useEffect, useState } from 'react';
 import type katex from 'katex';
 import { loadMath } from './loadMath';
 export function MathText({ text, display = false }: { text: string; display?: boolean }) {
-  const parts = text.split('$');
+  const exam = useExam();
+  const parts = exam.math ? text.split('$') : [text];
   const hasMath = parts.length > 1 && parts.length % 2 !== 0;
   const [renderer, setRenderer] = useState<typeof katex>();
   const [failed, setFailed] = useState(false);

@@ -2,7 +2,7 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const positive = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value));
 
 // expected maps registered rounds to the question numbers in their files.
-export function validateTopics(data, expected) {
+export function validateTopics(data, expected, exam = 'adsp') {
   const errors = [];
   const keys = (value, allowed, label) => {
     if (!object(value)) { errors.push(`${label}: 객체 형식 필요`); return false; }
@@ -15,11 +15,11 @@ export function validateTopics(data, expected) {
   if (!Array.isArray(data.topics)) errors.push('topics.json: topics 배열 필요');
   else for (const topic of data.topics) {
     if (!keys(topic, ['id', 'name', 'subject'], '주제')) continue;
-    if (typeof topic.id !== 'string' || !/^T\d{3}$/.test(topic.id)) errors.push('주제 ID 형식 오류');
+    if (typeof topic.id !== 'string' || !(exam === 'sqld' ? /^S\d{3}$/ : /^T\d{3}$/).test(topic.id)) errors.push('주제 ID 형식 오류');
     if (ids.has(topic.id)) errors.push('주제 ID 중복');
     ids.add(topic.id);
     if (typeof topic.name !== 'string' || !topic.name.trim()) errors.push('주제 빈 이름');
-    if (!Number.isInteger(topic.subject) || ![1, 2, 3].includes(topic.subject)) errors.push('주제 과목 값 오류');
+    if (!Number.isInteger(topic.subject) || !(exam === 'sqld' ? [1, 2] : [1, 2, 3]).includes(topic.subject)) errors.push('주제 과목 값 오류');
   }
   if (!object(data.questions)) errors.push('topics.json: questions 객체 필요');
   else {

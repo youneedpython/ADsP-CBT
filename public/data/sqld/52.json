@@ -1,0 +1,954 @@
+{
+  "formatVersion": 1,
+  "round": 52,
+  "title": "SQLD 제52회 기출 복원문제",
+  "timeLimitMinutes": 90,
+  "subjects": [
+    {
+      "id": 1,
+      "name": "데이터 모델링의 이해"
+    },
+    {
+      "id": 2,
+      "name": "SQL 기본 및 활용"
+    }
+  ],
+  "questions": [
+    {
+      "number": 1,
+      "subject": 1,
+      "question": "두 개 이상의 부모 엔터티로부터 발생하며, 독립적인 단일 주식별자 대신 부모 엔터티의 식별자를 상속·조합하여 식별되는 경우가 많은 엔터티 유형으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "기본 엔터티",
+        "중심 엔터티",
+        "행위 엔터티",
+        "코드 엔터티"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 행위 엔터티는 두 개 이상의 부모 엔터티로부터 업무 행위(주문, 계약 등)가 발생하면서 만들어지며, 부모 엔터티의 식별자를 상속받아 조합한 복합 식별자로 설계되는 경우가 많다.\n오답 풀이\n\n1번: 기본 엔터티는 업무에 원래 존재하는 독립 정보로 스스로 고유 식별자를 가진다.\n2번: 중심 엔터티는 기본 엔터티로부터 발생하지만 업무의 중심 데이터로서 독자적 식별자를 갖는 것이 일반적이다.\n3번: 부모 식별자의 상속·조합으로 식별되는 대표적인 유형이다.\n4번: 코드 엔터티는 분류·기준값을 관리하는 엔터티로 부모 식별자 조합과 무관하다.\n\n보충 개념\n발생 시점에 따라 엔터티는 기본(키), 중심(메인), 행위(액티브) 엔터티로 분류한다. 행위 엔터티는 두 개 이상의 부모로부터 발생하며 데이터가 지속적으로 쌓이는 특징이 있다."
+    },
+    {
+      "number": 2,
+      "subject": 1,
+      "question": "다음 학생 데이터 모델에서 학과 정보 관리 방식으로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<상황>"
+        },
+        {
+          "type": "text",
+          "text": "학생 엔터티에 학과명, 학과사무실, 학과전화번호가 함께 저장되어 있고, 여러 학생이 동일한 학과 정보를 반복해서 가진다."
+        }
+      ],
+      "choices": [
+        "학생 엔터티에서 학과 관련 속성을 분리하여 학과 엔터티를 별도로 둔다.",
+        "학생 엔터티에 학과명, 학과사무실, 학과전화번호를 계속 중복 저장한다.",
+        "학과명을 삭제하고 학생명만으로 학과를 판단한다.",
+        "학과 정보를 학생별로 서로 다르게 입력할 수 있도록 자유 텍스트로 둔다."
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 여러 학생이 동일한 학과 정보를 반복해서 가지면 학과 엔터티로 분리하여 중복과 이상 현상을 줄이는 것이 적절하다.\n오답 풀이\n\n1번: 학과 정보를 별도 엔터티로 분리하면 중복과 수정 이상을 줄일 수 있다.\n2번: 같은 학과 정보가 반복 저장되어 데이터 불일치가 발생할 수 있다.\n3번: 학과명 자체를 삭제하면 필요한 업무 정보를 잃는다.\n4번: 자유 텍스트는 표준화와 참조 무결성 유지가 어렵다.\n\n보충 개념\n반복 저장되는 속성 집합이 독립적인 의미를 가지면 별도 엔터티로 분리하는 것이 좋다. 학생과 학과는 보통 학과 1개에 여러 학생이 소속되는 1:N 관계로 모델링한다."
+    },
+    {
+      "number": 3,
+      "subject": 1,
+      "question": "다음 설명에 해당하는 스키마로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<설명>"
+        },
+        {
+          "type": "text",
+          "text": "모든 사용자 관점을 통합한 조직 전체 관점의 통합적 표현이다."
+        }
+      ],
+      "choices": [
+        "외부 스키마",
+        "개념 스키마",
+        "내부 스키마",
+        "서브 스키마"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. 개념 스키마는 모든 사용자 관점을 통합한 데이터베이스 전체의 논리적 구조를 표현한다.\n오답 풀이\n\n1번: 외부 스키마는 사용자나 응용 프로그램별 관점이다.\n2번: 조직 전체의 통합 관점을 나타내므로 정답이다.\n3번: 내부 스키마는 물리적 저장 구조를 표현한다.\n4번: 서브 스키마는 외부 스키마와 유사한 사용자 관점의 부분 스키마를 의미한다.\n\n보충 개념\n3단계 스키마 구조는 외부, 개념, 내부 스키마로 구분된다. 개념 스키마는 데이터베이스 전체의 논리적 구조와 제약조건을 정의한다."
+    },
+    {
+      "number": 4,
+      "subject": 1,
+      "question": "개념적 데이터 모델링에 대한 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "업무 중심의 핵심 엔터티와 관계를 도출한다.",
+        "DBMS나 물리적 저장 구조에 독립적으로 모델링한다.",
+        "추상화 수준이 높아 업무의 전체 구조를 파악하는 데 사용된다.",
+        "추상화 단계가 높아 상위 수준의 업무 구조 파악이 어렵다."
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. 개념적 모델링은 추상화 수준이 높기 때문에 오히려 업무의 전체 구조를 파악하는 데 적합하다.\n오답 풀이\n\n1번: 개념적 모델링의 목적이다.\n2번: 개념적 모델은 특정 DBMS나 저장 구조에 독립적이다.\n3번: 상위 수준의 업무 구조 파악에 적합하다.\n4번: 추상화 수준이 높아 상위 파악이 어렵다는 설명은 부적절하다.\n\n보충 개념\n개념적 모델링은 현실 업무를 엔터티, 속성, 관계 중심으로 추상화하는 단계이다. 이후 논리 모델링, 물리 모델링으로 구체화된다."
+    },
+    {
+      "number": 5,
+      "subject": 1,
+      "question": "업무에 원래 존재하는 독립적인 정보로서 다른 엔터티의 부모 역할을 하는, 발생 시점에 따른 분류상의 엔터티 유형으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "기본 엔터티",
+        "중심 엔터티",
+        "행위 엔터티",
+        "사건 엔터티"
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 기본 엔터티(키 엔터티)는 업무에 원래 존재하는 정보로 다른 엔터티의 도움 없이 독립적으로 생성되며, 다른 엔터티의 부모 역할을 한다. 고객, 상품, 부서 등이 대표적이다.\n오답 풀이\n\n1번: 독립적으로 생성되어 부모가 되는 발생 시점 분류상의 유형이다.\n2번: 중심 엔터티는 기본 엔터티로부터 발생하므로 '업무에 원래 존재하는 독립 정보'가 아니다.\n3번: 행위 엔터티는 두 개 이상의 부모 엔터티로부터 발생하는 종속적 유형이다.\n4번: 사건 엔터티는 발생 시점 분류가 아니라 유무형에 따른 분류(유형·개념·사건)에 속한다.\n\n보충 개념\n엔터티 분류: 유무형에 따라 유형·개념·사건 엔터티, 발생 시점에 따라 기본(키)·중심(메인)·행위(액티브) 엔터티로 구분한다."
+    },
+    {
+      "number": 6,
+      "subject": 1,
+      "question": "다음 데이터 모델링 구성 요소의 관계를 올바르게 표현한 것은?",
+      "stimulus": [],
+      "choices": [
+        "엔터티와 인스턴스는 1:1, 인스턴스와 속성은 1:1, 속성과 속성값은 1:M이다.",
+        "엔터티와 인스턴스는 M:1, 인스턴스와 속성은 M:1, 속성과 속성값은 M:N이다.",
+        "엔터티와 인스턴스는 1:M, 인스턴스와 속성은 1:M, 속성과 속성값은 1:M이다.",
+        "엔터티와 인스턴스는 1:M, 인스턴스와 속성은 1:M, 속성과 속성값은 1:1이다."
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. 엔터티는 여러 인스턴스를 가지며, 인스턴스는 여러 속성을 가지고, 각 속성은 하나의 속성값을 가진다.\n오답 풀이\n\n1번: 엔터티와 인스턴스, 인스턴스와 속성의 관계가 너무 제한적이다.\n2번: 방향과 관계 수가 부적절하다.\n3번: 속성과 속성값의 관계를 1:M으로 본 점이 부적절하다.\n4번: 제시된 조건에 가장 적절하다.\n\n보충 개념\n엔터티는 관리 대상의 집합, 인스턴스는 개별 사례, 속성은 인스턴스를 설명하는 항목이다. 속성값은 특정 인스턴스의 특정 속성에 들어가는 실제 값이다."
+    },
+    {
+      "number": 7,
+      "subject": 1,
+      "question": "식별자 분류에 대한 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "내부 식별자는 엔터티 내부에서 스스로 생성된 식별자이다.",
+        "외부 식별자는 다른 엔터티와의 관계를 통해 전달받은 식별자이다.",
+        "외래키(FK)는 일반적으로 외부 식별자에 해당한다.",
+        "외래키(FK)는 항상 내부 식별자이다."
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. 외래키는 다른 엔터티로부터 전달받은 속성이므로 내부 식별자가 아니라 외부 식별자로 보는 것이 일반적이다.\n오답 풀이\n\n1번: 내부 식별자의 설명이다.\n2번: 외부 식별자의 설명이다.\n3번: 외래키는 관계를 통해 전달받은 식별자에 해당한다.\n4번: 외래키를 항상 내부 식별자라고 한 설명은 틀리다.\n\n보충 개념\n식별자는 생성 위치에 따라 내부 식별자와 외부 식별자로 구분할 수 있다. FK는 부모 엔터티와의 관계를 통해 전달받는 경우가 많다."
+    },
+    {
+      "number": 8,
+      "subject": 1,
+      "question": "식별 관계와 비식별 관계에 대한 설명으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "식별 관계는 점선, 비식별 관계는 실선으로 표현한다.",
+        "식별 관계와 비식별 관계는 모두 점선으로만 표현한다.",
+        "식별 관계는 실선, 비식별 관계는 점선으로 표현한다.",
+        "식별 관계와 비식별 관계는 모두 실선으로만 표현한다."
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. ERD 표기에서 식별 관계는 실선, 비식별 관계는 점선으로 표현한다.\n오답 풀이\n\n1번: 식별 관계와 비식별 관계의 표기가 반대이다.\n2번: 둘을 모두 점선으로 표현하지 않는다.\n3번: 식별 관계와 비식별 관계의 표기가 올바르다.\n4번: 둘을 모두 실선으로 표현하지 않는다.\n\n보충 개념\n식별 관계에서는 부모 식별자가 자식의 주식별자에 포함된다. 비식별 관계에서는 부모 식별자가 자식의 일반 속성 또는 외래키로만 포함된다."
+    },
+    {
+      "number": 9,
+      "subject": 1,
+      "question": "교수-과목, 학생-과목 사이에 각각 다대다 관계가 존재한다고 할 때, 정규화 및 관계 해소 후 추가로 생성되는 관계 엔터티 수로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "0개",
+        "1개",
+        "2개",
+        "3개"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 교수-과목, 학생-과목처럼 M:N 관계가 두 개 존재하면 이를 해소하기 위한 관계 엔터티가 2개 추가될 수 있다.\n오답 풀이\n\n1번: M:N 관계 해소가 필요하므로 추가 엔터티가 없다는 설명은 부적절하다.\n2번: M:N 관계가 두 개라면 하나만으로 부족할 수 있다.\n3번: 두 개의 관계 엔터티가 추가되는 경우에 해당한다.\n4번: 제시된 관계 수보다 과도하게 추가한 값이다.\n\n보충 개념\nM:N 관계는 관계형 모델에서 직접 구현하기 어렵기 때문에 교차 엔터티로 해소한다. 예를 들어 수강, 강의배정 같은 엔터티가 추가될 수 있다."
+    },
+    {
+      "number": 10,
+      "subject": 1,
+      "question": "정규화에 대한 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "제3정규형은 제1정규형과 제2정규형을 만족하지 않아도 된다.",
+        "제1정규형은 속성의 원자성을 만족해야 한다.",
+        "제2정규형은 부분 함수 종속을 제거한다.",
+        "제3정규형은 이행 함수 종속을 제거한다."
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 제3정규형은 제1정규형과 제2정규형을 만족한 상태에서 이행 함수 종속을 제거해야 한다.\n오답 풀이\n\n1번: 제3정규형이 하위 정규형을 만족하지 않아도 된다는 설명은 틀리다.\n2번: 제1정규형의 설명이다.\n3번: 제2정규형의 설명이다.\n4번: 제3정규형의 설명이다.\n\n보충 개념\n정규화는 단계적으로 진행된다. 일반적으로 제2정규형은 제1정규형을 만족해야 하고, 제3정규형은 제2정규형을 만족해야 한다."
+    },
+    {
+      "number": 11,
+      "subject": 2,
+      "question": "다음 조건식의 결과로 조회되는 값으로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<데이터>"
+        },
+        {
+          "type": "table",
+          "rows": [
+            [
+              "COL1",
+              "COL2",
+              "RESULT"
+            ],
+            [
+              "1",
+              "NULL",
+              "A"
+            ],
+            [
+              "2",
+              "NULL",
+              "B"
+            ],
+            [
+              "NULL",
+              "3",
+              "C"
+            ],
+            [
+              "NULL",
+              "4",
+              "D"
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "text": "SELECT RESULT\nFROM T\nWHERE NOT (COL1 = 1 OR COL2 = NULL);"
+        }
+      ],
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "조회 결과 없음"
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. COL2 = NULL은 TRUE가 아니라 UNKNOWN이다. WHERE 절은 조건 결과가 TRUE인 행만 반환하며 FALSE와 UNKNOWN은 제외된다.\n행별 판단\n\nA: COL1 = 1은 TRUE, COL2 = NULL은 UNKNOWN → TRUE OR UNKNOWN = TRUE → NOT TRUE = FALSE이므로 제외된다.\nB: COL1 = 1은 FALSE, COL2 = NULL은 UNKNOWN → FALSE OR UNKNOWN = UNKNOWN → NOT UNKNOWN = UNKNOWN이므로 제외된다.\nC: COL1 = 1은 UNKNOWN, COL2 = NULL은 UNKNOWN → UNKNOWN OR UNKNOWN = UNKNOWN → NOT UNKNOWN = UNKNOWN이므로 제외된다.\nD: COL1 = 1은 UNKNOWN, COL2 = NULL은 UNKNOWN → UNKNOWN OR UNKNOWN = UNKNOWN → NOT UNKNOWN = UNKNOWN이므로 제외된다.\n\n보충 개념\nSQL에서 NULL은 = 연산자로 비교할 수 없고 IS NULL을 사용해야 한다. WHERE 절에서는 TRUE인 행만 조회된다."
+    },
+    {
+      "number": 12,
+      "subject": 2,
+      "question": "다음 중 결과가 다른 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<조건>"
+        },
+        {
+          "type": "text",
+          "text": "값과 옵션이 서로 다를 수 있으며, NULL 처리 함수의 결과를 비교한다."
+        }
+      ],
+      "choices": [
+        "NVL(값, 옵션)",
+        "COALESCE(값, 옵션)",
+        "NULLIF(값, 옵션)",
+        "CASE WHEN 값 IS NOT NULL THEN 값 ELSE 옵션 END"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. NVL, COALESCE, CASE 표현식은 값이 NULL이면 옵션을 반환하고 아니면 값을 반환하는 형태로 유사하지만, NULLIF는 두 값이 같으면 NULL을 반환한다.\n오답 풀이\n\n1번: 값이 NULL이면 옵션을 반환한다.\n2번: 인자 중 첫 번째 NULL이 아닌 값을 반환한다.\n3번: 값과 옵션이 같으면 NULL을 반환하므로 다른 함수들과 성격이 다르다.\n4번: NVL과 유사한 NULL 대체 로직이다.\n\n보충 개념\nNVL(expr1, expr2)는 expr1이 NULL이면 expr2를 반환한다. NULLIF(expr1, expr2)는 두 값이 같으면 NULL, 다르면 expr1을 반환한다."
+    },
+    {
+      "number": 13,
+      "subject": 2,
+      "question": "다음 윈도우 함수의 결과로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<데이터>"
+        },
+        {
+          "type": "table",
+          "rows": [
+            [
+              "GRP",
+              "VAL"
+            ],
+            [
+              "A",
+              "1"
+            ],
+            [
+              "A",
+              "3"
+            ],
+            [
+              "A",
+              "5"
+            ],
+            [
+              "A",
+              "7"
+            ],
+            [
+              "B",
+              "2"
+            ],
+            [
+              "B",
+              "4"
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "text": "SELECT GRP, VAL,\nSUM(VAL) OVER(\nPARTITION BY GRP\nORDER BY VAL\nRANGE BETWEEN 2 PRECEDING AND 2 FOLLOWING\n) AS SUM_VAL\nFROM T;"
+        }
+      ],
+      "choices": [
+        "A: 1,3,5,7 / B: 2,4",
+        "A: 4,8,12,12 / B: 2,4",
+        "A: 4,9,15,12 / B: 6,6",
+        "A: 16,16,16,16 / B: 6,6"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. RANGE 2 PRECEDING AND 2 FOLLOWING은 현재 VAL 기준으로 -2부터 +2 사이의 값을 합산한다.\n오답 풀이\n\n1번: 원본 값을 그대로 나열한 값이다.\n2번: 일부 프레임 합산이 잘못되었다.\n3번: A 그룹은 1→1+3=4, 3→1+3+5=9, 5→3+5+7=15, 7→5+7=12이고 B 그룹은 각각 2+4=6이다.\n4번: 전체 파티션 합계를 모든 행에 표시한 결과이다.\n\n보충 개념\nRANGE 프레임은 물리적인 행 개수가 아니라 ORDER BY 값의 범위를 기준으로 윈도우를 계산한다."
+    },
+    {
+      "number": 14,
+      "subject": 2,
+      "question": "계층형 질의에서 사원에서 관리자 방향으로 역방향 탐색을 수행하려고 한다. 다음 중 PRIOR가 들어갈 위치로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "code",
+          "text": "SELECT EMPNO, MGR\nFROM EMP\nSTART WITH EMPNO = 7788\nCONNECT BY EMPNO = MGR;"
+        }
+      ],
+      "choices": [
+        "EMPNO 앞",
+        "MGR 앞",
+        "START WITH 앞",
+        "SELECT 앞"
+      ],
+      "answer": 2,
+      "explanation": "정답: ②\n해설\nPRIOR는 \"이전(부모) 행\"을 가리킨다. EMPNO = PRIOR MGR은 현재 행의 EMPNO = 이전 행의 MGR → 사원에서 시작해 그 관리자를 따라 위로 올라가는 상향 탐색이다.\n① PRIOR EMPNO = MGR은 부모의 EMPNO = 자식의 MGR → 관리자→사원 하향 탐색이라 방향 반대\n③④ PRIOR는 CONNECT BY 절 안의 컬럼에만 붙으므로 위치 자체가 성립 안 함"
+    },
+    {
+      "number": 15,
+      "subject": 2,
+      "question": "다음 중 NVL을 사용하여 금액 컬럼의 NULL을 0으로 대체한 뒤 합계를 구하는 SQL로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "SELECT SUM(금액) FROM 매출",
+        "SELECT NVL(SUM(금액), 금액) FROM 매출",
+        "SELECT SUM(NVL(금액, 0)) FROM 매출",
+        "SELECT NVL(금액, SUM(0)) FROM 매출"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 개별 금액 값이 NULL이면 0으로 바꾼 뒤 합산하려면 SUM(NVL(금액, 0))을 사용한다.\n오답 풀이\n\n1번: SUM은 NULL을 제외하지만 NULL을 0으로 대체한 행별 계산은 아니다.\n2번: SUM 결과가 NULL일 때 금액으로 대체하는 잘못된 형태이다.\n3번: 각 행의 NULL 금액을 0으로 대체한 뒤 합산한다.\n4번: 일반 컬럼과 집계 함수를 잘못 혼용했다.\n\n보충 개념\nNVL(expr1, expr2)는 expr1이 NULL이면 expr2를 반환한다. 행별 NULL 대체 후 집계하려면 집계 함수 내부에 NVL을 넣는다."
+    },
+    {
+      "number": 16,
+      "subject": 2,
+      "question": "Oracle 계층형 질의에서 순방향과 역방향 탐색을 결정하는 핵심 키워드는?",
+      "stimulus": [],
+      "choices": [
+        "START WITH",
+        "PRIOR",
+        "ORDER BY",
+        "GROUP BY"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. 계층형 질의에서 PRIOR의 위치에 따라 부모에서 자식으로 탐색할지, 자식에서 부모로 탐색할지가 결정된다.\n오답 풀이\n\n1번: START WITH는 시작 노드를 지정한다.\n2번: PRIOR는 계층 탐색 방향을 결정하는 핵심 키워드이다.\n3번: ORDER BY는 결과 정렬과 관련된다.\n4번: GROUP BY는 그룹 집계와 관련된다.\n\n보충 개념\nCONNECT BY PRIOR 부모컬럼 = 자식컬럼은 하위 방향 탐색에 자주 사용된다. PRIOR 위치가 바뀌면 역방향 탐색이 된다."
+    },
+    {
+      "number": 17,
+      "subject": 2,
+      "question": "트랜잭션이 동시에 실행될 경우 다른 트랜잭션에 의해 영향을 받지 않고 독립적으로 실행되어야 한다는 성질은?",
+      "stimulus": [],
+      "choices": [
+        "원자성",
+        "일관성",
+        "고립성",
+        "지속성"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 고립성은 동시에 실행되는 트랜잭션들이 서로 영향을 주지 않고 독립적으로 수행되어야 한다는 성질이다.\n오답 풀이\n\n1번: 원자성은 모두 수행되거나 모두 취소되어야 하는 성질이다.\n2번: 일관성은 트랜잭션 전후 데이터가 일관된 상태를 유지해야 하는 성질이다.\n3번: 동시 실행 트랜잭션 간 독립성과 관련된다.\n4번: 지속성은 커밋 결과가 영구히 보존되는 성질이다.\n\n보충 개념\n트랜잭션의 ACID는 원자성, 일관성, 고립성, 지속성이다. 동시성 제어는 주로 고립성을 보장하기 위한 기술이다."
+    },
+    {
+      "number": 18,
+      "subject": 2,
+      "question": "서브쿼리에 대한 설명 중 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "서브쿼리는 메인쿼리 안에 포함된 SELECT 문이다.",
+        "서브쿼리에서는 메인쿼리의 컬럼을 참조할 수 있는 경우가 있다.",
+        "메인쿼리에서는 서브쿼리 내부 테이블의 컬럼을 직접 사용할 수 있다.",
+        "서브쿼리는 단일행, 다중행, 다중컬럼 서브쿼리 등으로 구분할 수 있다."
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 메인쿼리는 서브쿼리 내부에서만 정의된 테이블의 컬럼을 직접 사용할 수 없다.\n오답 풀이\n\n1번: 서브쿼리의 기본 설명이다.\n2번: 상관 서브쿼리에서는 서브쿼리가 메인쿼리 컬럼을 참조할 수 있다.\n3번: 서브쿼리 내부 테이블의 컬럼은 메인쿼리에서 직접 사용할 수 없다.\n4번: 서브쿼리는 반환 행 수와 컬럼 수에 따라 분류할 수 있다.\n\n보충 개념\n조인은 참여 테이블이 같은 쿼리 블록에 있어 컬럼 참조가 가능하다. 반면 서브쿼리의 내부 범위는 메인쿼리와 구분된다."
+    },
+    {
+      "number": 19,
+      "subject": 2,
+      "question": "순위 결과가 1, 2, 2, 3처럼 공동 순위 이후에도 순위가 연속되도록 하려면 어떤 함수를 사용해야 하는가?",
+      "stimulus": [],
+      "choices": [
+        "RANK",
+        "DENSE_RANK",
+        "ROW_NUMBER",
+        "NTILE"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. DENSE_RANK는 공동 순위가 있어도 다음 순위를 건너뛰지 않는다.\n오답 풀이\n\n1번: RANK는 1, 2, 2, 4처럼 다음 순위를 건너뛴다.\n2번: DENSE_RANK는 1, 2, 2, 3처럼 연속 순위를 반환한다.\n3번: ROW_NUMBER는 같은 값에도 서로 다른 번호를 부여한다.\n4번: NTILE은 데이터를 지정한 버킷 수로 나누는 함수이다.\n\n보충 개념\n순위 함수의 차이는 공동 순위 처리 방식에서 자주 출제된다. RANK, DENSE_RANK, ROW_NUMBER를 구분해야 한다."
+    },
+    {
+      "number": 20,
+      "subject": 2,
+      "question": "SQL 명령어와 명령어 유형의 연결 중 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "CREATE - DDL",
+        "INSERT - DCL",
+        "REVOKE - DCL",
+        "COMMIT - TCL"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. INSERT는 데이터를 삽입하는 DML이지 DCL이 아니다.\n오답 풀이\n\n1번: CREATE는 객체 생성 명령으로 DDL이다.\n2번: INSERT는 DML이므로 DCL이라고 한 설명은 틀리다.\n3번: REVOKE는 권한 회수 명령으로 DCL이다.\n4번: COMMIT은 트랜잭션 제어 명령으로 TCL이다.\n\n보충 개념\nDDL은 데이터 정의, DML은 데이터 조작, DCL은 권한 제어, TCL은 트랜잭션 제어 명령을 의미한다."
+    },
+    {
+      "number": 21,
+      "subject": 2,
+      "question": "차집합 연산으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "UNION",
+        "UNION ALL",
+        "INTERSECT",
+        "MINUS"
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. Oracle에서 차집합 연산은 MINUS를 사용한다.\n오답 풀이\n\n1번: UNION은 합집합이다.\n2번: UNION ALL은 중복을 포함한 합집합이다.\n3번: INTERSECT는 교집합이다.\n4번: MINUS는 첫 번째 SELECT 결과에서 두 번째 SELECT 결과에 포함된 행을 제외하는 차집합 연산이다.\n\n보충 개념\nSQL 표준 및 일부 DBMS에서는 EXCEPT를 차집합으로 사용하지만, SQLD에서 자주 다루는 Oracle 기준 차집합 연산자는 MINUS이다."
+    },
+    {
+      "number": 22,
+      "subject": 2,
+      "question": "세 번째 문자가 L인 단어를 찾는 LIKE 조건으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "LIKE 'L__%'",
+        "LIKE '__L%'",
+        "LIKE '%L__'",
+        "LIKE '_L%'"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. _는 임의의 한 글자를 의미하므로 __L%는 첫 두 글자 뒤 세 번째 글자가 L인 문자열을 찾는다.\n오답 풀이\n\n1번: 첫 번째 문자가 L인 문자열을 찾는다.\n2번: 세 번째 문자가 L인 문자열을 찾는다.\n3번: 뒤쪽에 L이 포함되고 그 뒤에 두 글자가 이어지는 문자열을 찾는 형태이다.\n4번: 두 번째 문자가 L인 문자열을 찾는다.\n\n보충 개념\nLIKE에서 %는 0개 이상의 임의 문자열, _는 정확히 한 글자를 의미한다. 위치 조건에는 _ 개수가 중요하다."
+    },
+    {
+      "number": 23,
+      "subject": 2,
+      "question": "아래 쿼리의 결과값으로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<TAB1>"
+        },
+        {
+          "type": "table",
+          "rows": [
+            [
+              "C1",
+              "C2",
+              "C3"
+            ],
+            [
+              "1",
+              "2",
+              "3"
+            ],
+            [
+              "NULL",
+              "2",
+              "3"
+            ],
+            [
+              "NULL",
+              "NULL",
+              "3"
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "text": "SELECT SUM(COALESCE(C1, C2, C3))\nFROM TAB1;"
+        }
+      ],
+      "choices": [
+        "0",
+        "1",
+        "6",
+        "14"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. COALESCE는 첫 번째 NULL이 아닌 값을 반환하므로 각 행의 값은 1, 2, 3이고 합계는 6이다.\n오답 풀이\n\n1번: NULL을 모두 0으로 처리한 값이 아니다.\n2번: 첫 번째 행만 계산한 값이다.\n3번: 1 + 2 + 3 = 6으로 올바르다.\n4번: 모든 컬럼 값을 단순 합산한 값과 혼동한 것이다.\n\n보충 개념\nCOALESCE(expr1, expr2, ...)는 왼쪽부터 검사하여 첫 번째 NULL이 아닌 값을 반환한다. NVL보다 여러 인자를 처리할 수 있다."
+    },
+    {
+      "number": 24,
+      "subject": 2,
+      "question": "다음 중 SELECT 문장의 논리적 실행 순서를 올바르게 나열한 것은?",
+      "stimulus": [],
+      "choices": [
+        "SELECT - FROM - WHERE - GROUP BY - HAVING - ORDER BY",
+        "FROM - SELECT - WHERE - GROUP BY - HAVING - ORDER BY",
+        "FROM - WHERE - GROUP BY - HAVING - ORDER BY - SELECT",
+        "FROM - WHERE - GROUP BY - HAVING - SELECT - ORDER BY"
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. SELECT 문의 논리적 처리 순서는 FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY 순서로 이해할 수 있다.\n오답 풀이\n\n1번: SELECT가 가장 먼저 수행된다고 보기 어렵다.\n2번: WHERE가 SELECT보다 먼저 처리된다.\n3번: ORDER BY는 SELECT 결과를 기준으로 정렬하므로 SELECT 이후로 보는 것이 일반적이다.\n4번: 논리적 실행 순서로 가장 적절하다.\n\n보충 개념\n논리적 실행 순서를 이해하면 WHERE 절에서 SELECT 별칭을 사용할 수 없는 이유를 설명할 수 있다. ORDER BY에서는 SELECT 별칭 사용이 가능하다."
+    },
+    {
+      "number": 25,
+      "subject": 2,
+      "question": "다음 중 집계 결과 A와 B가 서로 다른 값을 반환할 수 있는 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<조건>"
+        },
+        {
+          "type": "text",
+          "text": "SAL 컬럼에는 서로 다른 급여 값이 존재한다."
+        }
+      ],
+      "choices": [
+        "COUNT(SAL) AS A, COUNT(SAL) AS B",
+        "SUM(SAL) AS A, SUM(SAL) AS B",
+        "MAX(SAL) AS A, MIN(SAL) AS B",
+        "AVG(SAL) AS A, AVG(SAL) AS B"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. SAL 컬럼에 서로 다른 값이 존재하면 일반적으로 MAX(SAL)과 MIN(SAL)은 서로 다른 집계 결과를 반환한다.\n오답 풀이\n\n1번: 같은 표현식이므로 A와 B가 같다.\n2번: 같은 표현식이므로 A와 B가 같다.\n3번: 최대값과 최소값은 서로 다른 값을 반환할 수 있다.\n4번: 같은 표현식이므로 A와 B가 같다.\n\n보충 개념\n집계 함수는 그룹별 하나의 결과를 반환한다. MAX는 최댓값, MIN은 최솟값을 반환하므로 서로 다른 값이 존재하는 데이터에서는 두 결과가 달라질 수 있다."
+    },
+    {
+      "number": 26,
+      "subject": 2,
+      "question": "제품, 생산제품, 생산라인 엔터티가 있을 때 제품과 생산라인을 생산제품 엔터티 없이 직접 조인하면 발생할 수 있는 문제로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "카테시안 곱이 발생할 수 있다.",
+        "항상 INNER JOIN 결과가 0건이 된다.",
+        "기본키가 자동으로 생성된다.",
+        "외래키 제약조건이 자동으로 삭제된다."
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 제품과 생산라인 사이의 관계 엔터티를 거치지 않고 직접 조인하면 조인 조건이 부정확해져 카테시안 곱이 발생할 수 있다.\n오답 풀이\n\n1번: 관계 조건이 없거나 부적절하면 모든 조합이 생성될 수 있다.\n2번: 항상 0건이 되는 것은 아니다.\n3번: 조인으로 기본키가 자동 생성되지 않는다.\n4번: 조인으로 외래키 제약조건이 삭제되지 않는다.\n\n보충 개념\nM:N 관계는 교차 엔터티를 통해 해소한다. 직접 관련 없는 테이블을 조인하면 불필요한 조합이 생성되어 결과가 부풀려질 수 있다."
+    },
+    {
+      "number": 27,
+      "subject": 2,
+      "question": "회원 테이블과 주문이력 테이블이 있을 때, 주문을 한 번도 하지 않은 회원을 찾는 SQL로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "SELECT * FROM 회원 M WHERE EXISTS (SELECT 1 FROM 주문 O WHERE M.회원ID = O.회원ID)",
+        "SELECT * FROM 회원 M WHERE M.회원ID IN (SELECT 회원ID FROM 주문)",
+        "SELECT * FROM 회원 M WHERE NOT EXISTS (SELECT 1 FROM 주문 O WHERE M.회원ID = O.회원ID)",
+        "SELECT * FROM 회원 M, 주문 O WHERE M.회원ID = O.회원ID"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 주문이 존재하지 않는 회원을 찾으려면 NOT EXISTS를 사용하여 해당 회원의 주문 이력이 없는 경우를 조회한다.\n오답 풀이\n\n1번: 주문한 회원을 찾는다.\n2번: 주문한 회원을 찾는다.\n3번: 주문 이력이 없는 회원을 찾는다.\n4번: 회원과 주문을 조인하므로 주문한 회원만 조회된다.\n\n보충 개념\n미존재 데이터를 찾을 때는 NOT EXISTS가 자주 사용된다. NOT IN은 서브쿼리 결과에 NULL이 포함될 때 예상과 다른 결과가 나올 수 있다."
+    },
+    {
+      "number": 28,
+      "subject": 2,
+      "question": "부모 테이블의 행 삭제 시 해당 행을 참조하는 자식 테이블의 행도 함께 삭제되도록 외래키를 생성하려고 한다. 적절한 옵션은?",
+      "stimulus": [],
+      "choices": [
+        "ON DELETE RESTRICT",
+        "ON DELETE SET NULL",
+        "ON DELETE CASCADE",
+        "ON UPDATE CASCADE"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. ON DELETE CASCADE는 부모 행이 삭제될 때 이를 참조하는 자식 행도 함께 삭제되도록 한다.\n오답 풀이\n\n1번: RESTRICT는 자식 행이 있으면 부모 행 삭제를 제한한다.\n2번: SET NULL은 자식 외래키 값을 NULL로 변경한다.\n3번: 자식 행까지 함께 삭제하는 옵션이다.\n4번: 삭제가 아니라 갱신 전파와 관련된 표현이다.\n\n보충 개념\n외래키 삭제 규칙에는 RESTRICT, CASCADE, SET NULL 등이 있다. 업무적으로 자식 데이터까지 삭제되어도 되는지 신중히 판단해야 한다."
+    },
+    {
+      "number": 29,
+      "subject": 2,
+      "question": "ROLE에 대한 설명으로 옳은 것은?",
+      "stimulus": [],
+      "choices": [
+        "ROLE은 테이블 데이터를 저장하는 물리적 공간이다.",
+        "ROLE은 GRANT로 부여하고 REVOKE로 회수할 수 있다.",
+        "ROLE은 COMMIT으로 생성하고 ROLLBACK으로 삭제한다.",
+        "ROLE은 SELECT 문에서만 사용할 수 있는 별칭이다."
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. ROLE은 여러 권한을 묶어 관리하는 객체이며 GRANT로 부여하고 REVOKE로 회수할 수 있다.\n오답 풀이\n\n1번: 물리적 저장 공간은 테이블스페이스 등에 해당한다.\n2번: ROLE 권한 부여와 회수 설명으로 옳다.\n3번: ROLE은 COMMIT/ROLLBACK으로 생성·삭제하지 않는다.\n4번: 별칭이 아니라 권한 관리 객체이다.\n\n보충 개념\nROLE을 사용하면 사용자별로 권한을 하나씩 부여하지 않고 권한 묶음을 관리할 수 있다. 권한 부여는 GRANT, 회수는 REVOKE를 사용한다."
+    },
+    {
+      "number": 30,
+      "subject": 2,
+      "question": "CTAS(Create Table As Select)로 테이블을 복제할 때 제약조건 적용에 대한 설명으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "기본키(PK)는 복제되지 않는다.",
+        "NOT NULL 조건은 절대 복제되지 않는다.",
+        "CHECK 제약조건은 항상 복제된다.",
+        "DEFAULT 값은 항상 복제된다."
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. CTAS로 테이블을 생성하면 일반적으로 기본키, 외래키, CHECK, DEFAULT 같은 제약조건은 복제되지 않고 일부 NOT NULL 속성만 유지될 수 있다.\n오답 풀이\n\n1번: PK는 CTAS로 자동 복제되지 않는다.\n2번: NOT NULL 속성은 일부 유지될 수 있다.\n3번: CHECK 제약조건은 일반적으로 복제되지 않는다.\n4번: DEFAULT 정의는 일반적으로 복제되지 않는다.\n\n보충 개념\nCTAS는 조회 결과를 기반으로 새 테이블을 빠르게 생성하는 방식이다. 구조와 데이터는 복제되지만 제약조건, 인덱스, 트리거 등은 별도 생성이 필요할 수 있다."
+    },
+    {
+      "number": 31,
+      "subject": 2,
+      "question": "급여가 2000 이상인 행만 합계에 포함하려고 한다. 조건에 맞지 않는 행은 NULL로 처리하여 SUM 집계에서 제외하는 표현으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "SUM(CASE WHEN SAL >= 2000 THEN SAL ELSE 0 END)",
+        "SUM(CASE WHEN SAL >= 2000 THEN SAL ELSE NULL END)",
+        "COUNT(CASE WHEN SAL >= 2000 THEN SAL ELSE NULL END)",
+        "MAX(CASE WHEN SAL >= 2000 THEN NULL ELSE SAL END)"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. 조건에 맞는 급여만 합산하고 조건에 맞지 않는 값은 NULL로 처리하면 SUM에서 제외된다.\n오답 풀이\n\n1번: ELSE 0은 합계 결과는 비슷할 수 있으나 NULL 제외 개념을 묻는 문제 의도와 다르다.\n2번: 조건에 맞지 않는 행을 NULL로 처리해 집계에서 제외한다.\n3번: 합계가 아니라 건수를 센다.\n4번: 조건에 맞는 값을 NULL로 만들어 반대로 처리한다.\n\n보충 개념\n집계 함수는 일반적으로 NULL을 제외한다. 조건부 집계에는 CASE WHEN과 SUM, COUNT를 함께 자주 사용한다."
+    },
+    {
+      "number": 32,
+      "subject": 2,
+      "question": "다음 중 A 결과와 B 결과가 다른 것으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "A: UNION, B: DISTINCT를 사용한 UNION 결과",
+        "A: INNER JOIN, B: 조인 조건을 WHERE 절에 작성한 등가 조인",
+        "A: NOT EXISTS, B: NULL이 포함된 NOT IN",
+        "A: COUNT(*), B: COUNT(1)"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. NOT EXISTS와 NOT IN은 서브쿼리 결과에 NULL이 포함될 때 결과가 달라질 수 있다.\n오답 풀이\n\n1번: UNION은 기본적으로 중복을 제거한다.\n2번: 같은 등가 조인 조건이라면 결과가 같을 수 있다.\n3번: NULL이 포함된 NOT IN은 UNKNOWN으로 인해 NOT EXISTS와 달라질 수 있다.\n4번: COUNT(*)와 COUNT(1)은 일반적으로 전체 행 수를 센다.\n\n보충 개념\nNOT IN은 비교 목록에 NULL이 있으면 결과가 반환되지 않는 문제가 생길 수 있다. NULL 가능성이 있는 반집합 연산에는 NOT EXISTS가 안전한 경우가 많다."
+    },
+    {
+      "number": 33,
+      "subject": 2,
+      "question": "SQL의 특징이 아닌 것은?",
+      "stimulus": [],
+      "choices": [
+        "절차적(procedural)",
+        "구조적(structured)",
+        "집합적(set-based)",
+        "선언적(declarative)"
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. SQL은 어떤 데이터를 원하는지 선언하는 비절차적 언어에 가깝다.\n오답 풀이\n\n1번: SQL은 절차적 언어가 아니라 비절차적·선언적 질의 언어이다.\n2번: SQL은 Structured Query Language로 구조화된 질의 언어이다.\n3번: SQL은 행 단위보다 집합 단위 처리를 지향한다.\n4번: SQL은 원하는 결과를 선언하는 방식이다.\n\n보충 개념\nSQL은 데이터 처리 절차를 상세히 명령하기보다 원하는 결과를 표현한다. DBMS 옵티마이저가 실행 계획을 결정한다."
+    },
+    {
+      "number": 34,
+      "subject": 2,
+      "question": "다음 집합 연산 결과로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<SQL>"
+        },
+        {
+          "type": "code",
+          "text": "SELECT MAX(SAL) FROM EMP\nUNION\nSELECT MIN(SAL) FROM EMP;"
+        },
+        {
+          "type": "text",
+          "text": "<EMP>"
+        },
+        {
+          "type": "table",
+          "rows": [
+            [
+              "ENAME",
+              "SAL"
+            ],
+            [
+              "SCOTT",
+              "9000"
+            ],
+            [
+              "SMITH",
+              "8950"
+            ],
+            [
+              "FORD",
+              "8925"
+            ]
+          ]
+        }
+      ],
+      "choices": [
+        "9000",
+        "8925",
+        "9000, 8925",
+        "NULL"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. UNION은 두 SELECT 결과를 합치고 중복을 제거하므로 최대 급여 9000과 최소 급여 8925가 모두 출력된다.\n오답 풀이\n\n1번: MAX 결과만 포함한 값이다.\n2번: MIN 결과만 포함한 값이다.\n3번: MAX와 MIN 결과가 서로 다르면 두 행이 출력된다.\n4번: 집계 결과가 존재하므로 NULL이 아니다.\n\n보충 개념\nUNION은 중복을 제거한 합집합이다. UNION ALL은 중복을 제거하지 않고 모든 결과를 그대로 합친다."
+    },
+    {
+      "number": 35,
+      "subject": 2,
+      "question": "다음 중 ROLLUP(A, B)와 다른 결과를 생성하는 것은?",
+      "stimulus": [],
+      "choices": [
+        "GROUP BY ROLLUP(A, B)",
+        "GROUP BY GROUPING SETS((A, B), (A), ())",
+        "GROUP BY ROLLUP((A, B))",
+        "GROUP BY A, B UNION ALL GROUP BY A UNION ALL GROUP BY ()"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. ROLLUP((A, B))는 A와 B를 하나의 묶음으로 보아 (A, B), ()만 생성하므로 ROLLUP(A, B)와 다르다.\n오답 풀이\n\n1번: 기준 표현이다.\n2번: ROLLUP(A, B)와 같은 그룹 집합이다.\n3번: 중첩 괄호로 A,B를 하나의 단위로 처리하여 (A) 소계가 빠진다.\n4번: ROLLUP(A, B)의 결과 집합을 UNION ALL로 표현한 형태이다.\n\n보충 개념\nROLLUP(A, B)는 (A,B), (A), ()를 생성한다. ROLLUP((A,B))는 복합 컬럼 묶음으로 처리되어 (A,B), ()만 생성한다."
+    },
+    {
+      "number": 36,
+      "subject": 2,
+      "question": "NULL을 포함한 컬럼에 대한 AVG 계산 설명으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "AVG(컬럼)과 AVG(NVL(컬럼, 0))은 항상 같다.",
+        "AVG(컬럼)은 NULL을 제외하고 평균을 계산한다.",
+        "AVG(NVL(컬럼, 0))은 NULL을 제외하고 평균을 계산한다.",
+        "AVG(컬럼)은 NULL이 하나라도 있으면 항상 NULL을 반환한다."
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. AVG(컬럼)은 NULL을 제외하고 평균을 계산한다.\n오답 풀이\n\n1번: AVG(NVL(컬럼,0))은 NULL을 0으로 포함해 평균을 내므로 AVG(컬럼)과 달라질 수 있다.\n2번: AVG의 NULL 처리 방식으로 옳다.\n3번: NVL로 NULL을 0으로 바꾸면 0도 평균 계산에 포함된다.\n4번: NULL이 있어도 NULL이 아닌 값이 있으면 평균을 계산한다.\n\n보충 개념\n집계 함수는 대부분 NULL을 제외한다. 그러나 NVL로 NULL을 0으로 바꾸면 평균의 분모가 달라져 결과가 달라질 수 있다."
+    },
+    {
+      "number": 37,
+      "subject": 2,
+      "question": "NATURAL JOIN에 대한 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "동일한 이름의 컬럼을 자동으로 조인 조건으로 사용한다.",
+        "동일 이름 컬럼은 결과에서 하나만 표시될 수 있다.",
+        "NATURAL JOIN 구문에서는 USING이나 ON 절을 함께 사용할 수 있다.",
+        "의도하지 않은 동일 이름 컬럼이 있으면 예상과 다른 결과가 나올 수 있다."
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. NATURAL JOIN은 조인 컬럼을 자동으로 결정하므로 ON이나 USING 절을 함께 사용할 수 없다.\n오답 풀이\n\n1번: NATURAL JOIN의 특징이다.\n2번: 동일 이름 컬럼은 하나로 표시될 수 있다.\n3번: NATURAL JOIN과 ON/USING을 함께 사용할 수 있다는 설명은 틀리다.\n4번: 동일 이름 컬럼이 의도치 않게 조인 조건이 될 수 있다.\n\n보충 개념\nNATURAL JOIN은 편리하지만 조인 조건이 명시적이지 않아 실무에서는 주의가 필요하다. 명확한 조건이 필요하면 ON 또는 USING을 사용하는 것이 좋다."
+    },
+    {
+      "number": 38,
+      "subject": 2,
+      "question": "제약조건에 대한 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "고유키에는 DBMS에 따라 NULL이 허용될 수 있다.",
+        "CHECK 제약조건은 조건을 만족하지 않는 값을 제한하는 데 사용된다.",
+        "하나의 테이블에는 기본키 제약조건을 두 개 이상 만들 수 있다.",
+        "DEFAULT는 명시 값이 없을 때 기본값을 입력하는 데 사용된다."
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 하나의 테이블에는 기본키 제약조건을 하나만 지정할 수 있다.\n오답 풀이\n\n1번: 고유키의 NULL 처리 방식은 DBMS별로 차이가 있을 수 있다.\n2번: CHECK는 값의 조건을 제한하는 제약조건이다.\n3번: 테이블당 기본키 제약조건은 하나만 만들 수 있다.\n4번: DEFAULT는 값이 생략될 때 기본값을 제공한다.\n\n보충 개념\n기본키는 테이블의 각 행을 대표하는 식별 기준이다. 여러 컬럼을 묶어 하나의 복합 기본키를 만들 수는 있지만 기본키 제약조건 자체는 테이블당 하나이다."
+    },
+    {
+      "number": 39,
+      "subject": 2,
+      "question": "가능한 모든 조합의 소계와 총계를 생성하는 GROUP BY 확장 기능은?",
+      "stimulus": [],
+      "choices": [
+        "ROLLUP",
+        "GROUPING SETS",
+        "CUBE",
+        "GROUPING"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. CUBE는 지정된 컬럼들의 모든 가능한 조합에 대한 소계를 생성한다.\n오답 풀이\n\n1번: ROLLUP은 계층적 소계를 생성한다.\n2번: GROUPING SETS는 지정된 그룹 집합만 생성한다.\n3번: CUBE는 모든 조합을 생성한다.\n4번: GROUPING은 소계 행 여부를 판별하는 함수이다.\n\n보충 개념\nCUBE(A, B)는 (A,B), (A), (B), () 그룹을 생성한다. ROLLUP(A,B)는 (A,B), (A), ()만 생성한다."
+    },
+    {
+      "number": 40,
+      "subject": 2,
+      "question": "다음 조건을 적용했을 때 조회되는 COL 값으로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<데이터>"
+        },
+        {
+          "type": "table",
+          "rows": [
+            [
+              "COL"
+            ],
+            [
+              "NULL"
+            ],
+            [
+              "1"
+            ],
+            [
+              "2"
+            ],
+            [
+              "3"
+            ],
+            [
+              "4"
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "text": "SELECT COL\nFROM T\nWHERE NOT (COL <= 2);"
+        }
+      ],
+      "choices": [
+        "NULL, 3, 4",
+        "1, 2",
+        "3, 4",
+        "NULL, 1, 2"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. COL이 3 또는 4이면 COL <= 2가 FALSE이고 NOT(FALSE)는 TRUE가 된다. NULL은 비교 결과가 UNKNOWN이므로 NOT을 적용해도 UNKNOWN이며 조회되지 않는다.\n오답 풀이\n\n1번: NULL은 조건 결과가 TRUE가 아니므로 포함되지 않는다.\n2번: 1, 2는 COL <= 2가 TRUE이고 NOT 처리 후 FALSE가 된다.\n3번: 3, 4만 조회된다.\n4번: NULL, 1, 2는 조건을 만족하지 않는다.\n\n보충 개념\nSQL WHERE 절은 TRUE인 행만 반환한다. FALSE뿐 아니라 UNKNOWN도 결과에서 제외된다."
+    },
+    {
+      "number": 41,
+      "subject": 2,
+      "question": "다음 중 조인 결과가 다른 것으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "INNER JOIN",
+        "동등 조인",
+        "JOIN ... ON",
+        "CROSS JOIN"
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. CROSS JOIN은 조인 조건 없이 두 테이블의 모든 조합을 생성하므로 일반적인 동등 조인이나 INNER JOIN과 결과가 다르다.\n오답 풀이\n\n1번: INNER JOIN은 조건을 만족하는 행만 결합한다.\n2번: 동등 조인은 같은 값을 기준으로 조인하는 방식이다.\n3번: JOIN ... ON은 명시적 조인 조건을 작성하는 방식이다.\n4번: CROSS JOIN은 카테시안 곱을 생성한다.\n\n보충 개념\nCROSS JOIN은 두 테이블의 행 수를 곱한 만큼 결과가 생성된다. 조인 조건 누락으로 의도치 않은 카테시안 곱이 발생할 수 있다."
+    },
+    {
+      "number": 42,
+      "subject": 2,
+      "question": "제품, 생산제품, 생산라인 엔터티가 있을 때 제품명과 생산라인명을 올바르게 조회하기 위한 조인 경로로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "제품 → 생산제품 → 생산라인",
+        "제품 → 생산라인",
+        "생산제품 → 제품을 거치지 않고 생산라인만 조회",
+        "제품과 생산라인을 조건 없이 CROSS JOIN"
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 제품과 생산라인의 관계는 생산제품 엔터티를 통해 표현되므로 제품 → 생산제품 → 생산라인 경로로 조인해야 한다.\n오답 풀이\n\n1번: 관계 엔터티를 거치는 올바른 조인 경로이다.\n2번: 제품과 생산라인을 직접 조인하면 관계 조건이 누락될 수 있다.\n3번: 제품 정보를 함께 조회할 수 없다.\n4번: CROSS JOIN은 모든 조합을 만들어 의미 없는 결과가 발생할 수 있다.\n\n보충 개념\nM:N 관계를 해소한 모델에서는 교차 엔터티가 실제 관계 정보를 가진다. 조회 시에도 관계 엔터티를 기준으로 조인해야 정확한 결과를 얻을 수 있다."
+    },
+    {
+      "number": 43,
+      "subject": 2,
+      "question": "다음 중 NULL 관련 함수의 설명으로 적절하지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "NVL(expr1, expr2)는 expr1이 NULL이면 expr2를 반환한다.",
+        "NVL2(expr1, expr2, expr3)는 expr1이 NULL이 아니면 expr2, NULL이면 expr3을 반환한다.",
+        "NULLIF(expr1, expr2)는 두 값이 같으면 NULL을 반환한다.",
+        "COALESCE(expr1, expr2, ...)는 모든 인자를 더한 합계를 반환한다."
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. COALESCE는 모든 인자를 더하는 함수가 아니라 첫 번째 NULL이 아닌 값을 반환하는 함수이다.\n오답 풀이\n\n1번: NVL의 설명이다.\n2번: NVL2의 설명이다.\n3번: NULLIF의 설명이다.\n4번: COALESCE에 대한 설명이 틀렸다.\n\n보충 개념\nNULL 처리 함수는 시험에서 자주 계산 문제로 출제된다. NVL, NVL2, NULLIF, COALESCE의 반환 규칙을 구분해야 한다."
+    },
+    {
+      "number": 44,
+      "subject": 2,
+      "question": "NULL이 포함된 컬럼에 대해 결과가 달라질 수 있는 집계식 조합으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "COUNT(*)와 COUNT(1)",
+        "MAX(COL)와 MAX(COL)",
+        "SUM(COL)와 SUM(COL)",
+        "AVG(COL)와 AVG(NVL(COL, 0))"
+      ],
+      "answer": 4,
+      "explanation": "정답: 4. AVG(COL)은 NULL을 제외하지만 AVG(NVL(COL,0))은 NULL을 0으로 바꿔 평균에 포함하므로 결과가 달라질 수 있다.\n오답 풀이\n\n1번: 둘 다 전체 행 수를 세는 경우가 일반적이다.\n2번: 같은 표현식이다.\n3번: 같은 표현식이다.\n4번: NULL 처리 방식이 달라 평균 결과가 달라질 수 있다.\n\n보충 개념\nAVG는 NULL을 제외하고 평균을 계산한다. NULL을 0으로 대체하면 분자와 분모 모두 영향을 받을 수 있다."
+    },
+    {
+      "number": 45,
+      "subject": 2,
+      "question": "SELECT 결과에서 행의 중복을 제거하는 키워드로 알맞은 것은?",
+      "stimulus": [],
+      "choices": [
+        "UNIQUE",
+        "DISTINCT",
+        "ONLY",
+        "EXCEPT"
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. DISTINCT는 SELECT 결과에서 중복 행을 제거할 때 사용한다.\n오답 풀이\n\n1번: UNIQUE는 제약조건이나 인덱스에서 주로 사용된다.\n2번: SELECT 중복 제거 키워드이다.\n3번: ONLY는 행 제한 구문에서 사용될 수 있다.\n4번: EXCEPT는 차집합 연산이다.\n\n보충 개념\nDISTINCT는 SELECT 절의 전체 결과 행 기준으로 중복을 제거한다. 여러 컬럼을 함께 조회하면 컬럼 조합 전체가 중복 판단 기준이 된다."
+    },
+    {
+      "number": 46,
+      "subject": 2,
+      "question": "MERGE 문에 대한 설명으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "MERGE는 조회 전용 명령어이다.",
+        "MERGE는 조건에 따라 UPDATE와 INSERT를 수행할 수 있다.",
+        "MERGE는 COMMIT과 ROLLBACK만 수행한다.",
+        "MERGE는 테이블 구조만 변경한다."
+      ],
+      "answer": 2,
+      "explanation": "정답: 2. MERGE는 대상 테이블과 원본 데이터를 비교하여 매칭되면 UPDATE, 매칭되지 않으면 INSERT 등을 수행할 수 있다.\n오답 풀이\n\n1번: MERGE는 조회 전용이 아니라 데이터 변경 명령이다.\n2번: MERGE의 핵심 기능이다.\n3번: COMMIT, ROLLBACK은 TCL이다.\n4번: 테이블 구조 변경은 ALTER 같은 DDL의 역할이다.\n\n보충 개념\nMERGE는 UPSERT 처리에 자주 사용된다. USING, ON, WHEN MATCHED, WHEN NOT MATCHED 절의 역할을 구분해야 한다."
+    },
+    {
+      "number": 47,
+      "subject": 2,
+      "question": "다음 날짜 형식 문자열로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "text",
+          "text": "<조건>"
+        },
+        {
+          "type": "text",
+          "text": "연월일시분초를 20250101143059와 같이 출력하려고 한다."
+        }
+      ],
+      "choices": [
+        "YYYYMMDDHH24MISS",
+        "YYYY-MM-DD HH24:MI:SS",
+        "YY/MM/DD HH:MI",
+        "YYYYDDMMHHMISS"
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. YYYYMMDDHH24MISS는 연도 4자리, 월 2자리, 일 2자리, 24시간제 시, 분, 초를 공백 없이 표현한다.\n오답 풀이\n\n1번: 조건의 출력 형식에 맞다.\n2번: 구분자와 공백이 포함된다.\n3번: 연도가 2자리이고 초가 없다.\n4번: 월과 일이 뒤바뀌어 있다.\n\n보충 개념\nOracle 날짜 포맷에서 YYYY는 4자리 연도, MM은 월, DD는 일, HH24는 24시간제 시, MI는 분, SS는 초를 의미한다."
+    },
+    {
+      "number": 48,
+      "subject": 2,
+      "question": "계층형 쿼리에서 하위 방향으로 사원 정보를 조회하려고 한다. PRIOR가 들어갈 위치로 가장 적절한 것은?",
+      "stimulus": [
+        {
+          "type": "code",
+          "text": "SELECT EMPNO, MGR\nFROM EMP\nSTART WITH MGR IS NULL\nCONNECT BY (ㄷ) EMPNO = (ㄹ) MGR;"
+        }
+      ],
+      "choices": [
+        "EMPNO 앞",
+        "MGR 앞",
+        "START WITH 앞",
+        "SELECT 앞"
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 부모 행의 EMPNO가 자식 행의 MGR과 같아야 하므로 CONNECT BY PRIOR EMPNO = MGR 형태가 적절하다.\n오답 풀이\n\n1번: EMPNO 앞에 PRIOR가 들어가면 부모에서 자식 방향 탐색이 된다.\n2번: MGR 앞에 PRIOR가 들어가면 자식에서 부모 방향 탐색이 될 수 있다.\n3번: START WITH 앞에 PRIOR를 두지 않는다.\n4번: SELECT 앞에 PRIOR를 두지 않는다.\n\n보충 개념\n계층형 질의에서 PRIOR는 이전 단계의 행을 의미한다. PRIOR가 붙는 컬럼에 따라 탐색 방향이 달라진다."
+    },
+    {
+      "number": 49,
+      "subject": 2,
+      "question": "부서 테이블의 1행을 삭제할 때, 이를 참조하는 사원 테이블의 행도 함께 삭제되도록 하는 외래키 표현으로 가장 적절한 것은?",
+      "stimulus": [],
+      "choices": [
+        "FOREIGN KEY (부서ID) REFERENCES 부서(부서ID) ON DELETE RESTRICT",
+        "부서 테이블이 사원 테이블을 REFERENCES 하고 ON DELETE CASCADE를 지정한다.",
+        "사원 테이블의 부서ID가 부서 테이블의 부서ID를 REFERENCES 하고 ON DELETE CASCADE를 지정한다.",
+        "FOREIGN KEY (부서ID) REFERENCES 부서(부서ID) ON DELETE SET NULL"
+      ],
+      "answer": 3,
+      "explanation": "정답: 3. 자식 테이블인 사원 테이블의 외래키가 부모 테이블인 부서 테이블을 참조하고 ON DELETE CASCADE를 지정해야 부모 삭제 시 자식 행도 삭제된다.\n오답 풀이\n\n1번: RESTRICT는 자식 행이 있으면 부모 삭제를 제한한다.\n2번: 참조 방향이 반대이다.\n3번: 자식이 부모를 참조하고 CASCADE를 지정하는 올바른 방식이다.\n4번: SET NULL은 자식 행을 삭제하지 않고 외래키 값을 NULL로 만든다.\n\n보충 개념\n외래키는 자식 테이블에 정의하며 부모 테이블의 기본키 또는 고유키를 참조한다. ON DELETE CASCADE는 부모 삭제 시 자식 행 삭제를 전파한다."
+    },
+    {
+      "number": 50,
+      "subject": 2,
+      "question": "아래 보기 중 올바르지 않은 것은?",
+      "stimulus": [],
+      "choices": [
+        "기본키 제약조건은 한 번 생성하면 제거할 수 없다.",
+        "기본키는 각 행을 유일하게 식별해야 한다.",
+        "기본키는 NULL 값을 가질 수 없다.",
+        "기본키는 하나 이상의 컬럼으로 구성될 수 있다."
+      ],
+      "answer": 1,
+      "explanation": "정답: 1. 기본키 제약조건은 ALTER TABLE ... DROP CONSTRAINT(또는 DROP PRIMARY KEY) 문으로 제거할 수 있다.\n오답 풀이\n\n1번: 기본키 제약조건도 ALTER TABLE 문으로 제거할 수 있으므로 틀린 설명이다.\n2번: 기본키는 각 행을 유일하게 식별해야 한다.\n3번: 기본키는 NULL을 허용하지 않는다.\n4번: 여러 컬럼으로 구성된 복합 기본키는 가능하다.\n\n보충 개념\n기본키는 테이블의 대표 식별자이다. 제약조건은 ALTER TABLE 문으로 추가·삭제할 수 있으며, 여러 컬럼을 묶은 복합 기본키도 가능하다."
+    }
+  ]
+}

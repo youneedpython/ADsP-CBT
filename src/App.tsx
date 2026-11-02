@@ -1,3 +1,5 @@
+import { exams, examAtPath } from './domain/exams';
+import { ExamContext } from './components/ExamContext';
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import { AppShell } from './components/AppShell';
 import { RoundList } from './pages/RoundList';
@@ -19,12 +21,18 @@ import { ExamHub } from './pages/ExamHub';
 function LegacyRoute() {
   const { pathname, search } = useLocation();
   const legacy = /^\/(rounds|sets|downloads|notes)(\/|$)/.test(pathname);
-  return <Navigate to={legacy ? `/adsp${pathname}${search}` : pathname.startsWith('/adsp/') ? '/adsp' : '/'} replace />;
+  return <Navigate to={legacy ? `/adsp${pathname}${search}` : examAtPath(pathname)?.path ? examAtPath(pathname)!.path : '/'} replace />;
 }
 export default function App() {
-  const [store] = useState(() => createRecordStore());
-  return <RecordStoreContext.Provider value={store}><HashRouter><DownloadsProvider><AppShell>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
-    <Route path="/" element={<ExamHub {...props} />} />
+  return <HashRouter><ExamApp /></HashRouter>;
+}
+function ExamApp() {
+  const { pathname } = useLocation();
+  const exam = examAtPath(pathname) ?? exams[0];
+  const [stores] = useState(() => Object.fromEntries(exams.map(e => [e.id, createRecordStore(undefined, e)])));
+  const store = stores[exam.id];
+  return <ExamContext.Provider value={exam}><RecordStoreContext.Provider value={store}><DownloadsProvider><AppShell key={exam.id}>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
+    <Route path="/" element={<ExamHub {...props} stores={stores} />} />
     <Route path="/adsp" element={<HomePage {...props} />} />
     <Route path="/adsp/notes/:id" element={<NotesPage />} />
     <Route path="/adsp/downloads" element={<DownloadsPage {...props} />} />
@@ -35,6 +43,14 @@ export default function App() {
     <Route path="/adsp/rounds/:round/exam" element={<ExamPage {...props} />} />
     <Route path="/adsp/rounds/:round/result" element={<ResultPage {...props} />} />
     <Route path="/adsp/rounds/:round/review" element={<ReviewPage {...props} />} />
+    <Route path="/sqld" element={<HomePage {...props} />} />
+    <Route path="/sqld/sets/*" element={<SetsPage {...props} />} />
+    <Route path="/sqld/rounds" element={<RoundList {...props} />} />
+    <Route path="/sqld/rounds/:round" element={<RoundInfoPage {...props} />} />
+    <Route path="/sqld/rounds/:round/practice" element={<PracticePage {...props} />} />
+    <Route path="/sqld/rounds/:round/exam" element={<ExamPage {...props} />} />
+    <Route path="/sqld/rounds/:round/result" element={<ResultPage {...props} />} />
+    <Route path="/sqld/rounds/:round/review" element={<ReviewPage {...props} />} />
     <Route path="*" element={<LegacyRoute />} />
-  </Routes></TopicsProvider>}</AppShell></DownloadsProvider></HashRouter></RecordStoreContext.Provider>;
+  </Routes></TopicsProvider>}</AppShell></DownloadsProvider></RecordStoreContext.Provider></ExamContext.Provider>;
 }

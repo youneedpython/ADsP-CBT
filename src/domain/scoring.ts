@@ -37,7 +37,7 @@ export function scoreRound(round: RoundData, answers: Answers): ScoringResult {
         correctCount, questionCount: indices.length, failed: !meetsSubjectMinimum(correctCount, indices.length) };
     });
   const correctCount = questions.filter(question => question.correct).length;
-  const score = correctCount * 2;
+  const score = Math.round(correctCount * 100 / questions.length);
   const failureReasons = [ ...(score < 60 ? ['총점 미달'] : []),
     ...subjects.filter(subject => subject.failed).map(subject => `${subject.subject}과목 과락`) ];
   return { score, correctCount, questionCount: questions.length, subjects,

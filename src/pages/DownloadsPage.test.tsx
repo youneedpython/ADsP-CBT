@@ -5,7 +5,7 @@ import App from '../App';
 const files = { type1: { file: 'pdf/900-type1.pdf', bytes: 286627, pages: 23 }, type2: { file: 'pdf/900-type2.pdf', bytes: 1048576, pages: 23 } };
 let downloads: unknown;
 const fetchMock = vi.fn();
-const round = { formatVersion: 1, round: 900, title: '개발용 표본', timeLimitMinutes: 90, subjects: [1, 2, 3].map(id => ({ id, name: `표본 ${id}` })), questions: [{ number: 1, subject: 1, question: '개발용 표본 문제', choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설', stimulus: [] }] };
+const round = { formatVersion: 1, round: 900, title: '개발용 표본', timeLimitMinutes: 90, subjects: [1, 2, 3].map(id => ({ id, name: ['데이터 이해', '데이터 분석 기획', '데이터 분석'][id - 1] })), questions: [{ number: 1, subject: 1, question: '개발용 표본 문제', choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본 해설', stimulus: [] }] };
 beforeEach(() => {
   localStorage.clear(); window.location.hash = '#/adsp/downloads';
   downloads = { formatVersion: 1, rounds: { 900: files } };

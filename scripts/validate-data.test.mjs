@@ -7,6 +7,29 @@ import { validateData, isDirectExecution } from './validate-data.mjs';
 import { pathToFileURL } from 'node:url';
 
 const entry = { round: 900, year: 2026, title: '개발용 표본', questionCount: 50, timeLimitMinutes: 90, file: '900.json' };
+test.each(['valid', 'third subject', 'wrong counts', 'odd dollar', 'wrong path', 'wrong name', 'missing topic', 'ADsP ID', 'topic subject 3'])('SQLD validation: %s', async variant => {
+  const dir = await mkdtemp(path.join(tmpdir(), 'sqld-validation-'));
+  try {
+    await mkdir(path.join(dir, 'sqld'));
+    const data = sample();
+    data.subjects = [{ id: 1, name: '데이터 모델링의 이해' }, { id: 2, name: 'SQL 기본 및 활용' }];
+    data.questions.forEach((q, i) => { q.subject = i < 10 ? 1 : 2; });
+    if (variant === 'third subject') data.subjects.push({ id: 3, name: '개발용 과목' });
+    if (variant === 'wrong counts') data.questions[0].subject = 2;
+    if (variant === 'odd dollar') data.questions[0].question = '새로 만든 SQL 표본 010$';
+    if (variant === 'wrong name') data.subjects[0].name = '다른 과목';
+    await writeFile(path.join(dir, 'sqld/900.json'), JSON.stringify(data));
+    await writeFile(path.join(dir, 'sqld/rounds.json'), JSON.stringify([{ ...entry, file: variant === 'wrong path' ? '../900.json' : 'sqld/900.json' }]));
+    const topics = JSON.parse(JSON.stringify(sampleTopics()).replaceAll('T101', 'S101'));
+    if (variant === 'missing topic') delete topics.questions[900][1];
+    if (variant === 'ADsP ID') topics.topics[0].id = 'T101';
+    if (variant === 'topic subject 3') topics.topics[0].subject = 3;
+    await writeFile(path.join(dir, 'sqld/topics.json'), JSON.stringify(topics));
+    const result = await validateData(dir, 'sqld');
+    expect(result.errors.length === 0).toBe(['valid', 'odd dollar'].includes(variant));
+    if (!result.errors.length) expect([result.roundCount, result.questionCount]).toEqual([1, 50]);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
 function sample() {
   return { formatVersion: 1, round: 900, title: entry.title, timeLimitMinutes: 90,
     subjects: [1, 2, 3].map(id => ({ id, name: `표본 과목 ${id}` })),
@@ -31,8 +54,8 @@ async function check(mutate = () => {}, list = [entry], mutateTopics = () => {})
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 test('valid 50 questions and empty list pass', async () => {
-  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1, pdfCount: 0, notesCount: 0 });
-  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0, pdfCount: 0, notesCount: 0 });
+  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1, pdfCount: 0, notesCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
+  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0, pdfCount: 0, notesCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
 });
 
 test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid round year %s', async year => {

@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { loadRounds } from '../data/loadRounds';
+import { createRecordStore } from '../storage/records';
 import { Link } from 'react-router';
 import { exams, type Exam } from '../domain/exams';
 import { LoadingState, type PageProps } from '../components/LoadingState';
@@ -15,21 +17,22 @@ function ExamCard({ exam, state, retry }: PageProps & { exam: Exam }) {
     <Link className="button" to={exam.path}>{exam.name} 풀기 ›</Link>
   </article>;
 }
-function ExamResume({ exam, state }: { exam: Exam; state: PageProps['state'] }) {
-  const selection = useResume(state.status === 'success' ? state.rounds : []);
-  if (!selection.resume) return null;
-  return <section className="hub-resume-section"><h2>이어 풀기</h2><ResumePanel selection={selection} exam={exam} hub /></section>;
-}
-export function ExamHub(props: PageProps) {
+export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<typeof createRecordStore>> }) {
+  const exam = exams.find(item => item.id === 'sqld')!;
+  const [state, setState] = useState<PageProps['state']>({ status: 'loading' });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    document.title = '독특한 CBT · 기출 복원 문제';
-    return () => { document.title = 'ADsP 기출 복원 문제'; };
-  }, []);
+    const controller = new AbortController();
+    loadRounds(controller.signal, exam).then(rounds => { if (!controller.signal.aborted) setState({ status: 'success', rounds }); }).catch(() => { if (!controller.signal.aborted) setState({ status: 'error' }); });
+    return () => controller.abort();
+  }, [attempt, exam]);
+  const adsp = useResume(props.state.status === 'success' ? props.state.rounds : [], props.stores.adsp);
+  const sqld = useResume(state.status === 'success' ? state.rounds : [], props.stores.sqld);
   return <>
     <h1 className="page-title">기출 복원 문제를 회차별로 풀어 보세요</h1>
     <p className="page-lead">시험을 고르면 회차별 시험·연습과 주제별 모아 풀기를 할 수 있습니다. 풀이 기록은 이 브라우저에만 저장됩니다.</p>
-    <div className="exam-grid">{exams.map(exam => <ExamCard key={exam.id} exam={exam} {...props} />)}</div>
-    {exams.map(exam => <ExamResume key={exam.id} exam={exam} state={props.state} />)}
+    <div className="exam-grid"><ExamCard exam={exams[0]} {...props} /><ExamCard exam={exam} state={state} retry={() => { setState({ status: 'loading' }); setAttempt(n => n + 1); }} /></div>
+    {(adsp.resume || sqld.resume) && <section className="hub-resume-section"><h2>이어 풀기</h2><ResumePanel selection={adsp} exam={exams[0]} hub /><ResumePanel selection={sqld} exam={exam} hub /></section>}
     <aside className="overview-panel hub-notice">복원 문제입니다. 실제 시험과 다를 수 있습니다.</aside>
   </>;
 }

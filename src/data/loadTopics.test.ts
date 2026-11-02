@@ -1,5 +1,17 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { loadTopics } from './loadTopics';
+import { exams } from '../domain/exams';
+
+test.each(['valid', 'ADsP ID', 'third subject'])('SQLD topic loading: %s', async variant => {
+  const exam = exams.find(item => item.id === 'sqld')!;
+  const id = variant === 'ADsP ID' ? 'T101' : 'S101';
+  const data = { formatVersion: 1, topics: [{ id, name: '새 개발용 주제', subject: variant === 'third subject' ? 3 : 2 }], questions: { 900: { 1: id } } };
+  const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => data });
+  vi.stubGlobal('fetch', fetchMock);
+  if (variant === 'valid') expect(await loadTopics(undefined, exam)).toEqual(data);
+  else await expect(loadTopics(undefined, exam)).rejects.toThrow('형식');
+  expect(fetchMock).toHaveBeenCalledWith(`${import.meta.env.BASE_URL}data/sqld/topics.json`, { signal: undefined, cache: 'no-cache' });
+});
 
 afterEach(() => vi.unstubAllGlobals());
 const sample = () => ({ formatVersion: 1, topics: [{ id: 'T101', name: '개발용 표본 주제', subject: 1 }], questions: { '900': { '1': 'T101' } } });

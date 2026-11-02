@@ -1,0 +1,90 @@
+[
+  {
+    "round": 62,
+    "year": 2026,
+    "title": "SQLD 제62회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/62.json"
+  },
+  {
+    "round": 61,
+    "year": 2026,
+    "title": "SQLD 제61회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/61.json"
+  },
+  {
+    "round": 60,
+    "year": 2026,
+    "title": "SQLD 제60회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/60.json"
+  },
+  {
+    "round": 59,
+    "year": 2025,
+    "title": "SQLD 제59회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/59.json"
+  },
+  {
+    "round": 58,
+    "year": 2025,
+    "title": "SQLD 제58회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/58.json"
+  },
+  {
+    "round": 57,
+    "year": 2025,
+    "title": "SQLD 제57회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/57.json"
+  },
+  {
+    "round": 56,
+    "year": 2025,
+    "title": "SQLD 제56회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/56.json"
+  },
+  {
+    "round": 55,
+    "year": 2024,
+    "title": "SQLD 제55회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/55.json"
+  },
+  {
+    "round": 54,
+    "year": 2024,
+    "title": "SQLD 제54회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/54.json"
+  },
+  {
+    "round": 53,
+    "year": 2024,
+    "title": "SQLD 제53회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/53.json"
+  },
+  {
+    "round": 52,
+    "year": 2024,
+    "title": "SQLD 제52회 기출 복원문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "sqld/52.json"
+  }
+]

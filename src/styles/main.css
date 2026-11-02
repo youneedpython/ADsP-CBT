@@ -221,7 +221,12 @@ h1, h2 { font-size: var(--font-heading); }
 .exam-card-title h2, .exam-card-title p { margin: 0; }
 .exam-card-title p { color: var(--muted); }
 .exam-badge { display: inline-flex; align-items: center; justify-content: center; padding: .75rem; border-radius: var(--radius); background: var(--exam-soft); color: var(--exam-color); font-weight: 700; }
-.exam-card .button, .hub-resume .button { background: var(--exam-color); border-color: var(--exam-color); color: var(--exam-button-text, white); background: var(--exam-button-bg, var(--exam-color)); }
+.exam-card .button, .hub-resume .button { border-color: var(--exam-button-bg, var(--exam-color)); color: var(--exam-button-text, white); background: var(--exam-button-bg, var(--exam-color)); }
+@media (min-width: 768px) {
+  .exam-grid { align-items: stretch; }
+  .exam-card { display: flex; flex-direction: column; }
+  .exam-card-action { margin-top: auto; align-self: flex-start; }
+}
 .exam-card .home-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
 .exam-card .home-facts > div { background: var(--background, #f5f6f8); border-radius: var(--radius); padding: .65rem; }
 .exam-card .home-facts dd { font-size: 1.125rem; white-space: nowrap; }
@@ -262,8 +267,8 @@ main { flex: 1; padding-block: var(--space-medium); }
 }
 .round-actions { display: flex; gap: var(--space-small); margin-top: var(--space-small); }
 .round-actions .button { flex: 1; }
-.button, button { display: inline-flex; justify-content: center; align-items: center; min-height: var(--touch-height); padding: var(--space-small) var(--space-medium); border: 1px solid var(--accent); border-radius: var(--radius); background: var(--button-bg); color: var(--button-text); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
-.secondary { color: var(--accent); background: var(--surface); }
+.button, button { display: inline-flex; justify-content: center; align-items: center; min-height: var(--touch-height); padding: var(--space-small) var(--space-medium); border: 1px solid var(--button-bg); border-radius: var(--radius); background: var(--button-bg); color: var(--button-text); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.secondary { color: var(--accent); background: var(--surface); border-color: var(--accent); }
 a:hover, button:hover { text-decoration: underline; }
 :focus-visible { outline: 3px solid #1c2330; outline-offset: 3px; }
 h2[tabindex="-1"], p[tabindex="-1"] { outline: none; }
@@ -340,7 +345,7 @@ button:disabled { cursor: default; }
 }
 .expiry-notice { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
 .practice-nav > * { white-space: nowrap; min-width: 0; }
-.round-actions [aria-pressed="false"] { color: var(--accent); background: var(--surface); }
+.round-actions [aria-pressed="false"] { color: var(--accent); background: var(--surface); border-color: var(--accent); }
 .result-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .result-heading p { font-size: 14px; color: var(--muted); }
 .result-summary { text-align: center; padding: 20px 16px; border: 1px solid var(--border); border-radius: 14px; margin-top: 16px; }
@@ -445,7 +450,7 @@ button:disabled { cursor: default; }
   .notes-layout { display: block; }
   .notes-toc { position: static; max-height: none; margin-bottom: 1rem; padding: 0; background: transparent; border: 0; }
   .notes-toc h2 { display: none; }
-  .notes-toc-toggle { display: block; width: 100%; text-align: left; background: white; color: var(--accent); }
+  .notes-toc-toggle { display: block; width: 100%; text-align: left; background: white; color: var(--accent); border-color: var(--accent); }
   .notes-toc nav { display: none; }
   .notes-toc nav.expanded { display: block; }
   .notes-article { padding: 1.15rem; }

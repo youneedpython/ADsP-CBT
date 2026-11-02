@@ -1,0 +1,137 @@
+{
+  "formatVersion": 1,
+  "rounds": {
+    "52": {
+      "type1": {
+        "file": "pdf/sqld/52-type1.pdf",
+        "bytes": 445940,
+        "pages": 20
+      },
+      "type2": {
+        "file": "pdf/sqld/52-type2.pdf",
+        "bytes": 428357,
+        "pages": 21
+      }
+    },
+    "53": {
+      "type1": {
+        "file": "pdf/sqld/53-type1.pdf",
+        "bytes": 454290,
+        "pages": 22
+      },
+      "type2": {
+        "file": "pdf/sqld/53-type2.pdf",
+        "bytes": 439283,
+        "pages": 23
+      }
+    },
+    "54": {
+      "type1": {
+        "file": "pdf/sqld/54-type1.pdf",
+        "bytes": 461886,
+        "pages": 25
+      },
+      "type2": {
+        "file": "pdf/sqld/54-type2.pdf",
+        "bytes": 447612,
+        "pages": 25
+      }
+    },
+    "55": {
+      "type1": {
+        "file": "pdf/sqld/55-type1.pdf",
+        "bytes": 448181,
+        "pages": 22
+      },
+      "type2": {
+        "file": "pdf/sqld/55-type2.pdf",
+        "bytes": 433090,
+        "pages": 23
+      }
+    },
+    "56": {
+      "type1": {
+        "file": "pdf/sqld/56-type1.pdf",
+        "bytes": 464177,
+        "pages": 25
+      },
+      "type2": {
+        "file": "pdf/sqld/56-type2.pdf",
+        "bytes": 445771,
+        "pages": 24
+      }
+    },
+    "57": {
+      "type1": {
+        "file": "pdf/sqld/57-type1.pdf",
+        "bytes": 457646,
+        "pages": 23
+      },
+      "type2": {
+        "file": "pdf/sqld/57-type2.pdf",
+        "bytes": 441912,
+        "pages": 23
+      }
+    },
+    "58": {
+      "type1": {
+        "file": "pdf/sqld/58-type1.pdf",
+        "bytes": 487099,
+        "pages": 24
+      },
+      "type2": {
+        "file": "pdf/sqld/58-type2.pdf",
+        "bytes": 468816,
+        "pages": 24
+      }
+    },
+    "59": {
+      "type1": {
+        "file": "pdf/sqld/59-type1.pdf",
+        "bytes": 473856,
+        "pages": 22
+      },
+      "type2": {
+        "file": "pdf/sqld/59-type2.pdf",
+        "bytes": 456156,
+        "pages": 22
+      }
+    },
+    "60": {
+      "type1": {
+        "file": "pdf/sqld/60-type1.pdf",
+        "bytes": 482836,
+        "pages": 22
+      },
+      "type2": {
+        "file": "pdf/sqld/60-type2.pdf",
+        "bytes": 464945,
+        "pages": 22
+      }
+    },
+    "61": {
+      "type1": {
+        "file": "pdf/sqld/61-type1.pdf",
+        "bytes": 511377,
+        "pages": 32
+      },
+      "type2": {
+        "file": "pdf/sqld/61-type2.pdf",
+        "bytes": 497342,
+        "pages": 31
+      }
+    },
+    "62": {
+      "type1": {
+        "file": "pdf/sqld/62-type1.pdf",
+        "bytes": 466635,
+        "pages": 24
+      },
+      "type2": {
+        "file": "pdf/sqld/62-type2.pdf",
+        "bytes": 452171,
+        "pages": 24
+      }
+    }
+  }
+}

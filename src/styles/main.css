@@ -501,3 +501,6 @@ button:disabled { cursor: default; }
 .exam-sqld .selected { color: var(--accent); background: var(--accent-soft); }
 .exam-sqld .frequency-bar i.present { background: var(--progress-color); }
 .stimulus-label { font-size: var(--font-small); font-weight: 700; margin-bottom: 4px; }
+
+.exam-card-action { display: flex; flex-wrap: wrap; gap: .75rem; max-width: 100%; }
+.exam-card .exam-latest { background: transparent; color: var(--exam-color, var(--accent)); border-color: var(--exam-color, var(--accent)); }

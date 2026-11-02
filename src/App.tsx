@@ -31,7 +31,7 @@ function ExamApp() {
   const exam = examAtPath(pathname) ?? exams[0];
   const [stores] = useState(() => Object.fromEntries(exams.map(e => [e.id, createRecordStore(undefined, e)])));
   const store = stores[exam.id];
-  return <ExamContext.Provider value={exam}><RecordStoreContext.Provider value={store}><DownloadsProvider><AppShell key={exam.id}>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
+  return <ExamContext.Provider value={exam}><RecordStoreContext.Provider value={store}><DownloadsProvider key={exam.id}><AppShell key={exam.id}>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
     <Route path="/" element={<ExamHub {...props} stores={stores} />} />
     <Route path="/adsp" element={<HomePage {...props} />} />
     <Route path="/adsp/notes/:id" element={<NotesPage />} />
@@ -43,6 +43,7 @@ function ExamApp() {
     <Route path="/adsp/rounds/:round/exam" element={<ExamPage {...props} />} />
     <Route path="/adsp/rounds/:round/result" element={<ResultPage {...props} />} />
     <Route path="/adsp/rounds/:round/review" element={<ReviewPage {...props} />} />
+    <Route path="/sqld/downloads" element={<DownloadsPage {...props} />} />
     <Route path="/sqld" element={<HomePage {...props} />} />
     <Route path="/sqld/sets/*" element={<SetsPage {...props} />} />
     <Route path="/sqld/rounds" element={<RoundList {...props} />} />

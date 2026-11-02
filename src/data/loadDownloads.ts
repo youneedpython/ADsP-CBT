@@ -1,3 +1,4 @@
+import { exams, type Exam } from '../domain/exams';
 export type DownloadType = 'type1' | 'type2';
 export type DownloadFile = { file: string; bytes: number; pages: number };
 export type SubjectDownload = { id: string; subject: number; subjectName: string; chapter?: number; notes?: string; name: string; questionCount: number; summary?: DownloadFile; solutions?: DownloadFile };
@@ -26,11 +27,11 @@ export function isDownloadsData(v: unknown): v is DownloadsData {
 }
 function isDownloadFile(f: unknown): f is DownloadFile {
   return object(f) && keys(f, ['file', 'bytes', 'pages']) && typeof f.file === 'string'
-    && /^pdf\/[A-Za-z0-9_-]+\.pdf$/.test(f.file) && Number.isSafeInteger(f.bytes) && (f.bytes as number) > 0
+    && /^pdf\/(?:sqld\/)?[A-Za-z0-9_-]+\.pdf$/.test(f.file) && Number.isSafeInteger(f.bytes) && (f.bytes as number) > 0
     && Number.isSafeInteger(f.pages) && (f.pages as number) > 0;
 }
-export async function loadDownloads(signal?: AbortSignal): Promise<DownloadsData> {
-  const response = await fetch(`${import.meta.env.BASE_URL}data/downloads.json`, { signal, cache: 'no-cache' });
+export async function loadDownloads(signal?: AbortSignal, exam: Exam = exams[0]): Promise<DownloadsData> {
+  const response = await fetch(`${import.meta.env.BASE_URL}${exam.downloadsFile}`, { signal, cache: 'no-cache' });
   if (!response.ok) throw new Error('PDF 목록 HTTP 오류');
   const data: unknown = await response.json();
   if (!isDownloadsData(data)) throw new Error('PDF 목록 형식 오류');

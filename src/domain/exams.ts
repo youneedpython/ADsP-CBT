@@ -19,7 +19,7 @@ export const exams: readonly Exam[] = [{
   ],
 }, {
   id: 'sqld', name: 'SQLD', fullName: 'SQL 개발자', path: '/sqld',
-  description: ['총점 60점 이상, 과목별 40% 이상이면 합격'],
+  description: ['총점 60점 이상, 과목별 40% 이상이면 합격', '회차별 PDF 문제지 제공'],
   subjectCount: 2, hasPDF: true, hasSets: true, math: false,
   downloadsFile: 'data/sqld/downloads.json', topicsFile: 'data/sqld/topics.json', roundsFile: 'data/sqld/rounds.json', recordPrefix: 'cbt:v1:sqld',
   subjects: [{ id: 1, name: '데이터 모델링의 이해', questionCount: 10 }, { id: 2, name: 'SQL 기본 및 활용', questionCount: 40 }],

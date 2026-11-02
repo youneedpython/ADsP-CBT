@@ -36,13 +36,14 @@
   --pass-bg: #eaf7ef;
   --fail-text: #a52a30;
   --fail-bg: #fff0f0;
-  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;
   font-size: var(--font-body);
   line-height: var(--line-height);
   color: var(--text);
   background: var(--background);
 }
 * { box-sizing: border-box; }
+input, select, textarea { font-family: inherit; }
 .container.overview-container { max-width: var(--overview-width); }
 .service-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-small); }
 .service-bar { flex-wrap: wrap; }

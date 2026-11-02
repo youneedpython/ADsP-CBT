@@ -191,7 +191,17 @@ test('hub separates introduction sentences and renders exam descriptions as list
   expect(lead.childNodes[2].textContent).toBe('풀이 기록은 이 브라우저에만 저장됩니다.');
   const passing = '90분 · 총점 60점 이상, 과목별 40% 이상이면 합격';
   expect(within(within(cards[0]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing, 'PDF 자료와 핵심 요약 제공']);
-  expect(within(within(cards[1]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing]);
+  expect(within(within(cards[1]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing, '회차별 PDF 문제지 제공']);
+});
+
+test('body uses Pretendard first while controls inherit and code stays monospace', () => {
+  const styles = readFileSync('src/styles/main.css', 'utf8');
+  expect(styles).toMatch(/:root\s*\{[^}]*font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;/);
+  expect(styles).toMatch(/input, select, textarea\s*\{ font-family: inherit; \}/);
+  expect(styles).toMatch(/\.button, button\s*\{[^}]*font: inherit;/);
+  expect(styles).toMatch(/pre\s*\{ margin: 0; font: 15px\/1\.6 monospace; \}/);
+  // Inline code retains the browser monospace default; code passages and notes use pre.
+  expect(styles).not.toMatch(/(?:^|\n)(?:code|\.stimulus-code|\.notes-code)\s*\{[^}]*(?:font-family|font):/);
 });
 
 test('hub hides latest shortcuts when both round lists fail', async () => {

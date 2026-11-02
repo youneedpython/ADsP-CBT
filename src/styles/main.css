@@ -320,8 +320,8 @@ button:disabled { cursor: default; }
 .number-grid [aria-current] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
 .board-legend { display: flex; flex-wrap: wrap; gap: var(--space-medium); margin-block: var(--space-medium); font-size: var(--font-small); }
 .board-legend > span { display: inline-flex; align-items: center; gap: var(--space-small); }
-.legend-sample { width: 20px; height: 20px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent); }
-.legend-sample.secondary { background: var(--surface); }
+.legend-sample { width: 20px; height: 20px; border: 1px solid var(--button-bg); border-radius: var(--radius); background: var(--button-bg); }
+.legend-sample.secondary { background: var(--surface); border-color: var(--accent); }
 .legend-sample.correct { background: #eaf7ef; border-color: #16633c; }
 .legend-sample.wrong { background: #fff0f0; border-color: #a52a30; }
 .legend-current { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }

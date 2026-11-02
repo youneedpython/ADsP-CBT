@@ -198,6 +198,28 @@ test('hub cards keep their final action in the shared desktop bottom-alignment s
   expect(styles).toMatch(/\.secondary\s*\{[^}]*border-color: var\(--accent\)/);
 });
 
+test('board legend samples share the answered and unanswered button colors', () => {
+  // jsdom does not resolve CSS variables: compare the rules used by both elements.
+  const styles = readFileSync('src/styles/main.css', 'utf8');
+  const rule = (selector: string) => {
+    const body = styles.split(`${selector} {`)[1]?.split('}')[0];
+    expect(body).toBeDefined();
+    return body!;
+  };
+  for (const selector of ['.button, button', '.legend-sample']) {
+    expect(rule(selector)).toContain('border: 1px solid var(--button-bg);');
+    expect(rule(selector)).toContain('background: var(--button-bg);');
+  }
+  for (const selector of ['.secondary', '.legend-sample.secondary']) {
+    expect(rule(selector)).toContain('border-color: var(--accent);');
+    expect(rule(selector)).toContain('background: var(--surface);');
+  }
+  expect(rule(':root')).toContain('--button-bg: var(--accent);');
+  expect(rule('.exam-sqld')).toContain('--button-bg: #f2c200;');
+  expect(rule('.legend-sample.correct')).toContain('background: #eaf7ef; border-color: #16633c;');
+  expect(rule('.legend-sample.wrong')).toContain('background: #fff0f0; border-color: #a52a30;');
+});
+
 test('outline review and mobile notes buttons preserve the dark accent border', () => {
   const styles = readFileSync('src/styles/main.css', 'utf8');
   expect(styles).toMatch(/\.round-actions \[aria-pressed="false"\]\s*\{[^}]*background: var\(--surface\);[^}]*border-color: var\(--accent\)/);

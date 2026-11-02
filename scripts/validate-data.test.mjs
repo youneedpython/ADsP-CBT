@@ -54,8 +54,8 @@ async function check(mutate = () => {}, list = [entry], mutateTopics = () => {})
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 test('valid 50 questions and empty list pass', async () => {
-  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1, pdfCount: 0, notesCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
-  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0, pdfCount: 0, notesCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
+  expect(await check()).toEqual({ errors: [], roundCount: 1, questionCount: 50, topicCount: 1, pdfCount: 0, notesCount: 0, sqldPdfCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
+  expect(await check(undefined, [])).toEqual({ errors: [], roundCount: 0, questionCount: 0, topicCount: 0, pdfCount: 0, notesCount: 0, sqldPdfCount: 0, sqldRoundCount: 0, sqldQuestionCount: 0, sqldTopicCount: 0 });
 });
 
 test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid round year %s', async year => {

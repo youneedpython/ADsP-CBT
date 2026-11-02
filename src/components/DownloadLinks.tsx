@@ -1,5 +1,6 @@
 import type { DownloadFile, DownloadType } from '../data/loadDownloads';
 import { useDownloads } from './DownloadsContext';
+import { useExam } from './ExamContext';
 export const downloadTypes = ['type1', 'type2'] as const;
 export const downloadLabels = { type1: '풀이용', type2: '해설용' };
 export const subjectTypes = ['summary', 'solutions'] as const;
@@ -8,8 +9,9 @@ export function formatFileSize(bytes: number) {
   return bytes >= 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 }
 export function DownloadLink({ round, type, file }: { round: number; type: DownloadType; file: DownloadFile }) {
+  const exam = useExam();
   const label = downloadLabels[type];
-  return <PdfItem kind={type} label={label} file={file} name={`${round}회 ${label}`} filename={`ADsP_${round}회_${label}.pdf`} />;
+  return <PdfItem kind={type} label={label} file={file} name={`${round}회 ${label}`} filename={`${exam.name}_${round}회_${label}.pdf`} />;
 }
 export function PdfIcon({ kind }: { kind: 'open' | 'download' | 'summary' | 'solutions' | DownloadType }) {
   const paths = { open: 'M14 3h7v7M21 3 10 14M10 3H3v18h18v-7', download: 'M12 3v12m-5-5 5 5 5-5M3 17v4h18v-4', summary: 'M5 3h15v18H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 14h15M8 7h8M8 11h5', solutions: 'm3 5 2 2 3-4M11 5h10M3 12l2 2 3-4M11 12h10M3 19l2 2 3-4M11 19h10', type1: 'm3 16 13-13 5 5L8 21H3v-5Zm10-10 5 5', type2: 'm3 5 2 2 3-4M11 5h10M3 12l2 2 3-4M11 12h10M3 19l2 2 3-4M11 19h10' };

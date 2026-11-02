@@ -112,7 +112,15 @@ export async function validateData(directory = defaultDirectory(), exam = 'adsp'
     errors.push(...validateTopics(topics, expectedTopics, exam));
     if (Array.isArray(topics?.topics)) topicCount = topics.topics.length;
   } catch { add(undefined, undefined, 'topics.json 읽기 / JSON 오류'); }
-  if (sqld) return { errors, roundCount, questionCount, topicCount };
+  if (sqld) {
+    let pdfCount = 0;
+    try {
+      await access(path.join(directory, 'sqld/downloads.json'));
+      const downloads = await validateDownloads(path.join(directory, 'sqld'), rounds, path.join(directory, '../pdf/sqld'), 'sqld');
+      errors.push(...downloads.errors); pdfCount = downloads.pdfCount;
+    } catch (error) { if (error.code !== 'ENOENT') errors.push('SQLD PDF 목록 접근 오류'); }
+    return { errors, roundCount, questionCount, topicCount, pdfCount };
+  }
   const downloads = await validateDownloads(directory, rounds);
   errors.push(...downloads.errors);
   const notes = await validateNotes(directory);
@@ -121,12 +129,12 @@ export async function validateData(directory = defaultDirectory(), exam = 'adsp'
   try { await access(path.join(directory, 'sqld/rounds.json')); sqldResult = await validateData(directory, 'sqld'); }
   catch (error) { if (error.code !== 'ENOENT') errors.push('SQLD 회차 목록 접근 오류'); }
   errors.push(...sqldResult.errors.map(error => `SQLD ${error}`));
-  return { errors, roundCount, questionCount, topicCount, sqldRoundCount: sqldResult.roundCount, sqldQuestionCount: sqldResult.questionCount, sqldTopicCount: sqldResult.topicCount ?? 0, pdfCount: downloads.pdfCount, notesCount: notes.notesCount };
+  return { errors, roundCount, questionCount, topicCount, sqldPdfCount: sqldResult.pdfCount ?? 0, sqldRoundCount: sqldResult.roundCount, sqldQuestionCount: sqldResult.questionCount, sqldTopicCount: sqldResult.topicCount ?? 0, pdfCount: downloads.pdfCount, notesCount: notes.notesCount };
 }
 
 if (await isDirectExecution(import.meta.url)) {
   const result = await validateData(process.argv[2]);
   if (result.errors.length) result.errors.forEach(error => console.error(error));
-  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개, PDF ${result.pdfCount}개, 핵심 요약 ${result.notesCount}개, SQLD 회차 ${result.sqldRoundCount}개, 문항 ${result.sqldQuestionCount}개, SQLD 주제 ${result.sqldTopicCount}개 검사 통과`);
+  else console.log(`회차 ${result.roundCount}개, 문항 ${result.questionCount}개, 주제 ${result.topicCount}개, PDF ${result.pdfCount}개, 핵심 요약 ${result.notesCount}개, SQLD 회차 ${result.sqldRoundCount}개, 문항 ${result.sqldQuestionCount}개, SQLD 주제 ${result.sqldTopicCount}개, SQLD PDF ${result.sqldPdfCount}개 검사 통과`);
   process.exitCode = result.errors.length ? 1 : 0;
 }

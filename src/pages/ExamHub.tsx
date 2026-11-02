@@ -14,7 +14,7 @@ function ExamCard({ exam, state, retry }: PageProps & { exam: Exam }) {
     <div className="exam-card-title"><span className="exam-badge">{exam.name}</span><div><h2>{exam.name}</h2><p>{exam.fullName}</p></div></div>
     {state.status !== 'success' ? <LoadingState state={state} retry={retry} /> : !rounds.length ? <p role="status" className="state-panel">아직 등록된 회차가 없습니다.</p> : <dl className="home-facts"><div><dt>회차</dt><dd>{Math.min(...numbers)} ~ {Math.max(...numbers)}회</dd></div><div><dt>문제</dt><dd>{rounds.reduce((n, r) => n + r.questionCount, 0)}문항</dd></div><div><dt>과목</dt><dd>{exam.subjectCount}과목</dd></div></dl>}
     <ul className="exam-description">{exam.description.map((item, index) => <li key={item}>{index === 0 && latest && `${latest.timeLimitMinutes}분 · `}{item}</li>)}</ul>
-    <Link className="button exam-card-action" to={exam.path}>{exam.name} 풀기 ›</Link>
+    <div className="exam-card-action"><Link className="button" to={exam.path}>{exam.name} 풀기 ›</Link>{latest && <Link className="button secondary exam-latest" to={`${exam.path}/rounds/${latest.round}`}>최신 {latest.round}회 풀기</Link>}</div>
   </article>;
 }
 export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<typeof createRecordStore>> }) {

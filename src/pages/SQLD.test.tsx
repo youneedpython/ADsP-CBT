@@ -83,7 +83,7 @@ test('SQLD exam submission stores exactly two subject keys and opens result/revi
   fireEvent.click(screen.getByRole('link', { name: '틀린 문제 보기' }));
   await screen.findByRole('heading', { name: '900회 · 다시 보기' });
 });
-test.each(['/sqld/downloads', '/sqld/notes/1', '/sqld/missing'])('unsupported route %s returns to SQLD home', async path => {
+test.each(['/sqld/notes', '/sqld/notes/1', '/sqld/missing'])('unsupported route %s returns to SQLD home', async path => {
   window.location.hash = `#${path}`; render(<App />);
   await screen.findByRole('heading', { name: 'SQLD 기출 복원 문제를 회차별로 풀어 보세요' });
   await waitFor(() => expect(window.location.hash).toBe('#/sqld'));
@@ -194,11 +194,20 @@ test('hub separates introduction sentences and renders exam descriptions as list
   expect(within(within(cards[1]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing]);
 });
 
+test('hub hides latest shortcuts when both round lists fail', async () => {
+  fetchMock.mockRejectedValue(new Error('sample failure'));
+  window.location.hash = '#/'; render(<App />);
+  await waitFor(() => expect(screen.getAllByRole('alert').length).toBe(2));
+  expect(screen.queryByRole('link', { name: /^최신/ })).toBeNull();
+});
+
 test('hub cards keep their final action in the shared desktop bottom-alignment structure', async () => {
   window.location.hash = '#/'; render(<App />);
   await screen.findByText('900 ~ 910회');
+  expect(within(screen.getAllByRole('article')[0]).getByRole('link', { name: '최신 900회 풀기' }).getAttribute('href')).toBe('#/adsp/rounds/900');
+  expect(within(screen.getAllByRole('article')[1]).getByRole('link', { name: '최신 910회 풀기' }).getAttribute('href')).toBe('#/sqld/rounds/910');
   for (const name of ['ADsP', 'SQLD']) {
-    const action = screen.getByRole('link', { name: `${name} 풀기 ›` });
+    const action = screen.getByRole('link', { name: `${name} 풀기 ›` }).parentElement!;
     expect(action.classList.contains('exam-card-action')).toBe(true);
     expect(action.parentElement?.classList.contains('exam-card')).toBe(true);
     expect(action.parentElement?.lastElementChild).toBe(action);

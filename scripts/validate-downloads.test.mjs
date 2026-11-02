@@ -69,3 +69,17 @@ test.each([
 test('rejects non PDF bytes', async () => expect((await check(undefined, 'not pdf')).errors.length).toBeGreaterThan(0));
 test('rejects unlisted PDF', async () => expect((await check(undefined, undefined, true)).errors.length).toBeGreaterThan(0));
 test('missing list fails', async () => expect((await validateDownloads('absent', [])).errors.length).toBeGreaterThan(0));
+
+test.each(['valid', 'round', 'bytes', 'missing'])('SQLD PDF validation: %s', async kind => {
+  const dir = await mkdtemp(path.join(tmpdir(), 'sqld-pdf-'));
+  try {
+    await mkdir(path.join(dir, 'data/sqld'), { recursive: true });
+    await mkdir(path.join(dir, 'pdf/sqld'), { recursive: true });
+    const data = { formatVersion: 1, rounds: { 900: { type1: { file: 'pdf/sqld/900-type1.pdf', bytes: kind === 'bytes' ? 99 : 11, pages: 1 } } } };
+    await writeFile(path.join(dir, 'data/sqld/downloads.json'), JSON.stringify(data));
+    if (kind !== 'missing') await writeFile(path.join(dir, 'pdf/sqld/900-type1.pdf'), '%PDF-sample');
+    const result = await validateDownloads(path.join(dir, 'data/sqld'), [{ round: kind === 'round' ? 901 : 900 }], path.join(dir, 'pdf/sqld'), 'sqld');
+    if (kind === 'valid') expect(result).toEqual({ errors: [], pdfCount: 1 });
+    else expect(result.errors.length).toBeGreaterThan(0);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});

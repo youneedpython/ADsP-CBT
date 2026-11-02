@@ -3,7 +3,7 @@
 독학으로 자격증 취득하는 CBT. ADsP(데이터분석 준전문가)와 SQLD(SQL 개발자) 기출 복원문제를 회차별로 풀어 보는 사이트입니다.
 
 - ADsP: 44 ~ 50회 350문항, PDF 자료와 핵심 요약
-- SQLD: 52 ~ 62회 550문항
+- SQLD: 52 ~ 62회 550문항, 회차별 PDF 문제지
 
 **[사이트 열기](https://youneedpython.github.io/ADsP-CBT/)**
 

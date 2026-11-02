@@ -16,6 +16,14 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 const downloadCalls = () => fetchMock.mock.calls.filter(([url]) => url.endsWith('downloads.json'));
+
+test.each(['#/sqld/downloads', '#/sqld/downloads?tab=rounds'])('SQLD PDF page uses its own list without tabs: %s', async hash => {
+  window.location.hash = hash; render(<App />);
+  const link = await screen.findByRole('link', { name: /900회 풀이용 PDF 내려받기/ });
+  expect(link.getAttribute('download')).toBe('SQLD_900회_풀이용.pdf');
+  expect(screen.queryByRole('tablist')).toBeNull();
+  expect(downloadCalls().some(([url]) => url.endsWith('data/sqld/downloads.json'))).toBe(true);
+});
 test('rows newest first, current nav, base URLs, names, sizes and pending types', async () => {
   render(<App />);
   const link = await screen.findByRole('link', { name: '900회 풀이용 PDF 내려받기, 280 KB' });

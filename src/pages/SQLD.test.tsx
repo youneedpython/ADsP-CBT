@@ -7,6 +7,7 @@ import { scoreRound } from '../domain/scoring';
 import { createRecordStore, recordKey } from '../storage/records';
 import type { RoundData } from '../data/types';
 import { loadRound } from '../data/loadRound';
+import { readFileSync } from 'node:fs';
 vi.mock('../data/loadDownloads', () => ({ loadDownloads: async () => ({ formatVersion: 1, rounds: {} }) }));
 const sql = exams[1];
 const summary = (round: number, sqld = true) => ({ round, year: 2026, title: '새로 만든 개발용 표본', questionCount: 50, timeLimitMinutes: 90, file: `${sqld ? 'sqld/' : ''}${round}.json` });
@@ -177,6 +178,30 @@ test('SQLD hub card and resume buttons receive the SQLD theme', async () => {
   const button = await screen.findByRole('link', { name: 'SQLD 풀기 ›' });
   expect(button.closest('.exam-sqld')).toBeTruthy();
   expect((await screen.findByRole('link', { name: '이어서 풀기' })).closest('.exam-sqld')).toBeTruthy();
+});
+
+test('hub cards keep their final action in the shared desktop bottom-alignment structure', async () => {
+  window.location.hash = '#/'; render(<App />);
+  await screen.findByText('900 ~ 910회');
+  for (const name of ['ADsP', 'SQLD']) {
+    const action = screen.getByRole('link', { name: `${name} 풀기 ›` });
+    expect(action.classList.contains('exam-card-action')).toBe(true);
+    expect(action.parentElement?.classList.contains('exam-card')).toBe(true);
+    expect(action.parentElement?.lastElementChild).toBe(action);
+    expect(action.previousElementSibling?.classList.contains('exam-description')).toBe(true);
+  }
+  // jsdom cannot measure layout: verify the responsive rules wired to this structure.
+  const styles = readFileSync('src/styles/main.css', 'utf8');
+  expect(styles).toMatch(/@media \(min-width: 768px\)\s*\{\s*\.exam-grid\s*\{ align-items: stretch; \}\s*\.exam-card\s*\{ display: flex; flex-direction: column; \}\s*\.exam-card-action\s*\{ margin-top: auto; align-self: flex-start; \}/);
+  expect(styles).toMatch(/\.exam-card \.button, \.hub-resume \.button\s*\{ border-color: var\(--exam-button-bg, var\(--exam-color\)\);/);
+  expect(styles).toMatch(/\.button, button\s*\{[^}]*border: 1px solid var\(--button-bg\)/);
+  expect(styles).toMatch(/\.secondary\s*\{[^}]*border-color: var\(--accent\)/);
+});
+
+test('outline review and mobile notes buttons preserve the dark accent border', () => {
+  const styles = readFileSync('src/styles/main.css', 'utf8');
+  expect(styles).toMatch(/\.round-actions \[aria-pressed="false"\]\s*\{[^}]*background: var\(--surface\);[^}]*border-color: var\(--accent\)/);
+  expect(styles).toMatch(/\.notes-toc-toggle\s*\{[^}]*background: white;[^}]*border-color: var\(--accent\)/);
 });
 test.each(['third subject', 'missing subject', 'wrong name'])('SQLD loader rejects %s', async variant => {
   const value = structuredClone(data);

@@ -180,6 +180,20 @@ test('SQLD hub card and resume buttons receive the SQLD theme', async () => {
   expect((await screen.findByRole('link', { name: '이어서 풀기' })).closest('.exam-sqld')).toBeTruthy();
 });
 
+test('hub separates introduction sentences and renders exam descriptions as lists', async () => {
+  window.location.hash = '#/'; render(<App />);
+  const cards = screen.getAllByRole('article');
+  await within(cards[0]).findByText('900 ~ 900회');
+  await within(cards[1]).findByText('900 ~ 910회');
+  const lead = document.querySelector('.page-lead')!;
+  expect(Array.from(lead.childNodes).map(node => node.nodeName)).toEqual(['#text', 'BR', '#text']);
+  expect(lead.childNodes[0].textContent).toBe('시험을 고르면 회차별 시험·연습과 주제별 모아 풀기를 할 수 있습니다.');
+  expect(lead.childNodes[2].textContent).toBe('풀이 기록은 이 브라우저에만 저장됩니다.');
+  const passing = '90분 · 총점 60점 이상, 과목별 40% 이상이면 합격';
+  expect(within(within(cards[0]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing, 'PDF 자료와 핵심 요약 제공']);
+  expect(within(within(cards[1]).getByRole('list')).getAllByRole('listitem').map(li => li.textContent)).toEqual([passing]);
+});
+
 test('hub cards keep their final action in the shared desktop bottom-alignment structure', async () => {
   window.location.hash = '#/'; render(<App />);
   await screen.findByText('900 ~ 910회');

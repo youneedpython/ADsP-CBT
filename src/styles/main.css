@@ -231,7 +231,8 @@ h1, h2 { font-size: var(--font-heading); }
 .exam-card .home-facts > div { background: var(--background, #f5f6f8); border-radius: var(--radius); padding: .65rem; }
 .exam-card .home-facts dd { font-size: 1.125rem; white-space: nowrap; }
 .exam-card .home-facts { margin-bottom: var(--space-medium); }
-.exam-description { font-size: .875rem; }
+.exam-description { font-size: .875rem; margin-block: 1em; padding-inline-start: 1em; list-style-type: disc; }
+.exam-description li::marker { content: '• '; }
 .hub-resume { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .5rem 1rem; }
 .hub-resume .exam-badge { grid-row: 1 / 3; }
 .hub-resume p { margin: .25rem 0 0; }

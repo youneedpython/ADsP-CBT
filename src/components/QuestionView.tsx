@@ -1,11 +1,10 @@
 import { useExam } from './ExamContext';
 import { useEffect, useRef } from 'react';
 import type { Answer, Question, RoundData } from '../data/types';
-import { dataUrl } from '../data/loadRound';
+import { QuestionStimulus } from './QuestionStimulus';
 import { MathText } from './MathText';
 import { reportQuestionUrl } from '../domain/reportQuestion';
 import { RelatedQuestions } from './RelatedQuestions';
-const stimulusLabel = (item: Question['stimulus'][number]) => item.type === 'text' ? /^\s*<([^<>]+)>\s*$/.exec(item.text)?.[1] : undefined;
 const circled = ['①', '②', '③', '④'];
 export function QuestionView({ question: q, subjects, round, selected, choose, currentTopic, marked = false, toggleMark, mode = 'practice', confirmed = selected !== undefined }: {
   marked?: boolean; toggleMark?: () => void;
@@ -18,12 +17,6 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
   const previous = useRef(q.number);
   const result = useRef<HTMLParagraphElement>(null);
   const wasConfirmed = useRef(confirmed);
-  const stimuli: (typeof q.stimulus)[] = [];
-  for (const item of q.stimulus) {
-    const last = stimuli.at(-1);
-    if (item.type === 'text' && !stimulusLabel(item) && last?.[0].type === 'text' && !stimulusLabel(last[0])) last.push(item);
-    else stimuli.push([item]);
-  }
   useEffect(() => {
     if (mode === 'practice' && confirmed && !wasConfirmed.current) result.current?.focus();
     wasConfirmed.current = confirmed;
@@ -36,16 +29,7 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
     <div className="question-top"><p className="question-subject">{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
     {toggleMark && <button className={`secondary mark-button ${marked ? 'marked' : ''}`} aria-label={`${round}회 ${q.number}번 문제 표시`} aria-keyshortcuts="S" aria-pressed={marked} onClick={toggleMark}>{marked ? '★ 표시함' : '☆ 표시'}</button>}</div>
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
-    {stimuli.map((group, index) => {
-      const item = group[0];
-      const label = stimulusLabel(item);
-      if (label !== undefined) return <p className="stimulus-label" key={index}>{label}</p>;
-      return <div className={`stimulus stimulus-${item.type}`} key={index}>
-      {item.type === 'text' && group.map((paragraph, paragraphIndex) => paragraph.type === 'text' && <p key={paragraphIndex}><MathText text={paragraph.text} display /></p>)}
-      {item.type === 'code' && <pre>{item.text}</pre>}
-      {item.type === 'table' && <table><thead><tr>{item.rows[0].map((cell, col) => <th key={col} scope="col"><MathText text={cell} /></th>)}</tr></thead><tbody>{item.rows.slice(1).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, col) => <td key={col}><MathText text={cell} /></td>)}</tr>)}</tbody></table>}
-      {item.type === 'image' && <img src={dataUrl(item.src)} alt={item.alt} />}
-    </div>; })}
+    <QuestionStimulus stimulus={q.stimulus} />
     <div className="choices">{q.choices.map((choice, index) => {
       const answer = (index + 1) as Answer;
       const graded = mode === 'review' || mode === 'practice' && confirmed;

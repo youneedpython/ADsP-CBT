@@ -226,7 +226,7 @@ test('hub cards keep their final action in the shared desktop bottom-alignment s
   // jsdom cannot measure layout: verify the responsive rules wired to this structure.
   const styles = readFileSync('src/styles/main.css', 'utf8');
   expect(styles).toMatch(/@media \(min-width: 768px\)\s*\{\s*\.exam-grid\s*\{ align-items: stretch; \}\s*\.exam-card\s*\{ display: flex; flex-direction: column; \}\s*\.exam-card-action\s*\{ margin-top: auto; align-self: flex-start; \}/);
-  expect(styles).toMatch(/\.exam-card \.button, \.hub-resume \.button\s*\{ border-color: var\(--exam-button-bg, var\(--exam-color\)\);/);
+  expect(styles).toMatch(/\.exam-card \.button, \.hub-resume \.button\s*\{ border-color: var\(--exam-button-border, var\(--exam-button-bg, var\(--exam-color\)\)\);/);
   expect(styles).toMatch(/\.button, button\s*\{[^}]*border: 1px solid var\(--button-bg\)/);
   expect(styles).toMatch(/\.secondary\s*\{[^}]*border-color: var\(--accent\)/);
 });
@@ -248,15 +248,16 @@ test('board legend samples share the answered and unanswered button colors', () 
     expect(rule(selector)).toContain('background: var(--surface);');
   }
   expect(rule(':root')).toContain('--button-bg: var(--accent);');
-  expect(rule('.exam-sqld')).toContain('--button-bg: #f2c200;');
-  expect(rule('.legend-sample.correct')).toContain('background: #eaf7ef; border-color: #16633c;');
-  expect(rule('.legend-sample.wrong')).toContain('background: #fff0f0; border-color: #a52a30;');
+  expect(rule('.exam-sqld')).toContain('--button-bg: var(--sqld-button);');
+  expect(rule(':root')).toContain('--sqld-button: #f2c200;');
+  expect(rule('.legend-sample.correct')).toContain('background: var(--pass-bg); border-color: var(--pass-text);');
+  expect(rule('.legend-sample.wrong')).toContain('background: var(--fail-bg); border-color: var(--fail-text);');
 });
 
 test('outline review and mobile notes buttons preserve the dark accent border', () => {
   const styles = readFileSync('src/styles/main.css', 'utf8');
   expect(styles).toMatch(/\.round-actions \[aria-pressed="false"\]\s*\{[^}]*background: var\(--surface\);[^}]*border-color: var\(--accent\)/);
-  expect(styles).toMatch(/\.notes-toc-toggle\s*\{[^}]*background: white;[^}]*border-color: var\(--accent\)/);
+  expect(styles).toMatch(/\.notes-toc-toggle\s*\{[^}]*background: var\(--surface\);[^}]*border-color: var\(--accent\)/);
 });
 test.each(['third subject', 'missing subject', 'wrong name'])('SQLD loader rejects %s', async variant => {
   const value = structuredClone(data);

@@ -39,6 +39,8 @@
   font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;
   font-size: var(--font-body);
   line-height: var(--line-height);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   color: var(--text);
   background: var(--background);
 }
@@ -95,14 +97,25 @@ input, select, textarea { font-family: inherit; }
 .wrong-note-choices li { padding: 8px 0; line-height: 1.7; overflow-wrap: anywhere; }
 .wrong-note-tag { display: inline-block; padding: 0 6px; border: 1px solid currentColor; border-radius: 4px; font-size: .85em; }
 @media print {
-  body:has(.wrong-note-shell) { background: white; color: black; }
+  @page wrong-note { margin: 12mm; }
+  body:has(.wrong-note-shell) { page: wrong-note; background: white; color: black; }
   .wrong-note-shell > header, .wrong-note-shell > footer, .wrong-note-controls { display: none; }
   .wrong-note-shell > main { width: 100%; max-width: none; margin: 0; padding: 0; }
   .wrong-note, .wrong-note * { color: black !important; background: transparent !important; box-shadow: none !important; }
-  .wrong-note-question { break-inside: avoid; border: 1px solid black; }
-  .wrong-note-group > h2 { break-after: avoid; }
-  .wrong-note pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-  .wrong-note .stimulus { overflow: visible; }
+  .wrong-note { font-size: 10.5pt; line-height: 1.4; }
+  .wrong-note-question { break-inside: auto; border: .5pt solid black; border-radius: 0; margin: 8pt 0; padding: 6pt; }
+  .wrong-note-question-heading, .wrong-note-choices, .wrong-note .stimulus { break-inside: avoid; }
+  .wrong-note-group { margin-top: 10pt; }
+  .wrong-note-group > h2 { break-after: avoid; margin-block: 6pt; font-size: 12pt; }
+  .wrong-note .question-subject { font-size: 9.5pt; margin: 0; padding: 0; }
+  .wrong-note .question-title { font-size: 11pt; margin: 4pt 0; }
+  .wrong-note-choices { margin-block: 4pt; padding-left: 18pt; }
+  .wrong-note-choices li { padding: 2pt 0; line-height: 1.4; }
+  .wrong-note-notice { padding: 4pt; margin-block: 6pt; }
+  .wrong-note .feedback { margin-top: 4pt; padding: 4pt; }
+  .wrong-note .feedback h4, .wrong-note .feedback p { margin-block: 2pt; }
+  .wrong-note pre { font-size: 9.5pt; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .wrong-note .stimulus { overflow: visible; margin-bottom: 4pt; padding: 4pt; }
   .wrong-note table { width: 100%; min-width: 0; table-layout: fixed; }
   .wrong-note th, .wrong-note td { overflow-wrap: anywhere; }
 }
@@ -314,7 +327,7 @@ progress { width: 100%; accent-color: var(--progress-color); }
 .stimulus-code, .stimulus-table { overflow-x: auto; }
 .stimulus-text p + p { margin-top: var(--space-small); }
 .stimulus p, .feedback p { white-space: pre-wrap; }
-pre { margin: 0; font: 15px/1.6 monospace; }
+pre { margin: 0; font: 15px/1.6 monospace; white-space: pre; overflow-wrap: normal; word-break: normal; }
 table { border-collapse: collapse; }
 th, td { border: 1px solid var(--border); padding: 8px; }
 img { display: block; max-width: 100%; height: auto; }

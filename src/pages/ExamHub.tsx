@@ -29,7 +29,27 @@ export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<t
   const adsp = useResume(props.state.status === 'success' ? props.state.rounds : [], props.stores.adsp, exams[0]);
   const sqld = useResume(state.status === 'success' ? state.rounds : [], props.stores.sqld, exam);
   return <>
-    <h1 className="page-title">기출 복원 문제를 회차별로 풀어 보세요</h1>
+    <section className="hub-intro" aria-labelledby="hub-intro-title">
+      <div className="hub-character">
+        <img className="dokdori" src={`${import.meta.env.BASE_URL}dokdori/hello.svg`} width="130" height="130" alt="" />
+        <span className="dokdori-decoration bubble bubble-one" aria-hidden="true" />
+        <span className="dokdori-decoration bubble bubble-two" aria-hidden="true" />
+        <span className="dokdori-decoration bubble bubble-three" aria-hidden="true" />
+        <span className="dokdori-decoration leaf leaf-one" aria-hidden="true" />
+        <span className="dokdori-decoration leaf leaf-two" aria-hidden="true" />
+      </div>
+      <div className="hub-intro-copy">
+        <p className="hub-intro-eyebrow">독학으로 준비하는</p>
+        <h1 id="hub-intro-title">자격증 합격, <br /><span>독토리가 함께할게요!</span></h1>
+        <ul><li>기출 복원 문제로 차근차근 시험 감각을 키워요</li><li>합격하는 날까지 독토리가 응원할게요</li></ul>
+      </div>
+      <div className="hub-character-copy">
+        <strong>안녕하세요, 독토리예요!</strong>
+        <p>독학의 "독"과 도토리를 합쳐 지은 이름이에요. 작은 도토리가 자라 큰 나무가 되듯, 혼자 하는 공부도 하루하루 쌓이면 합격이 돼요.</p>
+        <p>학사모 끝의 새싹 잎은 여러분의 실력이 자라고 있다는 표시랍니다.</p>
+      </div>
+    </section>
+    <h2 className="hub-exams-title">기출 복원 문제를 회차별로 풀어 보세요</h2>
     <p className="page-lead">시험을 고르면 회차별 시험·연습과 주제별 모아 풀기를 할 수 있습니다.<br />풀이 기록은 이 브라우저에만 저장됩니다.</p>
     <div className="exam-grid"><ExamCard exam={exams[0]} {...props} /><ExamCard exam={exam} state={state} retry={() => { setState({ status: 'loading' }); setAttempt(n => n + 1); }} /></div>
     {(adsp.resume || sqld.resume) && <section className="hub-resume-section"><h2>이어 풀기</h2><ResumePanel selection={adsp} exam={exams[0]} hub /><ResumePanel selection={sqld} exam={exam} hub /></section>}

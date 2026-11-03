@@ -66,12 +66,17 @@ test('note groups, source headers, answer labels, query persistence, print and t
   fireEvent.click(screen.getByRole('link', { name: '모아 풀기로' }));
   await waitFor(() => expect(document.title).toBe('ADsP 기출 복원 문제'));
 });
-test('resolved questions are excluded and empty note has only a return link', async () => {
-  localStorage.setItem('adsp-cbt:v1:50:practice', JSON.stringify({ current: 1, answers: { 1: 1 } }));
-  localStorage.setItem('adsp-cbt:v1:set-resolved', JSON.stringify({ '50:1': '2026-11-02T00:00:00Z' }));
-  await open('/adsp/sets/wrong/note');
+test.each(['adsp', 'sqld'])('%s resolved questions are excluded and empty note has only a return link', async exam => {
+  localStorage.setItem(`${prefix(exam)}:50:practice`, JSON.stringify({ current: 1, answers: { 1: 1 } }));
+  localStorage.setItem(`${prefix(exam)}:set-resolved`, JSON.stringify({ '50:1': '2026-11-02T00:00:00Z' }));
+  await open(`/${exam}/sets/wrong/note`);
   await screen.findByText('틀린 문제가 없습니다.');
+  expect(within(screen.getByRole('main')).getByRole('presentation').getAttribute('src')).toBe(`${import.meta.env.BASE_URL}dokdori/rest-${exam}.svg`);
   expect(within(screen.getByRole('main')).getAllByRole('link')).toHaveLength(1);
+  const returnLink = screen.getByRole('link', { name: '모아 풀기로' });
+  expect(returnLink.classList.contains('button')).toBe(true);
+  expect(returnLink.classList.contains('secondary')).toBe(true);
+  expect(returnLink.closest('.overview-panel.wrong-note-empty')).toBeTruthy();
   expect(screen.queryByRole('button', { name: '인쇄 / PDF로 저장' })).toBeNull();
 });
 test('SQLD note keeps dollar text and shares stimulus labels, code and tables', async () => {

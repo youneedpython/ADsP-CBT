@@ -2,6 +2,14 @@ import { expect, test } from 'vitest';
 import { readFileSync } from 'node:fs';
 const css = readFileSync('src/styles/main.css', 'utf8');
 
+test('result actions stack below 600px and mock facts use two or four columns', () => {
+  expect(css).toContain('.result-actions > * { white-space: nowrap; }');
+  expect(css).toMatch(/\.mock-facts \{[^}]*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+  expect(css).toMatch(/@media \(max-width: 599px\) \{\s*\.result-actions \{ flex-direction: column; \}\s*\.result-actions > \* \{ width: 100%; \}\s*\.mock-facts \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/);
+  const resultPage = readFileSync('src/pages/ResultPage.tsx', 'utf8');
+  expect(resultPage).toContain('className="round-actions result-actions"');
+});
+
 test('body wraps at word boundaries while screen code preserves whitespace', () => {
   const root = css.match(/:root\s*\{([^}]+)\}/)![1];
   expect(root).toContain('word-break: keep-all');

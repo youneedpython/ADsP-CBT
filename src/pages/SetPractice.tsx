@@ -29,11 +29,13 @@ function SetPracticeSession({ data, pathname }: { data: SetsData; pathname: stri
     const topic = data.topics.topics.find(topic => topic.id === topicId);
     const wrong = pathname === `${exam.path}/sets/wrong`;
     const marked = pathname === `${exam.path}/sets/marked`;
-    const items = marked ? all.filter(item => marks.marked[questionKey(item)]) : wrong ? wrongQuestions(all, records, store.readResolved()) : subject ? subjectQuestions(all, Number(subject[1])) : topic ? topicQuestions(all, data.topics, topic.id) : [];
+    const mock = store.readMock('result', data.rounds);
+    const items = marked ? all.filter(item => marks.marked[questionKey(item)]) : wrong ? wrongQuestions(all, records, store.readResolved(), mock) : subject ? subjectQuestions(all, Number(subject[1])) : topic ? topicQuestions(all, data.topics, topic.id) : [];
     const id = marked ? 'marked' : wrong ? 'wrong' : subject ? `subject-${subject[1]}` : `topic-${topicId}`;
     const name = marked ? '표시한 문제' : wrong ? '틀린 문제' : subject ? `${subject[1]}과목 ${items[0]?.subjects.find(item => item.id === Number(subject[1]))?.name ?? ''}` : topic?.name ?? '';
     // A changed wrong set (including a newer submitted exam) starts a fresh session.
-    const signature = JSON.stringify(items.map(item => [questionKey(item), item.question.answer, wrong ? records[item.round].result?.submittedAt : null]));
+    const signature = JSON.stringify(items.map(item => [questionKey(item), item.question.answer,
+      wrong ? mock ? [records[item.round].result?.submittedAt, mock.submittedAt] : records[item.round].result?.submittedAt : null]));
     return { items, id, name, wrong, signature };
   });
   const [record, setRecord] = useState(() => store.readSet(session.id, session.signature, session.items.map(questionKey)) ?? { signature: session.signature, current: 1, answers: {} as Record<string, Answer> });

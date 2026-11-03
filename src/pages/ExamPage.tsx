@@ -16,10 +16,11 @@ import { useRecordStore } from '../storage/RecordStoreContext';
 export function ExamPage(props: PageProps) {
   return <RoundPage {...props}>{data => <ExamRound key={data.round} data={data} />}</RoundPage>;
 }
-function ExamRound({ data }: { data: RoundData }) {
+export function ExamRound({ data }: { data: RoundData }) {
   const activeExam = useExam();
+  const base = data.round === 0 ? `${activeExam.path}/mock` : `${activeExam.path}/rounds/${data.round}`;
   const store = useRecordStore();
-  const marks = useMarks();
+  const marks = useMarks(data);
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const [record, setRecord] = useState(() => store.read(data.round, 'exam', data.questions.length)
@@ -118,11 +119,11 @@ function ExamRound({ data }: { data: RoundData }) {
       passed: result.passed, elapsedSeconds: live.current.elapsedSeconds,
       submittedAt: new Date(submittedAt).toISOString(), questionCount: result.questionCount });
     store.remove(data.round, 'exam');
-    navigate(`${activeExam.path}/rounds/${data.round}/result`, { replace: true });
+    navigate(`${base}/result`, { replace: true });
   };
   const question = data.questions[current - 1];
   return <>
-    <div className="practice-heading"><h2><Link to={`${activeExam.path}/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
+    <div className="practice-heading"><h2><Link to={base} className="round-title-link">{data.round === 0 ? '실전 모의고사' : `${data.round}회`}</Link> · 시험</h2><p>푼 문제 {progress.answeredCount} / {data.questions.length}</p>
       <p className={isTimeWarning(timing.remainingSeconds) ? 'time-warning' : ''}>
         {timing.remainingSeconds >= 0 && '남은 시간 '}{formatRemainingTime(timing.remainingSeconds)}
         {timing.remainingSeconds >= 0 && isTimeWarning(timing.remainingSeconds) && ' · 10분 이하'}</p><progress className={activeExam.id === 'sqld' ? 'sqld-progress' : undefined} aria-label="푼 문제 진행" value={progress.answeredCount} max={data.questions.length} /></div>

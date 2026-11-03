@@ -1,5 +1,5 @@
 import type { Question, RoundData, RoundSummary, TopicsData } from '../data/types';
-import type { PracticeRecord, ResultRecord } from '../storage/records';
+import type { MockRecord, PracticeRecord, ResultRecord } from '../storage/records';
 
 export interface SetQuestion { round: number; question: Question; subjects: RoundData['subjects'] }
 export const questionKey = (item: SetQuestion) => `${item.round}:${item.question.number}`;
@@ -11,14 +11,18 @@ export function collectQuestions(summaries: RoundSummary[], rounds: RoundData[])
   return rounds.filter(round => registered.has(round.round)).flatMap(round => round.questions.map(question => ({ round: round.round, question, subjects: round.subjects })))
     .sort((a, b) => b.round - a.round || a.question.number - b.question.number);
 }
-export function wrongQuestions(items: SetQuestion[], records: Record<number, RoundRecords>, resolved: ResolvedQuestions): SetQuestion[] {
+export function wrongQuestions(items: SetQuestion[], records: Record<number, RoundRecords>, resolved: ResolvedQuestions, mock?: MockRecord<'result'> | null): SetQuestion[] {
   return items.filter(item => {
     const { practice, result } = records[item.round] ?? { practice: null, result: null };
     const number = item.question.number;
     const examWrong = result !== null && result.answers[number] !== item.question.answer;
     const practiceWrong = practice?.answers[number] !== undefined && practice.answers[number] !== item.question.answer;
     const solvedAt = resolved[questionKey(item)];
-    return (examWrong || practiceWrong) && (!solvedAt || examWrong && Date.parse(result!.submittedAt) > Date.parse(solvedAt));
+    const mockIndex = mock?.sources.findIndex(([round, number]) => round === item.round && number === item.question.number) ?? -1;
+    const mockWrong = mockIndex >= 0 && mock!.answers[mockIndex + 1] !== item.question.answer;
+    return (examWrong || practiceWrong || mockWrong) && (!solvedAt
+      || examWrong && Date.parse(result!.submittedAt) > Date.parse(solvedAt)
+      || mockWrong && Date.parse(mock!.submittedAt) > Date.parse(solvedAt));
   });
 }
 export const subjectQuestions = (items: SetQuestion[], subject: number) => items.filter(item => item.question.subject === subject);

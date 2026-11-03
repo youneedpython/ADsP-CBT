@@ -1,4 +1,6 @@
 import { exams, type Exam } from '../domain/exams';
+import { restoreMock, type QuestionSource } from '../domain/mockExam';
+import type { RoundData } from '../data/types';
 import type { Answers } from '../domain/scoring';
 import { isAnswer } from '../domain/scoring';
 import { validResolved, validSetRecord, type SetRecord } from './setRecords';
@@ -17,6 +19,7 @@ export interface ResultRecord {
   questionCount: number;
 }
 export interface RecordTypes { practice: PracticeRecord; exam: ExamRecord; result: ResultRecord }
+export type MockRecord<K extends 'exam' | 'result'> = RecordTypes[K] & { sources: QuestionSource[] };
 export type RecordKind = keyof RecordTypes;
 export type RecordStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
@@ -80,6 +83,20 @@ export function createRecordStore(provided?: RecordStorage | (() => RecordStorag
     }
   }
   return {
+    readMock<K extends 'exam' | 'result'>(kind: K, rounds?: RoundData[]): MockRecord<K> | null {
+      return readExtra(`${exam.recordPrefix}:mock:${kind}`, (value): value is MockRecord<K> => {
+        if (!object(value) || !Array.isArray(value.sources) || value.sources.length < 1 || value.sources.length > 50
+          || !value.sources.every(s => Array.isArray(s) && s.length === 2 && s.every(n => integer(n, 1)))
+          || new Set(value.sources.map(s => s.join(':'))).size !== value.sources.length) return false;
+        return valid(value, kind, value.sources.length, exam) && (!rounds || restoreMock(rounds, value.sources, exam) !== null);
+      });
+    },
+    writeMock<K extends 'exam' | 'result'>(kind: K, value: MockRecord<K>) { writeExtra(`${exam.recordPrefix}:mock:${kind}`, value); },
+    removeMock(kind: 'exam' | 'result') {
+      const key = `${exam.recordPrefix}:mock:${kind}`;
+      memory.delete(key);
+      if (storage) { try { storage.removeItem(key); } catch { persistent = false; } }
+    },
     readMarked: () => readExtra(`${exam.recordPrefix}:marked`, validMarked) ?? {},
     writeMarked: (value: MarkedQuestions) => writeExtra(`${exam.recordPrefix}:marked`, value),
     readSetAnswers: (ids: string[], keys: string[]) => ids.flatMap(id => {

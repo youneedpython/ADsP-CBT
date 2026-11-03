@@ -51,7 +51,7 @@ function SetsOverview({ data }: { data: SetsData }) {
   const [filter, setFilter] = useState(0);
   const items = collectQuestions(data.summaries, data.rounds);
   const records = Object.fromEntries(data.rounds.map(round => [round.round, { practice: store.read(round.round, 'practice', round.questions.length), result: store.read(round.round, 'result', round.questions.length) }]));
-  const wrong = wrongQuestions(items, records, store.readResolved());
+  const wrong = wrongQuestions(items, records, store.readResolved(), store.readMock('result', data.rounds));
   const marked = store.readMarked();
   const markedCount = items.filter(item => marked[questionKey(item)]).length;
   const ids = ['wrong', 'marked', ...exam.subjects.map(subject => `subject-${subject.id}`), ...data.topics.topics.map(topic => `topic-${topic.id}`)];

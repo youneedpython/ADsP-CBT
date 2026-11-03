@@ -21,7 +21,8 @@ export function WrongNotePage({ data }: { data: SetsData }) {
     practice: store.read(round.round, 'practice', round.questions.length),
     result: store.read(round.round, 'result', round.questions.length),
   }]));
-  const wrong = wrongQuestions(collectQuestions(data.summaries, data.rounds), records, store.readResolved());
+  const mock = store.readMock('result', data.rounds);
+  const wrong = wrongQuestions(collectQuestions(data.summaries, data.rounds), records, store.readResolved(), mock);
   const topicId = (item: typeof wrong[number]) => data.topics.questions[item.round]?.[item.question.number];
   const groups = roundSort
     ? [...new Set(wrong.map(item => item.round))].map(round => ({ id: String(round), name: `${round}회`, items: wrong.filter(item => item.round === round) }))
@@ -48,7 +49,10 @@ export function WrongNotePage({ data }: { data: SetsData }) {
         const record = records[item.round];
         // Show the answer responsible for membership in the wrong collection.
         const resultWrong = record.result !== null && record.result.answers[q.number] !== q.answer;
-        const selected = resultWrong ? record.result!.answers[q.number] : record.practice?.answers[q.number];
+        const mockIndex = mock?.sources.findIndex(([round, number]) => round === item.round && number === q.number) ?? -1;
+        const mockWrong = mockIndex >= 0 && mock!.answers[mockIndex + 1] !== q.answer;
+        const selected = mockWrong && (!resultWrong || Date.parse(mock!.submittedAt) > Date.parse(record.result!.submittedAt))
+          ? mock!.answers[mockIndex + 1] : resultWrong ? record.result!.answers[q.number] : record.practice?.answers[q.number];
         const topic = data.topics.topics.find(topic => topic.id === topicId(item));
         return <article className="question-card wrong-note-question" key={questionKey(item)}>
           <div className="wrong-note-question-heading">

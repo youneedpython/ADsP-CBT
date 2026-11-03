@@ -19,7 +19,7 @@ export function HomePage({ state, retry }: PageProps) {
     <div className={`home-hero${resume ? ' with-resume' : ''}`}><div>
       <h1 className="page-title">{activeExam.name} 기출 복원 문제를 회차별로 풀어 보세요</h1>
       <p className="page-lead">{latest !== null && `${activeExam.fullName}(${activeExam.name}) ${Math.min(...numbers)}회부터 ${latest}회까지의 복원 문제를 실제 시험처럼 풀고, 정답과 해설을 바로 확인합니다. `}가입 없이 무료로 씁니다.</p>
-      <div className="overview-actions"><Link className="button" to={`${activeExam.path}/rounds`}>회차 고르기</Link>{latest !== null && <Link className="button secondary" to={`${activeExam.path}/rounds/${latest}`}>최신 {latest}회 풀기</Link>}</div>
+      <div className="overview-actions"><Link className="button" to={`${activeExam.path}/rounds`}>회차 고르기</Link><Link className="button secondary" to={`${activeExam.path}/mock`}>실전 모의고사</Link>{latest !== null && <Link className="button secondary" to={`${activeExam.path}/rounds/${latest}`}>최신 {latest}회 풀기</Link>}</div>
       {state.status !== 'success' ? <LoadingState state={state} retry={retry} /> : rounds.length === 0 ? <p role="status" className="state-panel">아직 등록된 회차가 없습니다.</p> : <dl className="home-facts"><div><dt>회차</dt><dd>{rounds.length}개</dd></div><div><dt>문제</dt><dd>{rounds.reduce((sum, round) => sum + round.questionCount, 0)}문항</dd></div><div><dt>과목</dt><dd>{activeExam.subjectCount}개</dd></div><div><dt>합격 기준</dt><dd>60점 이상</dd></div></dl>}
     </div><ResumePanel selection={selection} exam={activeExam} /></div>
     <section className="how-section"><h2>이렇게 풉니다</h2><div className="how-grid">
@@ -27,6 +27,7 @@ export function HomePage({ state, retry }: PageProps) {
       <section className="overview-panel"><span className="step-number" aria-hidden="true">2</span><h3>시험</h3><p>50문항을 90분 안에 풉니다. 제출하기 전에는 정답이 보이지 않습니다.</p></section>
       <section className="overview-panel"><span className="step-number" aria-hidden="true">3</span><h3>결과와 다시 보기</h3><p>총점과 과목별 점수, 합격 여부를 보고 틀린 문제만 골라 해설을 다시 읽습니다.</p></section>
     </div></section>
+    <section className="overview-panel home-mock-panel"><h2>실전 모의고사</h2><p>여러 회차에서 과목 비율대로 50문항을 무작위로 뽑아 90분 동안 풉니다.</p><Link className="home-resource-link" to={`${activeExam.path}/mock`}>모의고사 보기 ›</Link></section>
     {activeExam.hasPDF && hasPDF && <p className="home-download-link"><Link to={`${activeExam.path}/downloads`}>PDF로 공부하고 싶다면 PDF 자료 ›</Link></p>}
     <section className="pass-rule-section" aria-labelledby="pass-rule-title">
       <h2 id="pass-rule-title">합격 기준</h2>

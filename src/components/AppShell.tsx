@@ -10,12 +10,14 @@ export function AppShell({ children }: { children: (props: PageProps) => ReactNo
   const downloads = useDownloads();
   const hasPDF = downloads.state.status === 'success' && (!!downloads.state.data.subjects?.length || Object.values(downloads.state.data.rounds).some(files => files.type1 || files.type2));
   const practice = useMatch(`${currentExam.path}/rounds/:round/practice`);
-  const exam = useMatch(`${currentExam.path}/rounds/:round/exam`);
+  const roundExam = useMatch(`${currentExam.path}/rounds/:round/exam`);
+  const mockExam = useMatch(`${currentExam.path}/mock/exam`);
+  const exam = roundExam || mockExam;
   const { pathname } = useLocation();
   const activeExam = exams.find(exam => pathname === exam.path || pathname.startsWith(`${exam.path}/`));
   const sets = pathname === `${currentExam.path}/sets` || pathname.startsWith(`${currentExam.path}/sets/`);
   const wrongNote = pathname === `${currentExam.path}/sets/wrong/note`;
-  const overview = wrongNote || pathname === '/' || pathname === currentExam.path || pathname === `${currentExam.path}/rounds` || pathname === `${currentExam.path}/sets` || pathname === `${currentExam.path}/downloads` || pathname.startsWith(`${currentExam.path}/notes/`);
+  const overview = wrongNote || pathname === `${currentExam.path}/mock` || pathname === '/' || pathname === currentExam.path || pathname === `${currentExam.path}/rounds` || pathname === `${currentExam.path}/sets` || pathname === `${currentExam.path}/downloads` || pathname.startsWith(`${currentExam.path}/notes/`);
   const info = useMatch(`${currentExam.path}/rounds/:round`);
   const Brand = overview || info ? 'div' : 'h1';
   const [state, setState] = useState<LoadState>({ status: 'loading' });
@@ -30,7 +32,7 @@ export function AppShell({ children }: { children: (props: PageProps) => ReactNo
     });
     return () => controller.abort();
   }, [attempt, currentExam]);
-  useEffect(() => { document.title = wrongNote ? `${currentExam.name} 오답 노트 · 독특한 CBT` : pathname === '/' ? '독특한 CBT · 기출 복원 문제' : `${currentExam.name} 기출 복원 문제`; }, [pathname, currentExam, wrongNote]);
+  useEffect(() => { document.title = pathname.includes('/mock') ? `${currentExam.name} 실전 모의고사` : wrongNote ? `${currentExam.name} 오답 노트 · 독특한 CBT` : pathname === '/' ? '독특한 CBT · 기출 복원 문제' : `${currentExam.name} 기출 복원 문제`; }, [pathname, currentExam, wrongNote]);
   return <div className={activeExam ? `exam-${currentExam.id}${wrongNote ? ' wrong-note-shell' : ''}` : undefined} style={{ display: 'contents' }}>
     <header><div className={`container service-bar${activeExam ? ' exam-service-bar' : ''}${practice || exam ? ' practice-header' : overview ? ' overview-container' : ''}`}>
       <Brand className="service-name"><Link to="/" aria-label="독특한 CBT"><img className="service-logo" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="28" height="28" /><span className="service-copy"><span>독특한 CBT</span><small>독학으로 자격증 취득하는 CBT</small></span></Link></Brand>

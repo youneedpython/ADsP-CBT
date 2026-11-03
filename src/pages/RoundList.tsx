@@ -8,6 +8,7 @@ export function RoundList({ state, retry }: PageProps) {
   const store = useRecordStore();
   return <>
     <h1 className="page-title">회차 고르기</h1>
+    <p><Link to={`${activeExam.path}/mock`}>회차를 섞어 풀고 싶다면 실전 모의고사 ›</Link></p>
     <p className="page-lead">회차를 누르면 기본 정보를 확인하고 연습이나 시험을 시작합니다. <span>풀이 기록은 이 브라우저에만 저장됩니다.</span></p>
     {state.status !== 'success' ? <LoadingState state={state} retry={retry} /> : state.rounds.length === 0 ? <p role="status" className="state-panel">아직 등록된 회차가 없습니다.</p> : groupRounds(state.rounds).map(group => <section key={group.year} aria-labelledby={`year-${group.year}`}>
       <div className="year-heading"><h2 id={`year-${group.year}`}>{group.year}년</h2><span>{group.rounds.length}회차</span></div>

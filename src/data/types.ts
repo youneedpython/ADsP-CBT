@@ -23,6 +23,7 @@ export type Stimulus =
   | { type: 'table'; rows: string[][] }
   | { type: 'image'; src: string; alt: string };
 export interface Question {
+  source?: [number, number];
   number: number;
   subject: SubjectId;
   question: string;

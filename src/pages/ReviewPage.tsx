@@ -13,10 +13,11 @@ import { useRecordStore } from '../storage/RecordStoreContext';
 export function ReviewPage(props: PageProps) {
   return <RoundPage {...props}>{data => <ReviewRound key={data.round} data={data} />}</RoundPage>;
 }
-function ReviewRound({ data }: { data: RoundData }) {
+export function ReviewRound({ data }: { data: RoundData }) {
   const activeExam = useExam();
+  const base = data.round === 0 ? `${activeExam.path}/mock` : `${activeExam.path}/rounds/${data.round}`;
   const store = useRecordStore();
-  const marks = useMarks();
+  const marks = useMarks(data);
   const [record] = useState(() => store.read(data.round, 'result', data.questions.length));
   const [params, setParams] = useSearchParams();
   const result = scoreRound(data, record?.answers ?? {});
@@ -37,9 +38,9 @@ function ReviewRound({ data }: { data: RoundData }) {
     }
   }, [record, raw, current, params, filtered, setParams]);
   useQuestionKeys({ toggleMark: () => marks.toggle(data.round, current), blocked: !record, previous: position > 0 ? () => move(scope[position - 1].number) : undefined, next: position < scope.length - 1 ? () => move(scope[position + 1].number) : undefined });
-  if (!record) return <div className="state-panel"><p>시험 기록이 없습니다.</p><Link className="button" to={`${activeExam.path}/rounds/${data.round}/exam`}>시험 시작</Link></div>;
+  if (!record) return <div className="state-panel"><p>시험 기록이 없습니다.</p><Link className="button" to={`${base}/exam`}>시험 시작</Link></div>;
   return <>
-    <div className="practice-heading"><h2><Link to={`${activeExam.path}/rounds/${data.round}`} className="round-title-link">{data.round}회</Link> · 다시 보기</h2>
+    <div className="practice-heading"><h2><Link to={base} className="round-title-link">{data.round === 0 ? '실전 모의고사' : `${data.round}회`}</Link> · 다시 보기</h2>
       <p>{filtered ? '틀린 문제' : '전체'} {position + 1} / {scope.length}</p>
     </div>
     {!marks.persistent && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
@@ -51,7 +52,7 @@ function ReviewRound({ data }: { data: RoundData }) {
       selected={result.questions.find(question => question.number === current)!.selected ?? undefined} mode="review" choose={() => {}} />
     <nav className="practice-nav" aria-label="문제 이동">
       <button className="secondary" disabled={position === 0} onClick={() => move(scope[position - 1].number)}>이전</button>
-      <Link className="button secondary" to={`${activeExam.path}/rounds/${data.round}/result`}>결과로</Link>
+      <Link className="button secondary" to={`${base}/result`}>결과로</Link>
       <button disabled={position === scope.length - 1} onClick={() => move(scope[position + 1].number)}>다음</button>
     </nav>
   </>;

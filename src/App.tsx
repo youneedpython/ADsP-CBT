@@ -1,3 +1,4 @@
+import { MockPage } from './pages/MockPage';
 import { exams, examAtPath } from './domain/exams';
 import { ExamContext } from './components/ExamContext';
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router';
@@ -33,6 +34,8 @@ function ExamApp() {
   const store = stores[exam.id];
   return <ExamContext.Provider value={exam}><RecordStoreContext.Provider value={store}><DownloadsProvider key={exam.id}><AppShell key={exam.id}>{props => <TopicsProvider summaries={props.state.status === 'success' ? props.state.rounds : []}><Routes>
     <Route path="/" element={<ExamHub {...props} stores={stores} />} />
+    <Route path="/adsp/mock/*" element={<MockPage {...props} />} />
+    <Route path="/sqld/mock/*" element={<MockPage {...props} />} />
     <Route path="/adsp" element={<HomePage {...props} />} />
     <Route path="/adsp/notes/:id" element={<NotesPage />} />
     <Route path="/adsp/downloads" element={<DownloadsPage {...props} />} />

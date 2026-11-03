@@ -13,6 +13,8 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
   question: Question; subjects: RoundData['subjects']; selected?: Answer; choose: (answer: Answer) => void; mode?: 'practice' | 'exam' | 'review'; confirmed?: boolean;
 }) {
   const exam = useExam();
+  const sourceRound = q.source?.[0] ?? round;
+  const sourceNumber = q.source?.[1] ?? q.number;
   const title = useRef<HTMLHeadingElement>(null);
   const previous = useRef(q.number);
   const result = useRef<HTMLParagraphElement>(null);
@@ -26,8 +28,8 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
     previous.current = q.number;
   }, [q.number]);
   return <article className="question-card">
-    <div className="question-top"><p className="question-subject">{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
-    {toggleMark && <button className={`secondary mark-button ${marked ? 'marked' : ''}`} aria-label={`${round}회 ${q.number}번 문제 표시`} aria-keyshortcuts="S" aria-pressed={marked} onClick={toggleMark}>{marked ? '★ 표시함' : '☆ 표시'}</button>}</div>
+    <div className="question-top"><p className="question-subject">{q.source && <span>출처 {q.source[0]}회 {q.source[1]}번 · </span>}{q.subject}과목 {subjects.find(subject => subject.id === q.subject)?.name}</p>
+    {toggleMark && <button className={`secondary mark-button ${marked ? 'marked' : ''}`} aria-label={`${sourceRound}회 ${sourceNumber}번 문제 표시`} aria-keyshortcuts="S" aria-pressed={marked} onClick={toggleMark}>{marked ? '★ 표시함' : '☆ 표시'}</button>}</div>
     <h2 ref={title} tabIndex={-1} className="question-title">{q.number}. <MathText text={q.question} /></h2>
     <QuestionStimulus stimulus={q.stimulus} />
     <div className="choices">{q.choices.map((choice, index) => {
@@ -45,13 +47,13 @@ export function QuestionView({ question: q, subjects, round, selected, choose, c
     {mode === 'review' && <section className="feedback" aria-label="풀이 결과">
       {selected === undefined && <p>풀지 않음</p>}
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
-      {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
+      {round !== undefined && <a className="question-report" href={reportQuestionUrl(sourceRound!, sourceNumber)} target="_blank" rel="noopener noreferrer" aria-label={`${sourceRound}회 ${sourceNumber}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
     {mode === 'practice' && confirmed && selected !== undefined && <section className="feedback" aria-label="풀이 결과">
       <p ref={result} tabIndex={-1} role="status">{selected === q.answer ? '맞았습니다.' : `틀렸습니다. 정답은 ${circled[q.answer - 1]}번입니다.`}</p>
       <h3>해설</h3><p><MathText text={q.explanation} /></p>
-      {round !== undefined && <a className="question-report" href={reportQuestionUrl(round, q.number)} target="_blank" rel="noopener noreferrer" aria-label={`${round}회 ${q.number}번 문제 오류 신고`}>문제 오류 신고</a>}
+      {round !== undefined && <a className="question-report" href={reportQuestionUrl(sourceRound!, sourceNumber)} target="_blank" rel="noopener noreferrer" aria-label={`${sourceRound}회 ${sourceNumber}번 문제 오류 신고`}>문제 오류 신고</a>}
     </section>}
-    {exam.hasSets && round !== undefined && (mode === 'review' || mode === 'practice' && confirmed && selected !== undefined) && <RelatedQuestions round={round} number={q.number} currentTopic={currentTopic} />}
+    {exam.hasSets && round !== undefined && (mode === 'review' || mode === 'practice' && confirmed && selected !== undefined) && <RelatedQuestions round={sourceRound!} number={sourceNumber} currentTopic={currentTopic} />}
   </article>;
 }

@@ -167,7 +167,7 @@ input, select, textarea { font-family: inherit; }
 .overview-panel { padding: var(--space-large); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .resume-panel { margin-top: var(--space-large); }
 .resume-panel h2, .eyebrow { color: var(--accent); font-size: var(--font-small); }
-.resume-panel p, .how-grid p, .info-hint, .record-details, .mode-description { color: var(--muted); font-size: var(--font-small); }
+.resume-panel p, .how-grid p, .home-mock-panel p, .info-hint, .record-details, .mode-description { color: var(--muted); font-size: var(--font-small); }
 .resume-panel .button, .start-link { width: 100%; }
 .resume-panel progress { margin-block: var(--space-medium); }
 .how-section { margin-top: var(--space-large); }
@@ -202,10 +202,10 @@ input, select, textarea { font-family: inherit; }
 .round-number { font-size: var(--font-heading); }
 .card-status { display: flex; justify-content: space-between; gap: var(--space-small); margin-top: var(--space-medium); }
 .card-open, .breadcrumb a { color: var(--accent); }
-.round-title-link, .subject-pdf-link, .home-download-link a { color: var(--accent); text-decoration: none; }
+.round-title-link, .subject-pdf-link, .home-download-link a, .home-resource-link { color: var(--accent); text-decoration: none; }
 .round-title-link:hover, .round-title-link:focus,
 .subject-pdf-link:hover, .subject-pdf-link:focus,
-.home-download-link a:hover, .home-download-link a:focus { text-decoration: underline; }
+.home-download-link a:hover, .home-download-link a:focus, .home-resource-link:hover, .home-resource-link:focus { text-decoration: underline; }
 .round-card.in-progress { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
 .record-exam, .record-pass, .record-fail { display: inline-block; font-weight: 700; padding: var(--chip-padding-block) var(--chip-padding-inline); border-radius: var(--radius-pill); }
 .record-exam { color: var(--accent); background: var(--accent-soft); }
@@ -304,6 +304,16 @@ main { flex: 1; padding-block: var(--space-medium); }
 }
 .round-actions { display: flex; gap: var(--space-small); margin-top: var(--space-small); }
 .round-actions .button { flex: 1; }
+.result-actions > * { white-space: nowrap; }
+.mock-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: var(--space-large); }
+.mock-facts > div { min-width: 0; }
+.mock-overview > p, .mock-overview > .round-actions { margin-top: var(--space-medium); }
+.home-mock-panel { margin-top: var(--space-medium); }
+@media (max-width: 599px) {
+  .result-actions { flex-direction: column; }
+  .result-actions > * { width: 100%; }
+  .mock-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .button, button { display: inline-flex; justify-content: center; align-items: center; min-height: var(--touch-height); padding: var(--space-small) var(--space-medium); border: 1px solid var(--button-bg); border-radius: var(--radius); background: var(--button-bg); color: var(--button-text); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
 .secondary { color: var(--accent); background: var(--surface); border-color: var(--accent); }
 a:hover, button:hover { text-decoration: underline; }

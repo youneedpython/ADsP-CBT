@@ -26,8 +26,8 @@ export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<t
     loadRounds(controller.signal, exam).then(rounds => { if (!controller.signal.aborted) setState({ status: 'success', rounds }); }).catch(() => { if (!controller.signal.aborted) setState({ status: 'error' }); });
     return () => controller.abort();
   }, [attempt, exam]);
-  const adsp = useResume(props.state.status === 'success' ? props.state.rounds : [], props.stores.adsp);
-  const sqld = useResume(state.status === 'success' ? state.rounds : [], props.stores.sqld);
+  const adsp = useResume(props.state.status === 'success' ? props.state.rounds : [], props.stores.adsp, exams[0]);
+  const sqld = useResume(state.status === 'success' ? state.rounds : [], props.stores.sqld, exam);
   return <>
     <h1 className="page-title">기출 복원 문제를 회차별로 풀어 보세요</h1>
     <p className="page-lead">시험을 고르면 회차별 시험·연습과 주제별 모아 풀기를 할 수 있습니다.<br />풀이 기록은 이 브라우저에만 저장됩니다.</p>

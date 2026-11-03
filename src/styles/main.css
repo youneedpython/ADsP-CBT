@@ -762,4 +762,17 @@ progress { background: var(--track); }
   --fail-text: #a52a30;
   --fail-bg: #fff0f0;
   }
+  .offline-notice { display: none; }
+}
+.offline-notice {
+  padding: 8px 16px;
+  background: #eef0f3;
+  color: #354052;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
+:root[data-theme='dark'] .offline-notice { background: #252d39; color: #e6e9ef; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .offline-notice { background: #252d39; color: #e6e9ef; }
 }

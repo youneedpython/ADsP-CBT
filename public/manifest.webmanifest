@@ -1,0 +1,16 @@
+{
+  "name": "독특한 CBT · ADsP · SQLD 기출 복원 문제",
+  "short_name": "독특한 CBT",
+  "description": "ADsP · SQLD 기출 복원 문제를 회차별로 시험처럼 풀고 해설로 복습하는 무료 CBT",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#2f54d6",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

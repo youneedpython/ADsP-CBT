@@ -20,4 +20,7 @@ test('shows notice when initially offline', () => {
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
   render(<OfflineNotice />);
   expect(screen.getByRole('status')).toBeTruthy();
+  const image = screen.getByRole('presentation');
+  expect(image.getAttribute('src')).toBe(`${import.meta.env.BASE_URL}dokdori/sleep.svg`);
+  expect(image.getAttribute('width')).toBe('24');
 });

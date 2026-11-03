@@ -27,7 +27,7 @@ export function WrongNotePage({ data }: { data: SetsData }) {
   const groups = roundSort
     ? [...new Set(wrong.map(item => item.round))].map(round => ({ id: String(round), name: `${round}회`, items: wrong.filter(item => item.round === round) }))
     : topicStatistics(data.topics, data.summaries).map(topic => ({ id: topic.id, name: topic.name, items: wrong.filter(item => topicId(item) === topic.id) })).filter(group => group.items.length);
-  if (!wrong.length) return <><p>틀린 문제가 없습니다.</p><Link to={`${exam.path}/sets`}>모아 풀기로</Link></>;
+  if (!wrong.length) return <div className="overview-panel wrong-note-empty"><img className="dokdori" src={`${import.meta.env.BASE_URL}dokdori/rest-${exam.id}.svg`} width="96" height="96" alt="" /><p>틀린 문제가 없습니다.</p><Link className="button secondary" to={`${exam.path}/sets`}>모아 풀기로</Link></div>;
   return <div className="wrong-note">
     <h1 className="page-title">{exam.name} 오답 노트</h1>
     <p>{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} · 틀린 문제 {wrong.length}문항</p>

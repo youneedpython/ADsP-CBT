@@ -22,7 +22,7 @@ export function ResultRound({ data, startMock }: { data: RoundData; startMock?: 
   return <section className="result-panel">
     <div className="result-heading"><h2><Link to={base} className="round-title-link">{data.round === 0 ? '실전 모의고사' : `${data.round}회`}</Link> · 결과</h2><p>걸린 시간 {formatRemainingTime(record.elapsedSeconds)}</p></div>
     {!store.canPersist() && <p className="notice">이 브라우저에서는 풀이 기록을 저장할 수 없습니다.</p>}
-    <div className="result-summary"><p className="result-score">{result.score}점</p><p className={`result-verdict ${result.passed ? 'correct' : 'wrong'}`}>{result.passed ? '합격' : '불합격'}</p>
+    <div className="result-summary"><img className="dokdori" src={`${import.meta.env.BASE_URL}dokdori/${result.passed ? 'pass' : 'cheer'}-${activeExam.id}.svg`} width="96" height="96" alt="" /><p className="result-score">{result.score}점</p><p className={`result-verdict ${result.passed ? 'correct' : 'wrong'}`}>{result.passed ? '합격' : '불합격'}</p>
     {result.failureReasons.map(reason => <p key={reason}>{reason}</p>)}
     <p>총점 60점 이상, 과목별 40% 이상이면 합격입니다.</p>
     </div><div className="subject-results">{result.subjects.map(subject => <section className={subject.failed ? 'subject-failed' : undefined} key={subject.subject}>

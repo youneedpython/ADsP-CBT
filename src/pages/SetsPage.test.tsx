@@ -155,7 +155,7 @@ test.each(['/adsp/sets/unknown', '/adsp/sets/subject/4', '/adsp/sets/topic/T999'
   window.history.replaceState(null, '', `#${path}`);
   render(<App />);
   await screen.findByText('풀 문제가 없습니다.');
-  expect(read).not.toHaveBeenCalled();
+  expect(read.mock.calls.every(([key]) => key === 'cbt:v1:theme')).toBe(true);
   expect(remove).not.toHaveBeenCalled();
   expect(write).not.toHaveBeenCalled();
 });

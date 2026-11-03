@@ -24,6 +24,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="stylesheet" href="./fonts/pretendard/pretendardvariable-dynamic-subset.css" />
+    <script>
+      try { var t = localStorage.getItem('cbt:v1:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

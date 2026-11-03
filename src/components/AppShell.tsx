@@ -5,6 +5,7 @@ import { loadRounds } from "../data/loadRounds";
 import type { LoadState, PageProps } from "./LoadingState";
 import { exams } from "../domain/exams";
 import { useDownloads } from './DownloadsContext';
+import { ThemeToggle } from './ThemeToggle';
 export function AppShell({ children }: { children: (props: PageProps) => ReactNode }) {
   const currentExam = useExam();
   const downloads = useDownloads();
@@ -42,7 +43,7 @@ export function AppShell({ children }: { children: (props: PageProps) => ReactNo
         <Link to={`${activeExam.path}/rounds`} aria-current={pathname.startsWith(`${activeExam.path}/rounds`) ? 'page' : undefined}>회차</Link>
         {activeExam.hasSets && <Link to={`${activeExam.path}/sets`} aria-current={sets ? 'page' : undefined}>모아 풀기</Link>}
         {activeExam.hasPDF && hasPDF && <Link className="pdf-nav" to={`${activeExam.path}/downloads`} aria-current={pathname === `${activeExam.path}/downloads` || pathname.startsWith(`${activeExam.path}/notes/`) ? 'page' : undefined}>PDF</Link>}
-      </> : exams.map(item => <Link key={item.id} to={item.path}>{item.name}</Link>)}</nav>
+      </> : exams.map(item => <Link key={item.id} to={item.path}>{item.name}</Link>)}<ThemeToggle /></nav>
     </div></header>
     <main className={`container${practice || exam ? ' practice-container' : overview ? ' overview-container' : ''}`}>{children({state, retry})}</main>
     <footer><p>복원 문제입니다. 실제 시험과 다를 수 있습니다.</p><p>© 2026 youneedpython</p></footer>

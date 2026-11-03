@@ -51,7 +51,7 @@ test('note groups, source headers, answer labels, query persistence, print and t
   expect(screen.getByText('안 푼 문제')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: '회차순' }));
   expect(screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent)).toEqual(['50회 · 2문항', '49회 · 1문항']);
-  expect([...document.querySelectorAll('.wrong-note-question > .question-subject')].map(p => p.textContent?.split(' · ')[0])).toEqual(['50회 1번', '50회 3번', '49회 2번']);
+  expect([...document.querySelectorAll('.wrong-note-question-heading > .question-subject')].map(p => p.textContent?.split(' · ')[0])).toEqual(['50회 1번', '50회 3번', '49회 2번']);
   fireEvent.click(screen.getByRole('button', { name: '해설 포함' }));
   expect(screen.queryByText('개발용 표본 해설')).toBeNull();
   expect(window.location.hash).toBe('#/adsp/sets/wrong/note?sort=round&explain=0');

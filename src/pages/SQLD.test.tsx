@@ -199,7 +199,7 @@ test('body uses Pretendard first while controls inherit and code stays monospace
   expect(styles).toMatch(/:root\s*\{[^}]*font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;/);
   expect(styles).toMatch(/input, select, textarea\s*\{ font-family: inherit; \}/);
   expect(styles).toMatch(/\.button, button\s*\{[^}]*font: inherit;/);
-  expect(styles).toMatch(/pre\s*\{ margin: 0; font: 15px\/1\.6 monospace; \}/);
+  expect(styles).toMatch(/pre\s*\{ margin: 0; font: 15px\/1\.6 monospace;/);
   // Inline code retains the browser monospace default; code passages and notes use pre.
   expect(styles).not.toMatch(/(?:^|\n)(?:code|\.stimulus-code|\.notes-code)\s*\{[^}]*(?:font-family|font):/);
 });

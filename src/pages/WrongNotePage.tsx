@@ -51,8 +51,10 @@ export function WrongNotePage({ data }: { data: SetsData }) {
         const selected = resultWrong ? record.result!.answers[q.number] : record.practice?.answers[q.number];
         const topic = data.topics.topics.find(topic => topic.id === topicId(item));
         return <article className="question-card wrong-note-question" key={questionKey(item)}>
-          <p className="question-subject">{item.round}회 {q.number}번 · {q.subject}과목 {item.subjects.find(subject => subject.id === q.subject)?.name} · {topic?.name}</p>
-          <h3 className="question-title"><MathText text={q.question} /></h3>
+          <div className="wrong-note-question-heading">
+            <p className="question-subject">{item.round}회 {q.number}번 · {q.subject}과목 {item.subjects.find(subject => subject.id === q.subject)?.name} · {topic?.name}</p>
+            <h3 className="question-title"><MathText text={q.question} /></h3>
+          </div>
           <QuestionStimulus stimulus={q.stimulus} />
           {selected === undefined && <strong className="wrong-note-tag">안 푼 문제</strong>}
           <ol className="wrong-note-choices">{q.choices.map((choice, index) => <li key={index}>

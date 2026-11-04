@@ -796,7 +796,7 @@ progress { background: var(--track); }
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: 64px;
+  column-gap: clamp(64px, 9vw, 112px);
   row-gap: 12px;
   align-items: center;
   padding-block: 48px;

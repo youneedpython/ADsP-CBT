@@ -40,13 +40,19 @@ test.each(exams.flatMap(exam => [false, true].flatMap(passed => [0, 50].map(roun
     expect(document.querySelector('.result-summary')?.firstElementChild).toBe(image);
   });
 
-test('hub intro widens the desktop gap and preserves the tablet gap', () => {
+test('hub intro aligns its equal columns and gap with the exam cards', () => {
   const css = readFileSync('src/styles/main.css', 'utf8');
   const desktop = css.match(/^\.hub-intro \{([^}]+)\}/m)?.[1];
-  expect(desktop).toContain('column-gap: clamp(64px, 9vw, 112px);');
-  expect(desktop).toContain('grid-template-columns: 260px minmax(0, 1fr);');
-  const tablet = css.match(/@media \(max-width: 1000px\)\s*\{\s*\.hub-intro \{([^}]+)\}/)?.[1];
-  expect(tablet).toContain('column-gap: 36px;');
+  expect(desktop).toContain('column-gap: 1.5rem;');
+  expect(desktop).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
+  expect(css).toMatch(/\.exam-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); gap: 1\.5rem;/);
+  expect(css).toMatch(/\.hub-intro h1 \{ font-size: clamp\(34px, 5\.6vw, 60px\);/);
+  expect(css).toMatch(/\.hub-intro-eyebrow \{ font-size: 26px;/);
+  expect(css).not.toContain('clamp(64px, 9vw, 112px)');
+  const tablet = css.slice(css.indexOf('@media (max-width: 1000px)'), css.indexOf('@media (max-width: 620px)'));
+  expect(tablet).not.toContain('.hub-intro {');
+  expect(tablet).not.toContain('.hub-intro h1');
+  expect(tablet).toContain('.hub-intro-eyebrow { font-size: 21px; }');
 });
 
 test('decorations respect reduced motion and all characters are hidden in print', () => {

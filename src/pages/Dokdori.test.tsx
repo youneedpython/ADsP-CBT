@@ -40,6 +40,15 @@ test.each(exams.flatMap(exam => [false, true].flatMap(passed => [0, 50].map(roun
     expect(document.querySelector('.result-summary')?.firstElementChild).toBe(image);
   });
 
+test('hub intro widens the desktop gap and preserves the tablet gap', () => {
+  const css = readFileSync('src/styles/main.css', 'utf8');
+  const desktop = css.match(/^\.hub-intro \{([^}]+)\}/m)?.[1];
+  expect(desktop).toContain('column-gap: clamp(64px, 9vw, 112px);');
+  expect(desktop).toContain('grid-template-columns: 260px minmax(0, 1fr);');
+  const tablet = css.match(/@media \(max-width: 1000px\)\s*\{\s*\.hub-intro \{([^}]+)\}/)?.[1];
+  expect(tablet).toContain('column-gap: 36px;');
+});
+
 test('decorations respect reduced motion and all characters are hidden in print', () => {
   const css = readFileSync('src/styles/main.css', 'utf8');
   expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.dokdori-decoration \{ animation: none;/);

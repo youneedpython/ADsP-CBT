@@ -831,14 +831,14 @@ progress { background: var(--track); }
   .hub-intro-eyebrow { font-size: 21px; }
 }
 @media (max-width: 620px) {
-  .hub-intro { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 24px; text-align: center; }
+  .hub-intro { grid-template-columns: minmax(0, 1fr); gap: 12px; padding-block: 24px; text-align: center; }
   .hub-character, .hub-intro-copy, .hub-character-copy { grid-column: 1; grid-row: auto; }
   .hub-character { --character-size: 104px; }
   .hub-intro-copy { text-align: left; }
+  .hub-intro-copy { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 12px; }
   .hub-intro-eyebrow { font-size: 18px; }
   .hub-intro h1 { font-size: 36px; }
   .hub-intro-copy ul { text-align: left; }
-  .hub-character-copy { border-top: 1px solid var(--border); padding-top: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .dokdori-decoration { animation: none; }

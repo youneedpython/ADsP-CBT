@@ -22,6 +22,7 @@ test('hub introduces Dokdori above the existing exam selection copy', async () =
   expect(document.querySelector('.page-lead')?.textContent).toBe('시험을 고르면 회차별 시험·연습과 주제별 모아 풀기를 할 수 있습니다.풀이 기록은 이 브라우저에만 저장됩니다.');
   expect(screen.getByRole('presentation').getAttribute('src')).toBe(`${import.meta.env.BASE_URL}dokdori/hello.svg`);
   expect(document.querySelectorAll('.dokdori-decoration[aria-hidden="true"]')).toHaveLength(5);
+  expect(Array.from(document.querySelector('.hub-intro')!.children, child => child.className)).toEqual(['hub-intro-copy', 'hub-character', 'hub-character-copy']);
   await screen.findByRole('link', { name: 'SQLD 풀기 ›' });
 });
 
@@ -59,6 +60,18 @@ test('decorations respect reduced motion and all characters are hidden in print'
   const css = readFileSync('src/styles/main.css', 'utf8');
   expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.dokdori-decoration \{ animation: none;/);
   expect(css.slice(css.lastIndexOf('@media print'))).toContain('.offline-notice, .dokdori, .dokdori-decoration { display: none !important; }');
+});
+
+test('mobile hub places the divider before the character and keeps its introduction close', () => {
+  const css = readFileSync('src/styles/main.css', 'utf8');
+  const mobile = css.slice(css.indexOf('@media (max-width: 620px)'), css.indexOf('@media (prefers-reduced-motion: reduce)'));
+  expect(mobile).toMatch(/\.hub-intro \{[^}]*grid-template-columns: minmax\(0, 1fr\); gap: 12px;/);
+  expect(mobile).toContain('.hub-character, .hub-intro-copy, .hub-character-copy { grid-column: 1; grid-row: auto; }');
+  expect(mobile).toContain('.hub-intro-copy { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 12px; }');
+  expect(mobile).not.toContain('border-top:');
+  expect(css).toMatch(/\.hub-character \{[^}]*grid-column: 1; grid-row: 1;/);
+  expect(css).toContain('.hub-intro-copy { grid-column: 2; grid-row: 1 / 3; }');
+  expect(css).toMatch(/\.hub-character-copy \{ grid-column: 1; grid-row: 2;/);
 });
 
 test('hub decorations stay outside the image box at every size and mobile copy aligns left', () => {

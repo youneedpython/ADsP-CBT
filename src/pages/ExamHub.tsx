@@ -30,6 +30,11 @@ export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<t
   const sqld = useResume(state.status === 'success' ? state.rounds : [], props.stores.sqld, exam);
   return <>
     <section className="hub-intro" aria-labelledby="hub-intro-title">
+      <div className="hub-intro-copy">
+        <p className="hub-intro-eyebrow">독학으로 준비하는</p>
+        <h1 id="hub-intro-title">자격증 합격, <br /><span>독토리가 함께할게요!</span></h1>
+        <ul><li>기출 복원 문제로 차근차근 시험 감각을 키워요</li><li>합격하는 날까지 독토리가 응원할게요</li></ul>
+      </div>
       <div className="hub-character">
         <img className="dokdori" src={`${import.meta.env.BASE_URL}dokdori/hello.svg`} width="130" height="130" alt="" />
         <span className="dokdori-decoration bubble bubble-one" aria-hidden="true" />
@@ -37,11 +42,6 @@ export function ExamHub(props: PageProps & { stores: Record<string, ReturnType<t
         <span className="dokdori-decoration bubble bubble-three" aria-hidden="true" />
         <span className="dokdori-decoration leaf leaf-one" aria-hidden="true" />
         <span className="dokdori-decoration leaf leaf-two" aria-hidden="true" />
-      </div>
-      <div className="hub-intro-copy">
-        <p className="hub-intro-eyebrow">독학으로 준비하는</p>
-        <h1 id="hub-intro-title">자격증 합격, <br /><span>독토리가 함께할게요!</span></h1>
-        <ul><li>기출 복원 문제로 차근차근 시험 감각을 키워요</li><li>합격하는 날까지 독토리가 응원할게요</li></ul>
       </div>
       <div className="hub-character-copy">
         <strong>안녕하세요, 독토리예요!</strong>

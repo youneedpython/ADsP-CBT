@@ -1,7 +1,7 @@
 {
-  "name": "독특한 CBT · ADsP · SQLD 기출 복원 문제",
+  "name": "독특한 CBT · ADsP · SQLD 기출 문제",
   "short_name": "독특한 CBT",
-  "description": "ADsP · SQLD 기출 복원 문제를 회차별로 시험처럼 풀고 해설로 복습하는 무료 CBT",
+  "description": "ADsP · SQLD 기출 문제를 회차별로 시험처럼 풀고 해설로 복습하는 무료 CBT",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",

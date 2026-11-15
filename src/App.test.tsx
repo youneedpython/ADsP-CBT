@@ -22,13 +22,14 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 function footer() {
   const content = within(screen.getByRole('contentinfo'));
-  expect(content.getByText('복원 문제입니다. 실제 시험과 다를 수 있습니다.')).toBeTruthy();
+  expect(screen.getByRole('contentinfo').textContent).not.toContain('\uBCF5\uC6D0');
+  expect(content.getByText('실제 시험과 다를 수 있습니다.')).toBeTruthy();
   expect(content.getByText('© 2026 youneedpython')).toBeTruthy();
 }
 test('home computes range, counts and latest from data, with no resume when records are absent', async () => {
   fetchMock.mockResolvedValue(respond([sample(37, 2024, 7), sample(53, 2026, 12)])); render(<App />);
   expect(await screen.findByText('19문항')).toBeTruthy(); expect(screen.getByText('2개')).toBeTruthy();
-  expect(screen.getByText('데이터분석 준전문가(ADsP) 37회부터 53회까지의 복원 문제를 실제 시험처럼 풀고, 정답과 해설을 바로 확인합니다. 가입 없이 무료로 씁니다.')).toBeTruthy();
+  expect(screen.getByText('데이터분석 준전문가(ADsP) 37회부터 53회까지의 기출 문제를 실제 시험처럼 풀고, 정답과 해설을 바로 확인합니다. 가입 없이 무료로 씁니다.')).toBeTruthy();
   expect(screen.getByRole('link', { name: '최신 53회 풀기' }).getAttribute('href')).toBe('#/adsp/rounds/53');
   expect(screen.queryByRole('heading', { name: '이어 풀기' })).toBeNull();
   const logo = screen.getByRole('link', { name: '독특한 CBT' }).querySelector('img');
@@ -94,10 +95,10 @@ test('round list groups newest years and cards, uses full card links and removes
   expect(screen.getByRole('link', { name: '50회, 4문항 30분, 기록 없음' })).toBeTruthy(); expect(screen.queryByRole('complementary')).toBeNull();
   expect(screen.getByText('풀이 기록은 이 브라우저에만 저장됩니다.')).toBeTruthy();
   expect(screen.getByRole('link', { name: '회차' }).getAttribute('aria-current')).toBe('page');
-  fireEvent.click(screen.getByRole('link', { name: '50회, 4문항 30분, 기록 없음' })); await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' }); footer();
+  fireEvent.click(screen.getByRole('link', { name: '50회, 4문항 30분, 기록 없음' })); await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' }); footer();
 });
 test('round info defaults to practice, switches radio/start link, and derives subject counts and thresholds', async () => {
-  window.location.hash = '#/adsp/rounds/50'; render(<App />); await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' });
+  window.location.hash = '#/adsp/rounds/50'; render(<App />); await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' });
   expect((screen.getByRole('radio', { name: /^연습/ }) as HTMLInputElement).checked).toBe(true);
   expect(screen.getByRole('link', { name: '연습 시작' }).getAttribute('href')).toBe('#/adsp/rounds/50/practice');
   expect(screen.getByText('아직 기록이 없습니다.')).toBeTruthy();
@@ -147,7 +148,7 @@ test.each(['practice', 'exam', 'result', 'review'] as const)('%s heading links o
   expect(link.parentElement?.tagName).toBe('H2');
   expect(link.parentElement?.textContent).toBe(`50회 · ${{ practice: '연습', exam: '시험', result: '결과', review: '다시 보기' }[page]}`);
   fireEvent.click(link);
-  await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' });
+  await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' });
   expect(screen.queryByRole('dialog')).toBeNull();
 });
 
@@ -186,10 +187,11 @@ test('hub shows dynamic card facts, service link, single exam link and restores 
   expect(brand.getAttribute('href')).toBe('#/'); expect(brand.parentElement?.tagName).toBe('DIV');
   expect(within(screen.getByRole('navigation', { name: '주요 화면' })).getAllByRole('link').map(l => [l.textContent, l.getAttribute('href')])).toEqual([['ADsP', '#/adsp'], ['SQLD', '#/sqld']]);
   expect(screen.queryByRole('heading', { name: '이어 풀기' })).toBeNull();
-  expect(document.title).toBe('독특한 CBT · 기출 복원 문제'); footer();
+  expect(document.title).toBe('독특한 CBT · 기출 문제'); footer();
+  expect(document.body.textContent).not.toContain('\uBCF5\uC6D0');
   fireEvent.click(card.getByRole('link', { name: 'ADsP 풀기 ›' }));
   await screen.findByRole('link', { name: '최신 53회 풀기' });
-  expect(document.title).toBe('ADsP 기출 복원 문제');
+  expect(document.title).toBe('ADsP 기출 문제');
 });
 
 test('hub resumes existing ADsP exam ahead of practice without changing saved records', async () => {

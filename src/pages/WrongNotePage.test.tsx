@@ -64,7 +64,7 @@ test('note groups, source headers, answer labels, query persistence, print and t
   fireEvent.click(screen.getByRole('button', { name: '해설 포함' }));
   expect(window.location.hash).toBe('#/adsp/sets/wrong/note');
   fireEvent.click(screen.getByRole('link', { name: '모아 풀기로' }));
-  await waitFor(() => expect(document.title).toBe('ADsP 기출 복원 문제'));
+  await waitFor(() => expect(document.title).toBe('ADsP 기출 문제'));
 });
 test.each(['adsp', 'sqld'])('%s resolved questions are excluded and empty note has only a return link', async exam => {
   localStorage.setItem(`${prefix(exam)}:50:practice`, JSON.stringify({ current: 1, answers: { 1: 1 } }));

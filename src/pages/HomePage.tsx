@@ -17,8 +17,8 @@ export function HomePage({ state, retry }: PageProps) {
   const { resume } = selection;
   return <>
     <div className={`home-hero${resume ? ' with-resume' : ''}`}><div>
-      <h1 className="page-title">{activeExam.name} 기출 복원 문제를 회차별로 풀어 보세요</h1>
-      <p className="page-lead">{latest !== null && `${activeExam.fullName}(${activeExam.name}) ${Math.min(...numbers)}회부터 ${latest}회까지의 복원 문제를 실제 시험처럼 풀고, 정답과 해설을 바로 확인합니다. `}가입 없이 무료로 씁니다.</p>
+      <h1 className="page-title">{activeExam.name} 기출 문제를 회차별로 풀어 보세요</h1>
+      <p className="page-lead">{latest !== null && `${activeExam.fullName}(${activeExam.name}) ${Math.min(...numbers)}회부터 ${latest}회까지의 기출 문제를 실제 시험처럼 풀고, 정답과 해설을 바로 확인합니다. `}가입 없이 무료로 씁니다.</p>
       <div className="overview-actions"><Link className="button" to={`${activeExam.path}/rounds`}>회차 고르기</Link><Link className="button secondary" to={`${activeExam.path}/mock`}>실전 모의고사</Link>{latest !== null && <Link className="button secondary" to={`${activeExam.path}/rounds/${latest}`}>최신 {latest}회 풀기</Link>}</div>
       {state.status !== 'success' ? <LoadingState state={state} retry={retry} /> : rounds.length === 0 ? <p role="status" className="state-panel">아직 등록된 회차가 없습니다.</p> : <dl className="home-facts"><div><dt>회차</dt><dd>{rounds.length}개</dd></div><div><dt>문제</dt><dd>{rounds.reduce((sum, round) => sum + round.questionCount, 0)}문항</dd></div><div><dt>과목</dt><dd>{activeExam.subjectCount}개</dd></div><div><dt>합격 기준</dt><dd>60점 이상</dd></div></dl>}
     </div><ResumePanel selection={selection} exam={activeExam} /></div>

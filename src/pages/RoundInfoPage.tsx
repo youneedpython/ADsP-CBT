@@ -23,7 +23,7 @@ function RoundInfo({ data }: { data: RoundData }) {
   const wrong = records.result && data.questions.some(question => records.result!.answers[question.number] !== question.answer);
   return <div className="round-info">
     <nav className="breadcrumb" aria-label="현재 위치"><Link to={`${activeExam.path}/rounds`}>회차</Link> › {data.round}회</nav>
-    <section className="overview-panel info-start"><p className="eyebrow">풀기 전 확인</p><h1 className="page-title">{activeExam.name} {data.round}회 복원 문제</h1>
+    <section className="overview-panel info-start"><p className="eyebrow">풀기 전 확인</p><h1 className="page-title">{activeExam.name} {data.round}회 기출 문제</h1>
       <dl className="info-facts"><div><dt>문항 수</dt><dd>{data.questions.length}문항</dd></div><div><dt>제한 시간</dt><dd>{data.timeLimitMinutes}분</dd></div><div className="full"><dt>합격 기준</dt><dd>총점 60점 이상 · 과목별 40% 미만 과락</dd></div></dl>
       <p className="info-hint">풀지 않은 문제는 오답으로 채점합니다. 시험 화면을 떠나 있는 동안은 시간이 멈춥니다.</p>
       <fieldset className="mode-fieldset"><legend>풀이 방식</legend><div className="mode-options">{(['practice', 'exam'] as const).map(value => <label key={value} className={`mode-option${mode === value ? ' active' : ''}`}><span><input type="radio" name="mode" value={value} checked={mode === value} onChange={() => setMode(value)} /> <strong>{value === 'practice' ? '연습' : '시험'}</strong></span><span className="mode-description">{value === 'practice' ? '문제마다 정답과 해설 확인 · 시간 제한 없음' : `다 풀고 한 번에 채점 · ${data.timeLimitMinutes}분`}</span></label>)}</div></fieldset>

@@ -31,7 +31,7 @@ export function WrongNotePage({ data }: { data: SetsData }) {
   return <div className="wrong-note">
     <h1 className="page-title">{exam.name} 오답 노트</h1>
     <p>{new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} · 틀린 문제 {wrong.length}문항</p>
-    <p className="wrong-note-notice">복원 문제입니다. 실제 시험과 다를 수 있습니다.</p>
+    <p className="wrong-note-notice">실제 시험과 다를 수 있습니다.</p>
     <div className="wrong-note-controls">
       <div className="wrong-note-buttons" role="group" aria-label="오답 노트 고르기">
         <button className="secondary" aria-pressed={!roundSort} onClick={() => change('sort')}>주제순</button>

@@ -45,7 +45,7 @@ test('round heading exit saves answers and elapsed time and pauses until returni
   vi.useFakeTimers({ shouldAdvanceTime: true });
   await act(async () => { vi.advanceTimersByTime(3000); });
   fireEvent.click(screen.getByRole('link', { name: '50회' }));
-  await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제' });
+  await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' });
   expect(screen.queryByRole('dialog')).toBeNull();
   const saved = readExam();
   expect(saved.answers).toEqual({ 1: 2 });

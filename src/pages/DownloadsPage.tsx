@@ -28,7 +28,7 @@ export function DownloadsPage({ state, retry }: PageProps) {
     if (rounds) next.set('tab', 'rounds'); else next.delete('tab');
     setParams(next);
   }
-  return <><h1 className="page-title">PDF 자료</h1><p className="page-lead">화면에서 바로 보거나 내려받아 인쇄하세요. 복원 문제라 실제 시험과 다를 수 있습니다.</p>
+  return <><h1 className="page-title">PDF 자료</h1><p className="page-lead">화면에서 바로 보거나 내려받아 인쇄하세요. 실제 시험과 다를 수 있습니다.</p>
     {downloads.state.status === 'error' ? <div role="alert" className="state-panel"><p>PDF 목록을 불러오지 못했습니다.</p><button onClick={downloads.retry}>다시 시도</button></div>
       : downloads.state.status === 'loading' ? <p role="status" className="state-panel">PDF 목록을 불러오는 중입니다.</p>
       : <>

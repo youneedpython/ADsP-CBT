@@ -58,8 +58,8 @@ export function NotesPage() {
   const unit = data?.units.find(u => u.number === requested) ?? data?.units[0];
   const name = subject ? `${subject.subject}과목${subject.chapter ? ` ${subject.chapter}장` : ''}` : '';
   useEffect(() => {
-    document.title = `${name ? `${name} ` : ''}핵심 요약 · ADsP 기출 복원 문제`;
-    return () => { document.title = 'ADsP 기출 복원 문제'; };
+    document.title = `${name ? `${name} ` : ''}핵심 요약 · ADsP 기출 문제`;
+    return () => { document.title = 'ADsP 기출 문제'; };
   }, [name]);
   const previousUnit = useRef<{ id: string; number: number } | null>(null);
   useEffect(() => {

@@ -35,7 +35,7 @@ test('loaded round keeps its original title and integer minimum for 55 questions
       number: i + 1, subject: 1, question: '개발 표본', stimulus: [], choices: ['가', '나', '다', '라'], answer: 1, explanation: '표본',
     })) });
   show({ status: 'success', rounds: [{ round: 50, year: 2026, title: '개발 표본', questionCount: 55, timeLimitMinutes: 90, file: '50.json' }] });
-  await screen.findByRole('heading', { name: 'ADsP 50회 복원 문제', level: 1 });
+  await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제', level: 1 });
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   expect(screen.getByRole('cell', { name: '22문항' })).toBeTruthy();
 });

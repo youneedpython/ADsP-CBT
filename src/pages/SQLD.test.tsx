@@ -28,9 +28,9 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 const savedResult = () => ({ answers: { 1: 1 }, score: 2, passed: false, subjectCorrect: { 1: 1, 2: 0 }, elapsedSeconds: 1, submittedAt: '2026-11-02T00:00:00Z', questionCount: 50 });
 test.each([
-  ['/sqld', 'SQLD 기출 복원 문제를 회차별로 풀어 보세요'],
+  ['/sqld', 'SQLD 기출 문제를 회차별로 풀어 보세요'],
   ['/sqld/rounds', '회차 고르기'],
-  ['/sqld/rounds/900', 'SQLD 900회 복원 문제'],
+  ['/sqld/rounds/900', 'SQLD 900회 기출 문제'],
   ['/sqld/rounds/900/practice', '900회 · 연습'],
   ['/sqld/rounds/900/exam', '900회 · 시험'],
   ['/sqld/rounds/900/result', '900회 · 결과'],
@@ -48,7 +48,7 @@ test.each([
   if (path.endsWith('/result')) {
     expect(screen.getAllByRole('progressbar').every(bar => !bar.classList.contains('sqld-progress'))).toBe(true);
   }
-  expect(document.title).toBe('SQLD 기출 복원 문제');
+  expect(document.title).toBe('SQLD 기출 문제');
   const nav = within(screen.getByRole('navigation', { name: '주요 화면' }));
   expect(nav.getAllByRole('link').map(a => a.textContent)).toEqual(['SQLD 홈', '회차', '모아 풀기']);
   expect(screen.getByRole('navigation', { name: '시험 전환' }).querySelector('[aria-current="page"]')?.textContent).toBe('SQLD');
@@ -85,7 +85,7 @@ test('SQLD exam submission stores exactly two subject keys and opens result/revi
 });
 test.each(['/sqld/notes', '/sqld/notes/1', '/sqld/missing'])('unsupported route %s returns to SQLD home', async path => {
   window.location.hash = `#${path}`; render(<App />);
-  await screen.findByRole('heading', { name: 'SQLD 기출 복원 문제를 회차별로 풀어 보세요' });
+  await screen.findByRole('heading', { name: 'SQLD 기출 문제를 회차별로 풀어 보세요' });
   await waitFor(() => expect(window.location.hash).toBe('#/sqld'));
 });
 test('unknown SQLD round redirects to SQLD rounds', async () => {

@@ -66,7 +66,7 @@ test('all blocks, safe bold text, topic statistics, links and current PDF nav', 
   expect(pdf.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
   expect(pdf.textContent).not.toContain('↗');
   expect(screen.getByRole('button', { name: '표본 그림 크게 보기' }).style.maxWidth).toBe('50px');
-  expect(document.title).toBe('1과목 핵심 요약 · ADsP 기출 복원 문제');
+  expect(document.title).toBe('1과목 핵심 요약 · ADsP 기출 문제');
   expect(screen.queryByRole('navigation', { name: '핵심 요약 과목' })).toBeNull();
 });
 test('TOC toggle, query navigation, previous / next, invalid query fallback', async () => {

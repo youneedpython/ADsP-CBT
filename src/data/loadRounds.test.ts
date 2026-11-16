@@ -3,6 +3,14 @@ import { loadRounds } from './loadRounds';
 
 afterEach(() => vi.unstubAllGlobals());
 const summary = { round: 50, year: 2026, title: '표본', questionCount: 50, timeLimitMinutes: 90, file: '50.json' };
+test.each(['2026-2-01', '2026-02-30', '2025-08-22', null, 20260822, '2026-00-01', '2026-13-01', '2026-01-00'])('rejects invalid examDate %s', async examDate => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [{ ...summary, examDate }] }));
+  await expect(loadRounds()).rejects.toThrow('회차 목록 형식 오류');
+});
+test.each([{ ...summary }, { ...summary, examDate: '2026-08-22' }, { ...summary, year: 2000, examDate: '2000-02-29' }])('accepts optional valid dates %j', async item => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [item] }));
+  expect(await loadRounds()).toEqual([item]);
+});
 
 test.each([undefined, null, '2026', 2025.5, 1999, 2101])('rejects invalid year %s', async year => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [{ ...summary, year }] }));

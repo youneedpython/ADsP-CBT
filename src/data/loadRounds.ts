@@ -1,5 +1,6 @@
 import { exams, type Exam } from '../domain/exams';
 import type { RoundSummary } from './types';
+import { validExamDate } from './examDate';
 
 function isRound(value: unknown): value is RoundSummary {
   if (typeof value !== 'object' || value === null) return false;
@@ -7,6 +8,7 @@ function isRound(value: unknown): value is RoundSummary {
   return ['round', 'questionCount', 'timeLimitMinutes'].every(
     key => typeof item[key] === 'number' && Number.isInteger(item[key]) && (item[key] as number) > 0,
   ) && typeof item.year === 'number' && Number.isInteger(item.year) && item.year >= 2000 && item.year <= 2100
+    && (!('examDate' in item) || validExamDate(item.examDate, item.year))
     && typeof item.title === 'string' && item.title.trim() !== ''
     && typeof item.file === 'string' && item.file.trim() !== '';
 }

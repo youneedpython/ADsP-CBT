@@ -132,6 +132,18 @@
         "bytes": 542698,
         "pages": 36
       }
+    },
+    "63": {
+      "type1": {
+        "file": "pdf/sqld/63-type1.pdf",
+        "bytes": 592270,
+        "pages": 38
+      },
+      "type2": {
+        "file": "pdf/sqld/63-type2.pdf",
+        "bytes": 569296,
+        "pages": 35
+      }
     }
   }
 }

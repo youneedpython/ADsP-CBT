@@ -13,6 +13,13 @@ export async function isDirectExecution(moduleUrl, argument = process.argv[1]) {
 
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const nonempty = value => typeof value === 'string' && value.trim().length > 0;
+function validExamDate(value, year) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [y, month, day] = value.split('-').map(Number);
+  const leap = y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return y === year && month >= 1 && month <= 12 && day >= 1 && day <= days[month - 1];
+}
 export function defaultDirectory() {
   return fileURLToPath(new URL('../public/data/', import.meta.url));
 }
@@ -54,7 +61,8 @@ export async function validateData(directory = defaultDirectory(), exam = 'adsp'
   const seen = new Set();
   for (const entry of rounds) {
     const r = entry?.round;
-    if (!keys(entry, ['round', 'year', 'title', 'questionCount', 'timeLimitMinutes', 'file'], r)) continue;
+    if (!keys(entry, ['round', 'year', 'examDate', 'title', 'questionCount', 'timeLimitMinutes', 'file'], r)) continue;
+    if ('examDate' in entry && !validExamDate(entry.examDate, entry.year)) add(r, undefined, 'examDate 날짜 / 연도 오류');
     if (!Number.isInteger(entry.year) || entry.year < 2000 || entry.year > 2100) add(r, undefined, 'year는 2000 ~ 2100 정수 필요');
     if (!Number.isInteger(r) || r < 1 || seen.has(r)) add(r, undefined, '회차 번호 오류 / 중복');
     seen.add(r);

@@ -14,8 +14,10 @@ export function RoundList({ state, retry }: PageProps) {
       <div className="year-heading"><h2 id={`year-${group.year}`}>{group.year}년</h2><span>{group.rounds.length}회차</span></div>
       <ul className="round-list">{group.rounds.map(round => {
         const record = cardRecord(round, { exam: store.read(round.round, 'exam', round.questionCount), practice: store.read(round.round, 'practice', round.questionCount), result: store.read(round.round, 'result', round.questionCount) });
-        return <li key={round.round}><Link className={`round-card ${record.kind === 'exam' ? 'in-progress' : ''}`} to={`${activeExam.path}/rounds/${round.round}`} aria-label={`${round.round}회, ${round.questionCount}문항 ${round.timeLimitMinutes}분, ${record.text}`}>
-          <div><strong className="round-number">{round.round}회</strong><p className="round-meta">{round.questionCount}문항 · {round.timeLimitMinutes}분</p></div><div className="card-status"><span className={`record-${record.kind}`}>{record.text}</span><span className="card-open" aria-hidden="true">열기 ›</span></div>
+        const date = round.examDate?.split('-').map(Number);
+        const dateLabel = date ? `${date[0]}년 ${date[1]}월 ${date[2]}일 시험, ` : '';
+        return <li key={round.round}><Link className={`round-card ${record.kind === 'exam' ? 'in-progress' : ''}`} to={`${activeExam.path}/rounds/${round.round}`} aria-label={`${round.round}회, ${dateLabel}${round.questionCount}문항 ${round.timeLimitMinutes}분, ${record.text}`}>
+          <div><div className="round-heading"><strong className="round-number">{round.round}회</strong>{round.examDate && <span className="round-date">{round.examDate.replaceAll('-', '.')}</span>}</div><p className="round-meta">{round.questionCount}문항 · {round.timeLimitMinutes}분</p></div><div className="card-status"><span className={`record-${record.kind}`}>{record.text}</span><span className="card-open" aria-hidden="true">열기 ›</span></div>
         </Link></li>;
       })}</ul>
     </section>)}

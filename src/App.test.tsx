@@ -97,6 +97,15 @@ test('round list groups newest years and cards, uses full card links and removes
   expect(screen.getByRole('link', { name: '회차' }).getAttribute('aria-current')).toBe('page');
   fireEvent.click(screen.getByRole('link', { name: '50회, 4문항 30분, 기록 없음' })); await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' }); footer();
 });
+test('round cards show supplied dates and include the spoken date in their name', async () => {
+  window.location.hash = '#/adsp/rounds';
+  fetchMock.mockResolvedValue(respond([{ ...sample(), examDate: '2026-08-22' }, sample(49)]));
+  render(<App />);
+  const card = await screen.findByRole('link', { name: '50회, 2026년 8월 22일 시험, 4문항 30분, 기록 없음' });
+  expect(within(card).getByText('2026.08.22')).toBeTruthy();
+  expect(screen.getByRole('link', { name: '49회, 4문항 30분, 기록 없음' }).querySelector('.round-date')).toBeNull();
+});
+
 test('round info defaults to practice, switches radio/start link, and derives subject counts and thresholds', async () => {
   window.location.hash = '#/adsp/rounds/50'; render(<App />); await screen.findByRole('heading', { name: 'ADsP 50회 기출 문제' });
   expect((screen.getByRole('radio', { name: /^연습/ }) as HTMLInputElement).checked).toBe(true);

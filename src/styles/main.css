@@ -331,6 +331,8 @@ main { flex: 1; padding-block: var(--space-medium); }
 .round-list { list-style: none; padding: 0; margin: var(--space-medium) 0; display: grid; gap: var(--space-medium); }
 .round-card { display: block; padding: var(--space-medium); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); text-decoration: none; min-height: var(--touch-height); }
 .round-meta { color: var(--muted); font-size: var(--font-small); }
+.round-heading { display: flex; align-items: baseline; gap: var(--space-small); white-space: nowrap; }
+.round-date { color: var(--muted); font-size: 0.75rem; }
 @media (min-width: 640px) {
   .round-card { display: flex; flex-direction: column; height: 100%; }
   .round-card .card-status { margin-top: auto; padding-top: var(--space-medium); align-items: center; min-height: calc(var(--font-small) * var(--line-height) + 2 * var(--chip-padding-block) + var(--space-medium)); }

@@ -7,7 +7,13 @@ import { validateData, isDirectExecution } from './validate-data.mjs';
 import { pathToFileURL } from 'node:url';
 
 const entry = { round: 900, year: 2026, title: '개발용 표본', questionCount: 50, timeLimitMinutes: 90, file: '900.json' };
-test.each(['valid', 'third subject', 'wrong counts', 'odd dollar', 'wrong path', 'wrong name', 'missing topic', 'ADsP ID', 'topic subject 3'])('SQLD validation: %s', async variant => {
+test.each(['2026-2-01', '2026-02-30', '2025-08-22', null, 20260822, '2026-13-01', '2026-01-00'])('rejects invalid examDate %s', async examDate => {
+  expect((await check(undefined, [{ ...entry, examDate }])).errors).toContain('회차 900 : examDate 날짜 / 연도 오류');
+});
+test.each([{ ...entry }, { ...entry, examDate: '2026-08-22' }, { ...entry, year: 2000, examDate: '2000-02-29' }])('accepts optional dates %j', async item => {
+  expect((await check(undefined, [item])).errors).toEqual([]);
+});
+test.each(['valid', 'valid date', 'bad date format', 'impossible date', 'wrong date year', 'third subject', 'wrong counts', 'odd dollar', 'wrong path', 'wrong name', 'missing topic', 'ADsP ID', 'topic subject 3'])('SQLD validation: %s', async variant => {
   const dir = await mkdtemp(path.join(tmpdir(), 'sqld-validation-'));
   try {
     await mkdir(path.join(dir, 'sqld'));
@@ -19,14 +25,15 @@ test.each(['valid', 'third subject', 'wrong counts', 'odd dollar', 'wrong path',
     if (variant === 'odd dollar') data.questions[0].question = '새로 만든 SQL 표본 010$';
     if (variant === 'wrong name') data.subjects[0].name = '다른 과목';
     await writeFile(path.join(dir, 'sqld/900.json'), JSON.stringify(data));
-    await writeFile(path.join(dir, 'sqld/rounds.json'), JSON.stringify([{ ...entry, file: variant === 'wrong path' ? '../900.json' : 'sqld/900.json' }]));
+    const dates = { 'valid date': '2026-08-22', 'bad date format': '2026-8-22', 'impossible date': '2026-02-30', 'wrong date year': '2025-08-22' };
+    await writeFile(path.join(dir, 'sqld/rounds.json'), JSON.stringify([{ ...entry, ...(variant in dates ? { examDate: dates[variant] } : {}), file: variant === 'wrong path' ? '../900.json' : 'sqld/900.json' }]));
     const topics = JSON.parse(JSON.stringify(sampleTopics()).replaceAll('T101', 'S101'));
     if (variant === 'missing topic') delete topics.questions[900][1];
     if (variant === 'ADsP ID') topics.topics[0].id = 'T101';
     if (variant === 'topic subject 3') topics.topics[0].subject = 3;
     await writeFile(path.join(dir, 'sqld/topics.json'), JSON.stringify(topics));
     const result = await validateData(dir, 'sqld');
-    expect(result.errors.length === 0).toBe(['valid', 'odd dollar'].includes(variant));
+    expect(result.errors.length === 0).toBe(['valid', 'valid date', 'odd dollar'].includes(variant));
     if (!result.errors.length) expect([result.roundCount, result.questionCount]).toEqual([1, 50]);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });

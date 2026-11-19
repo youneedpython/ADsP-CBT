@@ -136,12 +136,12 @@
     "63": {
       "type1": {
         "file": "pdf/sqld/63-type1.pdf",
-        "bytes": 592270,
+        "bytes": 592183,
         "pages": 38
       },
       "type2": {
         "file": "pdf/sqld/63-type2.pdf",
-        "bytes": 569296,
+        "bytes": 568718,
         "pages": 35
       }
     }

@@ -1,7 +1,17 @@
 [
   {
+    "round": 51,
+    "year": 2026,
+    "examDate": "2026-10-31",
+    "title": "ADsP 제51회 기출 문제",
+    "questionCount": 50,
+    "timeLimitMinutes": 90,
+    "file": "51.json"
+  },
+  {
     "round": 50,
     "year": 2026,
+    "examDate": "2026-08-08",
     "title": "ADsP 제50회 기출 문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -10,6 +20,7 @@
   {
     "round": 49,
     "year": 2026,
+    "examDate": "2026-05-17",
     "title": "ADsP 제49회 자료 기반 학습문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,
@@ -18,6 +29,7 @@
   {
     "round": 48,
     "year": 2026,
+    "examDate": "2026-02-07",
     "title": "ADsP 제48회 기출 문제",
     "questionCount": 50,
     "timeLimitMinutes": 90,

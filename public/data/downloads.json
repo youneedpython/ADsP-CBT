@@ -88,13 +88,13 @@
     "51": {
       "type1": {
         "file": "pdf/51-type1.pdf",
-        "bytes": 1083338,
+        "bytes": 1083481,
         "pages": 8
       },
       "type2": {
         "file": "pdf/51-type2.pdf",
-        "bytes": 2275707,
-        "pages": 25
+        "bytes": 2269039,
+        "pages": 21
       }
     }
   },

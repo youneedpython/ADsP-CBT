@@ -1,3 +1,4 @@
+import { Explanation } from '../components/Explanation';
 import { Link, useSearchParams } from 'react-router';
 import { useExam } from '../components/ExamContext';
 import { MathText } from '../components/MathText';
@@ -66,7 +67,7 @@ export function WrongNotePage({ data }: { data: SetsData }) {
             {selected === index + 1 && <strong className="wrong-note-tag">내 답</strong>}{' '}
             {q.answer === index + 1 && <strong className="wrong-note-tag">정답</strong>}
           </li>)}</ol>
-          {explain && <section className="feedback"><h4>해설</h4><p><MathText text={q.explanation} /></p></section>}
+          {explain && <section className="feedback"><h4>해설</h4><Explanation text={q.explanation} stimulus={q.explanationStimulus} headingLevel={5} /></section>}
         </article>;
       })}
     </section>)}

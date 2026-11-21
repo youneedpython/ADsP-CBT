@@ -84,6 +84,18 @@
         "bytes": 349083,
         "pages": 11
       }
+    },
+    "51": {
+      "type1": {
+        "file": "pdf/51-type1.pdf",
+        "bytes": 1083338,
+        "pages": 8
+      },
+      "type2": {
+        "file": "pdf/51-type2.pdf",
+        "bytes": 2275707,
+        "pages": 25
+      }
     }
   },
   "subjects": [

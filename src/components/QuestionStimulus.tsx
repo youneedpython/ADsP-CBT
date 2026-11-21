@@ -18,7 +18,7 @@ export function QuestionStimulus({ stimulus }: { stimulus: Question['stimulus'] 
       {item.type === 'text' && group.map((paragraph, paragraphIndex) => paragraph.type === 'text' && <p key={paragraphIndex}><MathText text={paragraph.text} display /></p>)}
       {item.type === 'code' && <pre>{item.text}</pre>}
       {item.type === 'table' && <table><thead><tr>{item.rows[0].map((cell, col) => <th key={col} scope="col"><MathText text={cell} /></th>)}</tr></thead><tbody>{item.rows.slice(1).map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, col) => <td key={col}><MathText text={cell} /></td>)}</tr>)}</tbody></table>}
-      {item.type === 'image' && <img src={dataUrl(item.src)} alt={item.alt} />}
+      {item.type === 'image' && <img src={dataUrl(item.src)} alt={item.alt} loading="lazy" />}
     </div>; })}
   </>;
 }

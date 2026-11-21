@@ -88,7 +88,7 @@ export async function validateData(directory = defaultDirectory(), exam = 'adsp'
     const counts = ids.map(() => 0);
     for (const [index, q] of data.questions.entries()) {
       const n = q?.number ?? index + 1;
-      if (!keys(q, ['number', 'subject', 'question', 'stimulus', 'choices', 'answer', 'explanation'], r, n)) continue;
+      if (!keys(q, ['number', 'subject', 'question', 'stimulus', 'choices', 'answer', 'explanation', 'explanationStimulus'], r, n)) continue;
       if (q.number !== index + 1) add(r, n, '문항 번호 연속 순서 오류');
       if (!ids.includes(q.subject)) add(r, n, sqld ? 'subject는 1, 2 필요' : 'subject는 1 ~ 3 필요');
       else counts[q.subject - 1]++;
@@ -96,9 +96,24 @@ export async function validateData(directory = defaultDirectory(), exam = 'adsp'
       if (!Array.isArray(q.choices) || q.choices.length !== 4) add(r, n, 'choices 4개 필요');
       if (Array.isArray(q.choices)) q.choices.forEach(c => string(c, r, n, 'choice', true));
       if (!Number.isInteger(q.answer) || q.answer < 1 || q.answer > 4) add(r, n, 'answer는 1 ~ 4 정수 필요');
-      string(q.explanation, r, n, 'explanation');
+      if (typeof q.explanation !== 'string') add(r, n, 'explanation 문자열 오류');
+      const special = /^\s*(?:\[([^\[\]]+)\]|\[\[그림 (\d+)\]\])\s*$/;
+      const parts = typeof q.explanation === 'string' ? q.explanation.split(/\r?\n/) : [];
+      let block = [];
+      const references = [];
+      const checkBlock = () => { if (!sqld && (block.join('\n').match(/\$/g) ?? []).length % 2) add(r, n, 'explanation $ 개수가 홀수'); block = []; };
+      for (const line of parts) {
+        const match = special.exec(line);
+        if (match && (match[2] || match[1].trim())) { checkBlock(); if (match[2]) references.push(Number(match[2])); }
+        else block.push(line);
+      }
+      checkBlock();
+      if ('explanationStimulus' in q && (!Array.isArray(q.explanationStimulus) || !q.explanationStimulus.length)) add(r, n, 'explanationStimulus 비어 있지 않은 배열 필요');
+      const explanationItems = Array.isArray(q.explanationStimulus) ? q.explanationStimulus : [];
+      for (const ref of references) if (ref < 1 || ref > explanationItems.length) add(r, n, 'explanationStimulus 그림 번호 범위 오류');
+      for (let i = 1; i <= explanationItems.length; i++) if (references.filter(ref => ref === i).length !== 1) add(r, n, 'explanationStimulus 그림 번호는 정확히 한 번 필요');
       if (!Array.isArray(q.stimulus)) { add(r, n, 'stimulus 배열 필요'); continue; }
-      for (const s of q.stimulus) {
+      for (const s of [...q.stimulus, ...explanationItems]) {
         const allowed = { text: ['type', 'text'], code: ['type', 'text'], table: ['type', 'rows'], image: ['type', 'src', 'alt'] }[s?.type];
         if (!allowed) { add(r, n, 'stimulus type 오류'); continue; }
         if (!keys(s, allowed, r, n)) continue;

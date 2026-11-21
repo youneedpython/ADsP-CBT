@@ -180,3 +180,17 @@ test.each([
 test('topic subject may differ from question subject', async () => {
   expect((await check(undefined, [entry], t => t.topics[0].subject = 3)).errors).toEqual([]);
 });
+
+test('valid rich explanation accepts blank lines and referenced stimulus', async () => {
+  expect((await check(d => { Object.assign(d.questions[0], { explanation: '앞\n\n[소제목]\n$식$\n\n[[그림 1]]\n뒤', explanationStimulus: [{ type: 'image', src: '900.json', alt: '표본 그림' }] }); })).errors).toEqual([]);
+});
+test.each([
+  ['empty', '', []], ['unreferenced', '표본', [{ type: 'text', text: '표본' }]],
+  ['missing', '[[그림 1]]', undefined], ['out of range', '[[그림 2]]', [{ type: 'text', text: '표본' }]],
+  ['duplicate', '[[그림 1]]\n[[그림 1]]', [{ type: 'text', text: '표본' }]],
+  ['bad item', '[[그림 1]]', [{ type: 'image', src: 'missing.png', alt: '' }]],
+  ['split math', '$앞\n[제목]\n뒤$', undefined],
+])('rejects rich explanation %s', async (_name, explanation, explanationStimulus) => {
+  const result = await check(d => { d.questions[0].explanation = explanation; if (explanationStimulus !== undefined) d.questions[0].explanationStimulus = explanationStimulus; });
+  expect(result.errors.length).toBeGreaterThan(0);
+});

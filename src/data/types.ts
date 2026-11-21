@@ -32,6 +32,7 @@ export interface Question {
   choices: [string, string, string, string];
   answer: Answer;
   explanation: string;
+  explanationStimulus?: Stimulus[];
 }
 export interface RoundData {
   formatVersion: 1;

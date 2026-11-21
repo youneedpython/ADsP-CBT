@@ -849,3 +849,7 @@ progress { background: var(--track); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .offline-notice { background: #252d39; color: #e6e9ef; }
 }
+
+.explanation-heading { font-size: 0.95em; font-weight: 600; margin: 1em 0 0.4em; overflow-wrap: anywhere; }
+.explanation-stimulus { max-width: 560px; margin-inline: auto; }
+.explanation-stimulus img { max-width: 100%; height: auto; display: block; margin-inline: auto; }

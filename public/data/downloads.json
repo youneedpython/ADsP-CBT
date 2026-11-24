@@ -76,12 +76,12 @@
     "50": {
       "type1": {
         "file": "pdf/50-type1.pdf",
-        "bytes": 1105272,
+        "bytes": 1116007,
         "pages": 9
       },
       "type2": {
         "file": "pdf/50-type2.pdf",
-        "bytes": 2109163,
+        "bytes": 2119893,
         "pages": 19
       }
     },
